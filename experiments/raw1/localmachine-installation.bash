@@ -2,11 +2,13 @@
 # local machine or workstation
 
 # installing on MacOS
-brew install terraform
-terraform -v
+# brew install terraform
+# terraform -v
 
 # brew uninstall terraform
 # brew autoremove
+
+brew tap hashicorp/tap
 
 # update ( based on [2] ) 
 
