@@ -20,7 +20,7 @@ terraform -install-autocomplete
 brew update  # brew itself
 brew upgrade hashicorp/tap/terraform
 
-
+export TF_VAR_api_key="your_paperspace_api_key"
 
 # [1] Based on: https://docs.digitalocean.com/reference/terraform/getting-started/
 # [2] Upgrade: https://www.terraform.io/downloads.html
