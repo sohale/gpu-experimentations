@@ -1,25 +1,29 @@
+
 provider "paperspace" {
-  # Configure Paperspace provider settings
+  api_key = "mykey0010"
+  # Additional configuration here
 }
 
-resource "paperspace_instance" "gpu_instance" {
-  # Define instance settings (e.g., GPU type, instance type, etc.)
+resource "paperspace_gpu_instance" "example" {
+  project_id = "id00011"
+  # Define other properties like region, machine type, etc.
 }
 
-resource "null_resource" "clone_repo" {
-  provisioner "local-exec" {
-    # Execute script to clone GitHub repository into Docker container
-    command = "docker exec <container_id> git clone https://github.com/sohale/gpu-experimentations /path/to/raw1"
+variable "api_key" {}
+
+provider "paperspace" {
+  api_key = var.api_key
+}
+
+#  either a
+# terraform.tfvars file,
+# command-line arguments,
+# or environment variables.
+
+terraform {
+  required_providers {
+    paperspace = {
+      source = "paperspace/paperspace"
+    }
   }
-  depends_on = [paperspace_instance.gpu_instance]
 }
-
-resource "null_resource" "compile_cuda_code" {
-  provisioner "local-exec" {
-    # Execute script to compile CUDA code
-    command = "docker exec <container_id> /path/to/compile_script.sh"
-  }
-  depends_on = [null_resource.clone_repo]
-}
-
-# Logic to shutdown and destroy Paperspace instance after compilation
