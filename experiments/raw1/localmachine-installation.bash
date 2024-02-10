@@ -12,7 +12,7 @@
 
 # new version based on [3]
 brew tap hashicorp/tap
-
+brew install hashicorp/tap/terraform
 
 
 # [1] Based on: https://docs.digitalocean.com/reference/terraform/getting-started/
