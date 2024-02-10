@@ -14,6 +14,10 @@
 brew tap hashicorp/tap
 brew install hashicorp/tap/terraform
 
+terraform -install-autocomplete
+# terraform -uninstall-autocomplete
+
+
 
 # [1] Based on: https://docs.digitalocean.com/reference/terraform/getting-started/
 # [2] Upgrade: https://www.terraform.io/downloads.html
