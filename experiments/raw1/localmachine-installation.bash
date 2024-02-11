@@ -25,7 +25,9 @@ brew upgrade hashicorp/tap/terraform
 # terraform apply -var "api_key=mykey0010"
 # terraform apply -var-file="secrets.tfvars"
 #  which: api_key = "mykey0010"
+# project_id = ""
 
+terraform init -var-file="secrets.tfvars"
 
 # [1] Based on: https://docs.digitalocean.com/reference/terraform/getting-started/
 # [2] Upgrade: https://www.terraform.io/downloads.html
