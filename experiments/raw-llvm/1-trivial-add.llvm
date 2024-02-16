@@ -1,5 +1,5 @@
 define i32 @main(i32 %a, i32 %b) {
-entry:
+;entry:
   ; %sum = add i32 %a, %b
   %sum = add i32 %a, 0
   ret i32 %sum
