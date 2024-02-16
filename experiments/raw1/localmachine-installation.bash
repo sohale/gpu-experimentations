@@ -29,7 +29,13 @@ brew upgrade hashicorp/tap/terraform
 
 terraform init -var-file="secrets.tfvars"
 
+# works
+# next step, fails: "plan". See [4]
+terraform plan -var-file="secrets.tfvars"
+
+
 # [1] Based on: https://docs.digitalocean.com/reference/terraform/getting-started/
 # [2] Upgrade: https://www.terraform.io/downloads.html
 # [3] New instructions: https://developer.hashicorp.com/terraform/install
+# [4] https://blog.paperspace.com/introducing-paperspace-terraform-provider/
 
