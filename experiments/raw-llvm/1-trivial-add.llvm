@@ -5,6 +5,8 @@ define i32 @main(i32 %argc, i32 %argv) {
   ; print "Hello, world!"
   %success = call i32 @puts(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @str, i64 0, i64 0))
 
+  ; No `%0`: the numbering of variables within your LLVM IR function begins with %1
+
   ; %sum = add i32 %argc, %b
   %sum = add i32 %argc, 0
   ret i32 %sum
