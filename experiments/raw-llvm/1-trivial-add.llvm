@@ -3,7 +3,7 @@ define i32 @main(i32 %argc, i32 %argv) {
 ;entry:
 
   ; print "Hello, world!"
-  %0 = call i32 @puts(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @str, i64 0, i64 0))
+  %success = call i32 @puts(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @str, i64 0, i64 0))
 
   ; %sum = add i32 %argc, %b
   %sum = add i32 %argc, 0
