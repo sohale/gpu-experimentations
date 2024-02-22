@@ -6,3 +6,11 @@
 *.fatbin
 
 secrets.tfvars
+
+.terraform/
+.terraform.lock.hcl
+
+*.o
+*.o.i64
+
+*.exec
