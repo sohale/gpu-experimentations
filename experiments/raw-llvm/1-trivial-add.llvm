@@ -7,6 +7,14 @@ define i32 @main(i32 %argc, i32 %argv) {
 
   ; No `%0`: the numbering of variables within your LLVM IR function begins with %1
 
+
+  ; Access argv[1]
+  %argv_idx = getelementptr inbounds i8*, i8** %argv, i64 1
+  %argv1 = load i8*, i8** %argv_idx
+
+  ; Use argv[1] with puts
+  %2 = call i32 @puts(i8* %argv1)
+
   ; %sum = add i32 %argc, %b
   %sum = add i32 %argc, 0
   ret i32 %sum
