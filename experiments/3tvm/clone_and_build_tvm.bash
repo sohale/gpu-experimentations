@@ -74,6 +74,32 @@ ninja --version  # 1.10.1
 
 echo
 
+
+# LLVM (nightly)
+#   From: https://apt.llvm.org/
+: """ skip
+mkdir -p llvm-nightly
+cd llvm-nightly
+# bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+wget https://apt.llvm.org/llvm.sh
+chmod +x ./llvm.sh
+sudo ./llvm.sh all
+# or for specific version:
+#sudo ./llvm.sh <version number> all
+
+echo "oggi-llvm"
+
+llvm-config-18  # why "-18" ??
+
+# done : https://apt.llvm.org/
+exit
+
+"""
+llvm-config-18  --version
+clang-18 --version
+
+cd ~/gpu-experimentations/experiments/3tvm/tvm/build
+
 # cd build
 ls config.cmake
 
