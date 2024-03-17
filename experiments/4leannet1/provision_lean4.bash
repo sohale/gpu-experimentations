@@ -1,5 +1,7 @@
 set -ex
 
+# Pulls & builds & installs latest Lean4
+
 # from: https://lean-lang.org/lean4/doc/make/ubuntu.html
 # Please ensure you have the following build tools available and then follow the generic build instructions.
 # https://lean-lang.org/lean4/doc/make/index.html
@@ -18,3 +20,5 @@ cd build/release
 cmake ../..
 make
 
+# works
+echo "make complete"
