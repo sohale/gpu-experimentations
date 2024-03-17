@@ -1,5 +1,15 @@
 set -ex
 
+# Don't use this. Use elan instead. From:
+# https://leanprover-community.github.io/install/linux.html
+# https://lean-lang.org/lean4/doc/dev/index.html#dev-setup-using-elan
+# curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none
+# source $HOME/.elan/env
+# elan default stable
+# elan completions bash > /etc/bash_completion.d/elan.bash-completion
+# code lean.code-workspace
+
+
 # Pulls & builds & installs latest Lean4
 
 # from: https://lean-lang.org/lean4/doc/make/ubuntu.html
