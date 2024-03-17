@@ -3,6 +3,22 @@ import Mathlib.Data.List.Basic
 -- Placeholder for a real number type, using Float for simplicity
 def Real := Float
 
+-- Library of activation functions
+def relu (x : Real) : Real :=
+  max 0.0 x
+
+def leakyRelu (x : Real) (α : Real := 0.01) : Real :=
+  if x > 0.0 then x else α * x
+
+def tanh (x : Real) : Real :=
+  (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x))
+
+def sigmoid (x : Real) : Real :=
+  1.0 / (1.0 + Math.exp(-x))
+
+
+-- Main NN definitions
+
 -- Define a structure for a neuron (weights and bias)
 structure Neuron :=
   (weights : List Real)
@@ -29,7 +45,7 @@ def createNetwork (layerSizes : List Nat) : List Layer :=
 
 -- Placeholder for the activation function, to be defined based on the specific use case
 def activationFunction (x : Real) : Real :=
-  x -- Placeholder implementation, replace with sigmoid, ReLU, etc.
+  sigmoid x
 
 -- Function to compute the output of a neuron given its inputs
 def computeNeuronOutput (neuron : Neuron) (inputs : List Real) : Real :=
