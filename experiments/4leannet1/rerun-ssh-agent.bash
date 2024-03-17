@@ -17,6 +17,7 @@ echo "Checking existing ssh-agents:"
 ps aux | grep -v grep | grep ssh-ag || :
 
 echo "Manually run the folllwing:"
+# todo: make a "source" version
 
 echo 'eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/github_rsa'
