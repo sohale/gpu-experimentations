@@ -1,4 +1,9 @@
 
+# Deprecated
+# run source ./refresh-ssh-agent.bash_source   instead
+return
+exist
+
 set -e
 
 # Kill "ssh-agent"s if any:

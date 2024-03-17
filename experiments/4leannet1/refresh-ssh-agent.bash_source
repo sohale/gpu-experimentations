@@ -1,0 +1,15 @@
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "Error: This must be run only using 'source', and not 'bash'. Please run with:    source ${BASH_SOURCE[0]}"
+    exit 1
+    # return  # 'return' only allows bash, noit source
+fi
+
+
+echo "oh no"
+
+# exit
+
+eval "$(ssh-agent -s)"
+
+ssh-add ~/.ssh/github_rsa
