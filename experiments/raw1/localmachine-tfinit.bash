@@ -15,7 +15,11 @@ terraform init -var-file="secrets.tfvars"  -var-file="tfconfig.tfvars"
 
 # works
 # next step, fails: "plan". See [4]
-terraform plan -var-file="secrets.tfvars"  -var-file="tfconfig.tfvars"
+terraform plan -var-file="secrets.tfvars"  -var-file="tfconfig.tfvars"  -out "my_plan_diff_1"
+
+
+# To perform exactly these actions, run the following command to apply:
+#    terraform apply "my_plan_diff_1"
 
 # [4] https://blog.paperspace.com/introducing-paperspace-terraform-provider/
 
