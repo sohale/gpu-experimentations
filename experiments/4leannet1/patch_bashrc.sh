@@ -10,6 +10,7 @@ BASHRC="$HOME/.bashrc"
 append_if_not_exist() {
     local line="$1"
     local file="$2"
+    grep -qxF -- "$line" "$file" || echo "applying pathch: appending: to $file:: $line"
     grep -qxF -- "$line" "$file" || echo "$line" >> "$file"
 }
 
