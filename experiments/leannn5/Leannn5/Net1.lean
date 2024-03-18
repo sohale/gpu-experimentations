@@ -44,13 +44,33 @@ def createNetwork (layerSizes : List Nat) : List Layer :=
   | _ :: t => List.zipWith createLayer t layerSizes
 
 -- Placeholder for the activation function, to be defined based on the specific use case
-def activationFunction (x : Real) : Real :=
+def activationFunction (x : Float) : Float :=
   sigmoid x
 
 -- Function to compute the output of a neuron given its inputs
-def computeNeuronOutput (neuron : Neuron) (inputs : List Real) : Real :=
-  let weightedSum := List.foldl (λ acc (weightInput : Real × Real) => acc + (weightInput.1 * weightInput.2)) 0 (List.zip neuron.weights inputs)
+def computeNeuronOutput (neuron : Neuron) (inputs : List Float) : Float :=
+  let weightedSum := List.foldl (λ acc (weightInput : Float × Float) => acc + (weightInput.1 * weightInput.2)) 0 (List.zip neuron.weights inputs)
   activationFunction (weightedSum + neuron.bias)
 
+
+/-
+instance : Repr Neuron where
+  reprPrec n _ :=
+    "Neuron(" ++ toString n.weights ++ ", " ++ toString n.bias ++ ")"
+
+instance : Repr Layer where
+  reprPrec l _ :=
+    "Layer(" ++ toString l.neurons ++ ")"
+-/
+
+-- (λ w => if w == 0 then "." else toString w) weight
+
+instance : Repr Neuron where
+  reprPrec neuron _ :=
+    let weightsStr := String.intercalate ", " (neuron.weights.map toString)
+    s!"Neuron(weights: [{ if weightsStr == 0 then "-"" else weightsStr}], bias: {neuron.bias})"
+
 -- Example usage: Define the network architecture
-#eval createNetwork [4, 10, 3, 1]
+def n := createNetwork [4, 10, 3, 1]
+
+#eval n
