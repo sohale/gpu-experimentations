@@ -1,5 +1,5 @@
 import Mathlib.Data.List.Basic
-import Mathlib.Algebra.Exponential
+import Mathlib.Data.Real.Basic
 
 -- import CustomWeightStringFormat
 -- import CustomFormatFloat
@@ -80,3 +80,5 @@ instance : Repr Neuron where
 def n := createNetwork [4, 10, 3, 1]
 
 #eval n
+
+#eval Lean.versionString
