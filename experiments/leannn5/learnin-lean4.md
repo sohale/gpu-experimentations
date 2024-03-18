@@ -253,3 +253,20 @@ terms_list.foldl (λ sum i, sum + (x ^ i / nat.fact i)) 0.0
 ```lean4
 #eval Lean.versionString
 ```
+
+Cmd+Click on the import. Wow:
+`.lake/packages/mathlib/Mathlib/Data/Real/Basic.lean`
+
+.lake/packages/mathlib/docs/overview.yaml
+Mentions: Real.exp
+but where?
+
+"Simplifier" mentioned in
+.lake/packages/mathlib/Mathlib/Analysis/Calculus/Deriv/Basic.lean
+
+
+Wow:
+
+ℝ -> ℝ
+
+failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Real.instLinearOrderedRingReal', and it does not have executable code
