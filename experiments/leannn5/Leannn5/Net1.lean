@@ -81,4 +81,4 @@ def n := createNetwork [4, 10, 3, 1]
 
 #eval n
 
-#eval Lean.versionString
+#eval Lean.versionString -- "4.7.0-rc2"
