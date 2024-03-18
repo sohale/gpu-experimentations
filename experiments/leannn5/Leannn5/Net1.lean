@@ -17,10 +17,10 @@ def leakyRelu (x : Float) (α : Float := 0.01) : Float :=
   if x > 0.0 then x else α * x
 
 def tanh (x : Float) : Float :=
-  ((Math.exp x) - (Math.exp -x)) / ((Math.exp x) + ( Math.exp (-x)))
+  ((real.exp x) - (real.exp -x)) / ((real.exp x) + ( Math.exp (-x)))
 
 def sigmoid (x : Float) : Float :=
-  1.0 / (1.0 + Math.exp(-x))
+  1.0 / (1.0 + real.exp(-x))
 
 
 -- Main NN definitions
