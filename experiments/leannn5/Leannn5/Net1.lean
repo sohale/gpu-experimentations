@@ -29,7 +29,7 @@ def Layer := List Neuron
 
 -- A function to create a neuron with a given number of inputs (weights) initialized randomly
 def createNeuron (numInputs : Nat) : Neuron :=
-  let weights := List.replicate numInputs 0.1 -- Placeholder for random initialization
+  let weights := List.replicate numInputs 0.0 -- Placeholder for random initialization
   let bias := 0.1 -- Placeholder for random initialization
   Neuron.mk weights bias
 
@@ -67,8 +67,8 @@ instance : Repr Layer where
 
 instance : Repr Neuron where
   reprPrec neuron _ :=
-    let weightsStr := String.intercalate ", " (neuron.weights.map toString)
-    s!"Neuron(weights: [{ if weightsStr == 0 then "-"" else weightsStr}], bias: {neuron.bias})"
+    let weightsStr := String.intercalate ", " (neuron.weights.map (λ w => if w == 0 then "₀" else toString w))
+    s!"Neuron(weights: [{ weightsStr}], bias: {neuron.bias})"
 
 -- Example usage: Define the network architecture
 def n := createNetwork [4, 10, 3, 1]
