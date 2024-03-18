@@ -15,3 +15,13 @@ secrets.tfvars
 
 *.exec
 /.lake
+
+.vscode/
+
+# messin
+experiments/leannn5/not.git/
+trash-lean/
+experiments/4leannet1/not.lean4.not/
+
+# messed git clone etc
+experiments/3tvm/tvm/

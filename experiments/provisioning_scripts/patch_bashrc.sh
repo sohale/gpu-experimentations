@@ -18,8 +18,10 @@ append_if_not_exist() {
 append_if_not_exist 'export HISTCONTROL=ignoredups:erasedups' "$BASHRC"
 append_if_not_exist 'shopt -s histappend' "$BASHRC"
 append_if_not_exist 'PROMPT_COMMAND="history -a;$PROMPT_COMMAND"' "$BASHRC"
-append_if_not_exist 'export HISTSIZE=10000' "$BASHRC"
-append_if_not_exist 'export HISTFILESIZE=20000' "$BASHRC"
+append_if_not_exist 'export HISTSIZE=100000' "$BASHRC"
+append_if_not_exist 'export HISTFILESIZE=200000' "$BASHRC"
+
+# Note that it will need a manual intervension after this: There will be repeated HISTSIZE= etc statements
 
 # Reload .bashrc (optional, for the current session)
 source "$BASHRC"
