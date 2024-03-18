@@ -134,3 +134,54 @@ then, each time:
 ```bash
 source that/autocomplete.source
 ```
+
+
+### Mathlib installtion
+
+When  `Mathlib` does not exist: 'Mathlib.Algebra.Exponential': no such file or directory
+* `echo $LEAN_PATH`
+* `find ~/.elan -name "Mathlib"`
+
+* Key: You need to add Mathlib as a Dependency in Lake.
+* Then you need to build it, when lake file is changed: If no response, you need to clean first. The manifest file may be intruding.
+```bash
+# elan update
+lake clean
+lake build
+```
+
+The Language server builds the file too. Under the hood. It is invisible. Using "restart file" when it prompts for it:
+```txt
+Imports of 'Net1.lean' are out of date and must be rebuilt. Restarting the file will rebuild them.
+```
+
+### Lake file:
+
+#### Q
+Difference between `package  «Leannn5»`  vs `lean_lib  «leannn5»` ?
+*  The name in the `lean_lib` declaration should match the directory name
+
+
+*  There is typically one package declaration per lakefile.lean,
+
+## The language
+
+### f(x)
+Did you know `(x)` is invalid?
+That's why `f(x)` is invalid, and doe snot mean `((f) (x))`, i.e., `f x`
+
+#### Math
+I like to leverage `Mathlib`. So, for my math formulas, I use:
+`import Mathlib.Algebra.Exponential`
+
+See Mathlib installtion above, when not found.
+
+### Lambda `(λ`
+I'd like to use λ notation for local lambda functions.
+
+Examples:
+```lean4
+
+terms_list.foldl (λ sum i, sum + (x ^ i / nat.fact i)) 0.0
+
+```
