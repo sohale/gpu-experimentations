@@ -37,8 +37,8 @@ nvcc -c mykernel.cu -o mykernel.obj
 # compile host
 #### cl -c main.cpp -o main.obj  # Replace g++ with your C++ compiler if different
 #### cl /c main.cpp /Fo"main.obj"
-nvcc  -x cu -c main.cpp -o main.obj
+nvcc  -x cu -c host_main.cpp -o host_main.obj
 
 # link step
-nvcc -o myexec main.obj mykernel.obj
+nvcc -o myexec   host_main.obj mykernel.obj
 
