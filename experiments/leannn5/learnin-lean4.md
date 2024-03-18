@@ -135,6 +135,70 @@ then, each time:
 source that/autocomplete.source
 ```
 
+### Q
+Active versus default (versus override)?
+`elan toolchain`
+`elan show`
+
+```bash
+elan show
+```
+output:
+```txt
+installed toolchains
+--------------------
+
+leanprover/lean4:stable
+leanprover/lean4:v4.6.tmp
+leanprover/lean4:v4.7.0-rc2 (default)
+
+active toolchain
+----------------
+
+leanprover/lean4:v4.7.0-rc2 (overridden by '/home/ephemssss/gpu-experimentations/experiments/leannn5/lean-toolchain')
+Lean (version 4.7.0-rc2, x86_64-unknown-linux-gnu, commit 6fce8f7d5cd1, Release)
+```
+
+Use:
+```lean
+#eval Lean.versionString
+```
+
+
+### Q
+The difference between Active versus "default" versus "override"?
+
+* default: global
+* active: locally withing your project (session or folder?): `lean-toolchain`
+* override: is Temporarily
+
+```
+leanprover/lean4:v4.7.0-rc2 (overridden by '/home/ephemssss/gpu-experimentations/experiments/leannn5/lean-toolchain')
+```
+
+* **Override**: Scope: Local to a folder/directory.
+* **Active**: Scope: Local to the current terminal session (or the specific instance of VS Code/extention).
+* **Default**: Scope: Global for the current user.
+
+It attributes the "override" to due to the presence of a `lean-toolchain` file.
+"This local configuration overrides the global default."
+
+But then, why Override does not use tool-chain (maybe it does)
+Answer: Try `elan override`.
+
+Side:
+* `lean-toolchain` file when inside a Lean "package"?
+
+* directories can also be assigned their own Lean toolchain manually with `elan override`.
+
+When a directory has an override then any time `lean` or `lake` is run inside that directory, or one of its child directories, the override toolchain will be invoked.
+
+
+States: active, installed, default, override, (not-installed)
+
+### Actung:
+The active/default version of your lean4-extention may be different from the one in your terminal
+
 
 ### Mathlib installtion
 
@@ -184,4 +248,8 @@ Examples:
 
 terms_list.foldl (λ sum i, sum + (x ^ i / nat.fact i)) 0.0
 
+```
+
+```lean4
+#eval Lean.versionString
 ```
