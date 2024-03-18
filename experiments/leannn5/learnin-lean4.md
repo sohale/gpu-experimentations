@@ -42,13 +42,19 @@ To use leanpkg.toml or Lake file? which one is more modenn? Why not just stick t
    * For lake
       * you will need a `lakefile.lean`, "ideally"
 
-### Q: Package and folder issues:
+### Q: Package and folder issues: (folder & workspae confusion) (in progress)
+(in progress)
+
 Issues about not being in the root: (apparently):
    * "Make sure that the folder you have opened in VS Code is the root of your Lean 4 project, where your lean-toolchain file and, ideally, your lakefile.lean are located."
    * `^` apparently. But I dont want that.
 
    * What is ".code-workspace"? There was a` old-repo-root/lean.code-workspace`.
       * I see!
+      * A `.code-workspace` file "is used to define a multi-root workspace" by vscode.
+      * Each treated as a separate root by VS Code: `{"folders": [{"path":}, * ]}`
+      * The location of the  `*.code-workspace`  file "will affect how relative paths within it are resolved."
+      * You may end up opening the (sub-)workspace in vscode. Despite losing github. (Untile later notice. This understanding is in progress)
 
 ### Q
 The `.vscode/setting` necessary for lean4 extension to work, after restarting:
