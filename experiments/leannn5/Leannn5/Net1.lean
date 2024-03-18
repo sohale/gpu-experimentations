@@ -1,5 +1,10 @@
 import Mathlib.Data.List.Basic
 
+-- import CustomWeightStringFormat
+-- import CustomFormatFloat
+-- toString <-> CustomFormatFloat.customFormatFloat
+-- def customFormatFloat := CustomFormatFloat.customFormatFloat
+
 -- Placeholder for a real number type, using Float for simplicity
 -- def Real := Float
 
