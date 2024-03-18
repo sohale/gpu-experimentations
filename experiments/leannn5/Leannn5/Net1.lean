@@ -1,19 +1,19 @@
 import Mathlib.Data.List.Basic
 
 -- Placeholder for a real number type, using Float for simplicity
-def Real := Float
+-- def Real := Float
 
 -- Library of activation functions
-def relu (x : Real) : Real :=
+def relu (x : Float) : Float :=
   max 0.0 x
 
-def leakyRelu (x : Real) (α : Real := 0.01) : Real :=
+def leakyRelu (x : Float) (α : Float := 0.01) : Float :=
   if x > 0.0 then x else α * x
 
-def tanh (x : Real) : Real :=
+def tanh (x : Float) : Float :=
   (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x))
 
-def sigmoid (x : Real) : Real :=
+def sigmoid (x : Float) : Float :=
   1.0 / (1.0 + Math.exp(-x))
 
 
@@ -21,8 +21,8 @@ def sigmoid (x : Real) : Real :=
 
 -- Define a structure for a neuron (weights and bias)
 structure Neuron :=
-  (weights : List Real)
-  (bias : Real)
+  (weights : List Float)
+  (bias : Float)
 
 -- Define a type for a layer, which is a list of neurons
 def Layer := List Neuron
