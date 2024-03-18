@@ -14,3 +14,4 @@ secrets.tfvars
 *.o.i64
 
 *.exec
+/.lake

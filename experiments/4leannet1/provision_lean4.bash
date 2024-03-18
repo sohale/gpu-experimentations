@@ -7,6 +7,8 @@ set -ex
 # source $HOME/.elan/env
 # elan default stable
 # elan completions bash > /etc/bash_completion.d/elan.bash-completion
+#
+# what is this about?
 # code lean.code-workspace
 
 
