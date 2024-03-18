@@ -30,12 +30,25 @@ If you dont' have Mathlib, apparently you need to reinstall. `elan self remove` 
 
 ### Q
 What is "a `lean-toolchain` File?
+   * Needs to be at the root of your "project directory"
 
 ### Q
 What is a `.toml` file in general context? Is it not specific to Lean4?
 
 ### Q
 To use leanpkg.toml or Lake file? which one is more modenn? Why not just stick to `.toml` files?
+   * Regarding `toml`:
+      * It seems `.toml` is for "Lean 3"? and hence, deprecated?
+   * For lake
+      * you will need a `lakefile.lean`, "ideally"
+
+### Q: Package and folder issues:
+Issues about not being in the root: (apparently):
+   * "Make sure that the folder you have opened in VS Code is the root of your Lean 4 project, where your lean-toolchain file and, ideally, your lakefile.lean are located."
+   * `^` apparently. But I dont want that.
+
+   * What is ".code-workspace"? There was a` old-repo-root/lean.code-workspace`.
+      * I see!
 
 ### Q
 The `.vscode/setting` necessary for lean4 extension to work, after restarting:
@@ -80,7 +93,7 @@ elan toolchain list
 
 * Most cli commands start with `elan toolchain` ...
 
-   * You will need to keep doing `elan default` ... . 
+   * You will need to keep doing `elan default` ... .
    * Strangely, it is not `elan toolchain default` ... . Not sure why.
 
 * Mave in mind: Versions are called `toolchain` s.
