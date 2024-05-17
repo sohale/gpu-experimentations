@@ -1,4 +1,7 @@
 
+# distro: "ubuntu"
+
+
 ARG BASE_IMAGE="ubuntu:jammy"
 FROM ${BASE_IMAGE}
 
@@ -20,11 +23,11 @@ WORKDIR ${WORK_DIR}
 
 # Install tools needed
 RUN distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
-    && TZ="America/New_York" \
+    && TZ="Europe/London" \
     && if [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; then \
           DEBIAN_FRONTEND=noninteractive && \
-          apt-get update -qq && \
-          apt-get install -qq -y --no-install-recommends tzdata && \
+          apt-get update && \
+          apt-get install -y --no-install-recommends tzdata && \
           ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
           dpkg-reconfigure -f noninteractive tzdata && \
           apt-get install -qq -y --no-install-recommends \
@@ -36,25 +39,11 @@ RUN distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]
                   python3-typing-extensions zlib1g-dev && \
           rm -rf /var/lib/apt/lists/* && \
           ln -sf /usr/bin/pytest-3 /usr/bin/pytest; \
-       elif [ "${distro}" = "rhel" ] || [ "${distro}" = "fedora" ]; then \
-          ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
-          ([ -x /usr/bin/microdnf ] && microdnf install -y yum) && \
-          RHEL_VERSION=$(grep CPE_NAME /etc/os-release | cut -d':' -f5) && \
-          yum install -q -y \
-              https://dl.fedoraproject.org/pub/epel/epel-release-latest-${RHEL_VERSION}.noarch.rpm && \
-          yum update -q -y && \
-          yum install -q -y \
-              autoconf automake ca-certificates clang cmake diffutils \
-              file java-11-openjdk-devel java-11-openjdk-headless \
-              gcc gcc-c++ git libtool make ncurses-devel ninja-build \
-              python39 python39-devel python39-numpy python39-pip \
-              python39-setuptools python39-wheel tzdata-java zlib-devel && \
-          # Use same versions as those in ubuntu:jammy
-          pip3 install -q \
-               Cython pytest==6.2.5 pytest-forked==1.4.0 \
-               pytest-xdist==2.5.0 typing-extensions==3.10.0.2 && \
-          rm -rf /var/cache/dnf/* && \
-          echo -e "/usr/local/lib" > /etc/ld.so.conf.d/local.conf; \
+          \
+          echo "End of distribution-specific part"; \
+       else \
+          echo 2>&1 -e "Only 'ubuntu' or 'debian' are supported"; \
+          exit 2; \
        fi \
     && ln -sf /usr/bin/python3 /usr/bin/python \
     && pip3 install --upgrade pip
@@ -99,5 +88,6 @@ RUN git clone -n https://github.com/llvm/llvm-project.git \
 LABEL llvm_project_successfully_built=yes
 
 
+# https://github.com/sohale/neopiler/blob/62cfe86487ee9e78923578a339bec1675e704d28/toolchain/dockering/conan_with_clang.Dockerfile
 # https://github.com/onnx/onnx-mlir/blob/main/docker/Dockerfile.llvm-project
 # as of: https://github.com/onnx/onnx-mlir/blob/c992bd8d05c964e8c0a5fcfcbf911ca81ec4af71/docker/Dockerfile.llvm-project
