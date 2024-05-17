@@ -24,25 +24,31 @@ WORKDIR ${WORK_DIR}
 # RUN apt-get update && apt-get install -y apt-utils
 
 # ENV DEBIAN_FRONTEND=noninteractive
-# lean first layer:
-# RUN apt-get clean -y && \
-#    rm -rf /var/lib/apt/lists/*
 
-# Install basic tools
-RUN echo "First layer: updated apt-get (non-lean)" \
+# Install basic tools: non-lean approach (apt-get update stays in the Docker layer)
+RUN echo "First layer: updated apt-get" \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && TZ="Europe/London" \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
     \
-    && DEBIAN_FRONTEND=noninteractive && \
-          apt-get update && \
-          apt-get install -y --no-install-recommends tzdata && \
-          ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && DEBIAN_FRONTEND=noninteractive \
+    && apt-get update  -y \
+    && apt-get install -y --no-install-recommends tzdata apt-utils \
+    && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && echo "Pre-installation layer created (dev)" \
     || (echo "Unsupported distribution: ${distro}. Only 'ubuntu' or 'debian' are supported. Breaking the build" \
         && exit 3)
+
+# todo: study: `-qq -y --no-install-recommends`
+#    && apt-get install -qq -y --no-install-recommends \
+
+# For lean first layer, append to `RUN` :
+#    && apt-get clean -y \
+#    && rm -rf /var/lib/apt/lists/* \
+
 # End of distribution-specific part
+
 RUN : && \
           apt-get install -qq -y --no-install-recommends \
                   autoconf automake ca-certificates clang cmake cppcheck \
@@ -50,13 +56,12 @@ RUN : && \
                   libtool make maven ninja-build openjdk-11-jdk-headless \
                   python3 python3-dev python3-distutils python3-numpy \
                   python3-pip python3-pytest-xdist python3-setuptools \
-                  python3-typing-extensions zlib1g-dev && \
-          rm -rf /var/lib/apt/lists/* && \
-          ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
+                  python3-typing-extensions zlib1g-dev \
+          && rm -rf /var/lib/apt/lists/* \
+          && ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
           \
     && ln -sf /usr/bin/python3 /usr/bin/python \
     && pip3 install --upgrade pip
-
 # WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 
 # Install protobuf
