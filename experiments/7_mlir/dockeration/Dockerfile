@@ -21,19 +21,28 @@ ARG NPROC=2
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
+# RUN apt-get update && apt-get install -y apt-utils
+
+# ENV DEBIAN_FRONTEND=noninteractive
+# lean first layer:
+# RUN apt-get clean -y && \
+#    rm -rf /var/lib/apt/lists/*
+
 # Install basic tools
-RUN : \
+RUN echo "First layer: updated apt-get (non-lean)" \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && TZ="Europe/London" \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
-          DEBIAN_FRONTEND=noninteractive && \
+    \
+    && DEBIAN_FRONTEND=noninteractive && \
           apt-get update && \
           apt-get install -y --no-install-recommends tzdata && \
-          ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
-          dpkg-reconfigure -f noninteractive tzdata && \
+          ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
     && echo "Pre-installation layer created (dev)" \
-    || (echo "Unsupported distribution: ${distro}. Breaking the build" && exit 3)
-
+    || (echo "Unsupported distribution: ${distro}. Only 'ubuntu' or 'debian' are supported. Breaking the build" \
+        && exit 3)
+# End of distribution-specific part
 RUN : && \
           apt-get install -qq -y --no-install-recommends \
                   autoconf automake ca-certificates clang cmake cppcheck \
@@ -43,15 +52,12 @@ RUN : && \
                   python3-pip python3-pytest-xdist python3-setuptools \
                   python3-typing-extensions zlib1g-dev && \
           rm -rf /var/lib/apt/lists/* && \
-          ln -sf /usr/bin/pytest-3 /usr/bin/pytest; \
+          ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
           \
-          echo "End of distribution-specific part"; \
-       else \
-          echo 2>&1 -e "Only 'ubuntu' or 'debian' are supported"; \
-          exit 2; \
-       fi \
     && ln -sf /usr/bin/python3 /usr/bin/python \
     && pip3 install --upgrade pip
+
+# WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 
 # Install protobuf
 ARG PROTOBUF_VERSION=21.12
