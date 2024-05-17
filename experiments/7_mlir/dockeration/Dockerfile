@@ -21,15 +21,20 @@ ARG NPROC=2
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
-# Install tools needed
-RUN distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
+# Install basic tools
+RUN : \
+    && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && TZ="Europe/London" \
-    && if [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; then \
+    && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
           DEBIAN_FRONTEND=noninteractive && \
           apt-get update && \
           apt-get install -y --no-install-recommends tzdata && \
           ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
           dpkg-reconfigure -f noninteractive tzdata && \
+    && echo "Pre-installation layer created (dev)" \
+    || (echo "Unsupported distribution: ${distro}. Breaking the build" && exit 3)
+
+RUN : && \
           apt-get install -qq -y --no-install-recommends \
                   autoconf automake ca-certificates clang cmake cppcheck \
                   curl default-jdk-headless gcc g++ git libncurses-dev \
