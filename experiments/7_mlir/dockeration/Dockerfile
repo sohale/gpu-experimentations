@@ -1,5 +1,6 @@
 
-
+# syntax=docker/dockerfile:1.3
+# Necessary for new syntax suh as ARGs to be used in FROM
 
 
 ARG BASE_IMAGE="ubuntu:jammy"
@@ -18,8 +19,11 @@ LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
 LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
 
+# Standard dockerhub labels
 LABEL maintainer="Sohail Siadat <sohale@gmail.com>"
-# LABEL version="0.01"
+LABEL version="0.01"
+LABEL description="A MLIR build including MLIR development environment"
+
 
 # ARG: Only build time, not available at runtime. not preserved in the final image.
 # ENV: Only runtime, not available at build time. (during execusion of Docker image). persist (in the final image too?).
@@ -30,11 +34,12 @@ ARG NPROC=1
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
+# We don't want this at runtime
 ARG TZ="Europe/London"
 
 # RUN apt-get update && apt-get install -y apt-utils
 
-# ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # I don't want "cache busting".
 # In fact I want to save build time (by reusing layers that haven't changed) rather than save space.
@@ -49,22 +54,25 @@ RUN : \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
     \
-    && DEBIAN_FRONTEND=noninteractive \
     && apt-get update  -y \
     && apt-get install -y \
            apt-utils \
-           ca-certificates curl wget bash \
+           ca-certificates curl wget \
     \
     && TZ="Europe/London" \
     # tzdata: tzdata is the package that contains time zone and daylight-saving time dat
     && apt-get install -y tzdata \
     && ls -alth /usr/share/zoneinfo/ \
+    # assertion
     && ls -alth /usr/share/zoneinfo/${TZ} \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone \
     # ^ Necessary too?
     && dpkg-reconfigure -f noninteractive tzdata \
     \
+    # Not sure if needed or not
+    && apt-get autoremove -y \
+    # Make it a thin first layer
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
     && echo "Pre-installation layer created (dev)" \
@@ -101,17 +109,47 @@ RUN : \
 # metadata about what packages are deleted
 # actual packages (downaded files) are not deleted, again, the packages remain installed and functional
 
-RUN : \
-   && set -eux \
-   && apt-get update  -y \
-   && :
 # package "lists" ( "metadata") are updated, in /var/lib/apt/lists/
 # you can also --reinstall some package ".deb" files: /var/cache/apt/archives/
 # to downgrade:
 # dpkg -i /var/cache/apt/archives/older_version_package.deb
 # du -sh /var/cache/apt/archives/
 
-# End of distribution-specific part
+# End of base 1 part
+
+RUN : \
+   && set -eux \
+   && apt-get update  -y \
+   && :
+
+# End of the "hydrated" part
+
+# dev layer [2]
+ARG DevUser="myuser"
+USER ${DevUser}
+ENV \
+   force_color_prompt=yes \
+   color_prompt=yes
+
+RUN : \
+   && set -eux \
+   \
+   # Note that I already have had curl, wget here, but it's OK to have it again
+   && apt-get install -y curl bash && \
+   && apt-get install -y sudo wget \
+   # Also enable `--ssh default` in your `DOCKER_BUILDKIT=1 docker build` command:
+      # That will enable `RUN --mount=type=ssh ...` to work
+   && apt-get install -y git openssh \
+   && useradd -m -s /bin/bash -G sudo ${DevUser} \
+   && echo '${DevUser} ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+   && echo 'Username will be: ${DevUser} ' \
+   \
+   && :
+# TODO: Leave the bash / interactive / user bit to the last layers
+
+# ENV PATH=${APP_HOME}/bin:${PATH}
+
+
 
 
 # ARG ARCH_DEFAULT=$(uname -m)
@@ -124,6 +162,11 @@ ENV ARCH_RUNTIME=${ARCH_RUNTIME:-$ARCH_BUILD_TIME}
 RUN : \
    && echo "Architecture at build time: $ARCH_RUNTIME (ARCH_RUNTIME), available in execution time" \
    && echo "Architecture at build time: $ARCH_BUILD_TIME (ARCH_BUILD_TIME)" \
+   && :
+
+# A reusable python layer (reusable)
+RUN : \
+   && sudo apt-get install -y pipx \
    && :
 
 # Use --no-install-recommends to make things very tight
@@ -205,3 +248,5 @@ LABEL llvm_project_successfully_built=yes
 # https://github.com/sohale/neopiler/blob/62cfe86487ee9e78923578a339bec1675e704d28/toolchain/dockering/conan_with_clang.Dockerfile
 # https://github.com/onnx/onnx-mlir/blob/main/docker/Dockerfile.llvm-project
 # as of: https://github.com/onnx/onnx-mlir/blob/c992bd8d05c964e8c0a5fcfcbf911ca81ec4af71/docker/Dockerfile.llvm-project
+#
+# [2] See dev layer in https://github.com/sohale/neopiler/blob/62cfe86487ee9e78923578a339bec1675e704d28/toolchain/dockering/conan_with_clang.Dockerfile#L37
