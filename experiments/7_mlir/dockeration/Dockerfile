@@ -23,6 +23,7 @@ LABEL maintainer="Sohail Siadat <sohale@gmail.com>"
 
 # ARG: Only build time, not available at runtime. not preserved in the final image.
 # ENV: Only runtime, not available at build time. (during execusion of Docker image). persist (in the final image too?).
+#   is set (being assgned to) (evaluated) at build time(? no! but if RHG is an ARG??), readable in run (executable) time (& build time).
 # LABEL: metadata, only in Docker image, for informational & organizational purposes.
 
 ARG NPROC=1
@@ -43,6 +44,8 @@ ARG TZ="Europe/London"
 # $distro will be: "ubuntu"
 RUN : \
     && echo "First layer: updated apt-get" \
+    && set -eux \
+    \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
     \
@@ -99,6 +102,7 @@ RUN : \
 # actual packages (downaded files) are not deleted, again, the packages remain installed and functional
 
 RUN : \
+   && set -eux \
    && apt-get update  -y \
    && :
 # package "lists" ( "metadata") are updated, in /var/lib/apt/lists/
@@ -109,8 +113,22 @@ RUN : \
 
 # End of distribution-specific part
 
+
+# ARG ARCH_DEFAULT=$(uname -m)
+# ENV ARCH=${ARCH:-$ARCH_DEFAULT}
+# RUN echo "Architecture at build time: $ARCH, available in execution time"
+# RUN echo "Architecture at build time: $ARCH_DEFAULT"
+
+ARG ARCH_BUILD_TIME=$(uname -m)
+ENV ARCH_RUNTIME=${ARCH_RUNTIME:-$ARCH_BUILD_TIME}
+RUN : \
+   && echo "Architecture at build time: $ARCH_RUNTIME (ARCH_RUNTIME), available in execution time" \
+   && echo "Architecture at build time: $ARCH_BUILD_TIME (ARCH_BUILD_TIME)" \
+   && :
+
 # Use --no-install-recommends to make things very tight
 RUN : \
+   && set -eux \
    && apt-get install \
             -qq -y --no-install-recommends \
          autoconf automake clang cmake cppcheck \
@@ -123,25 +141,29 @@ RUN : \
    && ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
    \
    && ln -sf /usr/bin/python3 /usr/bin/python \
-   && pip3 install --upgrade pip
+   && pip3 install --upgrade pip \
+   && :
 # WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 
 # Install protobuf
 ARG PROTOBUF_VERSION=21.12
 RUN : \
+    && set -eux \
     && git clone -b v${PROTOBUF_VERSION} --recursive https://github.com/protocolbuffers/protobuf.git \
     && cd protobuf && ./autogen.sh \
     && ./configure --enable-static=no \
     && make -j${NPROC} install && ldconfig \
     && cd python && python3 setup.py install --cpp_implementation \
-    && cd ../.. && rm -rf protobuf
+    && cd ../.. && rm -rf protobuf \
+    && :
 
 # Install jsoniter
 ARG JSONITER_VERSION=0.9.23
 RUN : \
     && JSONITER_URL=https://repo1.maven.org/maven2/com/jsoniter/jsoniter/${JSONITER_VERSION} \
     && JSONITER_FILE=jsoniter-${JSONITER_VERSION}.jar \
-    && curl -s ${JSONITER_URL}/${JSONITER_FILE} -o /usr/share/java/${JSONITER_FILE}
+    && curl -s ${JSONITER_URL}/${JSONITER_FILE} -o /usr/share/java/${JSONITER_FILE} \
+    && :
 
 # Clone and build llvm-project and run tests
 ARG BUILD_SHARED_LIBS=OFF
