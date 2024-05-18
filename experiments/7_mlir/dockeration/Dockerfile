@@ -159,25 +159,28 @@ RUN : \
 # RUN echo "Architecture at build time: $ARCH, available in execution time"
 # RUN echo "Architecture at build time: $ARCH_DEFAULT"
 
+# Will be deferred to runtime
 ARG ARCH_BUILD_TIME=$(uname -m)
 ENV ARCH_RUNTIME=${ARCH_RUNTIME:-$ARCH_BUILD_TIME}
 RUN : \
-   && echo "Architecture at build time: $ARCH_RUNTIME (ARCH_RUNTIME), available in execution time" \
-   && echo "Architecture at build time: $ARCH_BUILD_TIME (ARCH_BUILD_TIME)" \
+   && echo  "Architecture at build time: $ARCH_RUNTIME (ARCH_RUNTIME), available in execution time" \
+   && echo  "Architecture at build time: $ARCH_BUILD_TIME (ARCH_BUILD_TIME)" \
    && :
+# Architecture at build time: $(uname (ARCH_RUNTIME), available in execution time
+# Architecture at build time: $(uname (ARCH_BUILD_TIME)
 
 # A reusable python layer (reusable)
 RUN : \
    && sudo apt-get install -y pipx \
    && :
 
-# Use --no-install-recommends to make things very tight
+# Use --no-install-recommends to make things very tightly efficient
 RUN : \
    && set -eux \
    && apt-get install \
             -qq -y --no-install-recommends \
          autoconf automake clang cmake cppcheck \
-         default-jdk-headless gcc g++ git libncurses-dev \
+         default-jdk-headless gcc g++ libncurses-dev \
          libtool make maven ninja-build openjdk-11-jdk-headless \
          python3 python3-dev python3-distutils python3-numpy \
          python3-pip python3-pytest-xdist python3-setuptools \
