@@ -130,15 +130,16 @@ ENV \
    force_color_prompt=yes \
    color_prompt=yes
 
+# Dev tools
 RUN : \
    && set -eux \
    \
    # Note that I already have had curl, wget here, but it's OK to have it again
-   && apt-get install -y curl bash && \
+   && apt-get install -y curl bash \
    && apt-get install -y sudo wget \
-   # Also enable `--ssh default` in your `DOCKER_BUILDKIT=1 docker build` command:
-      # That will enable `RUN --mount=type=ssh ...` to work
-   && apt-get install -y git openssh \
+   # Also enable `--ssh default` in your `DOCKER_BUILDKIT=1 docker build` command: \
+   #    That will enable `RUN --mount=type=ssh ...` to work \
+   && apt-get install -y git  ssh-client ca-certificates patch less \
    && useradd -m -s /bin/bash -G sudo ${DevUser} \
    && echo "${DevUser} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
    && echo 'Username will be: ${DevUser} ' \
@@ -146,7 +147,7 @@ RUN : \
    && :
 # TODO: Leave the bash / interactive / user bit to the last layers
 # Switch to the new user "after" the user is created
-USER ${DevUser}
+# USER ${DevUser}
 
 # ENV PATH=${APP_HOME}/bin:${PATH}
 
@@ -240,6 +241,8 @@ RUN : \
 
 ENV DEBIAN_FRONTEND=
 
+USER ${DevUser}
+# Will use the USER ${DevUser}
 CMD ["bash"]
 
 # LABEL add metadata to a Docker image
