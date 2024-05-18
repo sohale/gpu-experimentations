@@ -93,24 +93,26 @@ RUN : \
 
 
 # Use --no-install-recommends to make things very tight
-RUN : && \
-          apt-get install -qq -y --no-install-recommends \
-                  autoconf automake ca-certificates clang cmake cppcheck \
-                  curl default-jdk-headless gcc g++ git libncurses-dev \
-                  libtool make maven ninja-build openjdk-11-jdk-headless \
-                  python3 python3-dev python3-distutils python3-numpy \
-                  python3-pip python3-pytest-xdist python3-setuptools \
-                  python3-typing-extensions zlib1g-dev \
-          && rm -rf /var/lib/apt/lists/* \
-          && ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
-          \
-    && ln -sf /usr/bin/python3 /usr/bin/python \
-    && pip3 install --upgrade pip
+RUN : \
+   && apt-get install \
+            -qq -y --no-install-recommends \
+         autoconf automake ca-certificates clang cmake cppcheck \
+         curl default-jdk-headless gcc g++ git libncurses-dev \
+         libtool make maven ninja-build openjdk-11-jdk-headless \
+         python3 python3-dev python3-distutils python3-numpy \
+         python3-pip python3-pytest-xdist python3-setuptools \
+         python3-typing-extensions zlib1g-dev \
+   # && rm -rf /var/lib/apt/lists/* \
+   && ln -sf /usr/bin/pytest-3 /usr/bin/pytest \
+   \
+   && ln -sf /usr/bin/python3 /usr/bin/python \
+   && pip3 install --upgrade pip
 # WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
 
 # Install protobuf
 ARG PROTOBUF_VERSION=21.12
-RUN git clone -b v${PROTOBUF_VERSION} --recursive https://github.com/protocolbuffers/protobuf.git \
+RUN : \
+    && git clone -b v${PROTOBUF_VERSION} --recursive https://github.com/protocolbuffers/protobuf.git \
     && cd protobuf && ./autogen.sh \
     && ./configure --enable-static=no \
     && make -j${NPROC} install && ldconfig \
