@@ -126,7 +126,6 @@ RUN : \
 
 # dev layer [2]
 ARG DevUser="myuser"
-USER ${DevUser}
 ENV \
    force_color_prompt=yes \
    color_prompt=yes
@@ -141,11 +140,13 @@ RUN : \
       # That will enable `RUN --mount=type=ssh ...` to work
    && apt-get install -y git openssh \
    && useradd -m -s /bin/bash -G sudo ${DevUser} \
-   && echo '${DevUser} ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+   && echo "${DevUser} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
    && echo 'Username will be: ${DevUser} ' \
    \
    && :
 # TODO: Leave the bash / interactive / user bit to the last layers
+# Switch to the new user "after" the user is created
+USER ${DevUser}
 
 # ENV PATH=${APP_HOME}/bin:${PATH}
 
