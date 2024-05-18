@@ -1,5 +1,5 @@
 
-# distro: "ubuntu"
+
 
 
 ARG BASE_IMAGE="ubuntu:jammy"
@@ -25,7 +25,12 @@ WORKDIR ${WORK_DIR}
 
 # ENV DEBIAN_FRONTEND=noninteractive
 
+# I don't want "cache busting".
+# In fact I want to save build time (by reusing layers that haven't changed) rather than save space.
+# To clean/prune the cache: docker builder prune --all --force
+
 # Install basic tools: non-lean approach (apt-get update stays in the Docker layer)
+# $distro will be: "ubuntu"
 RUN echo "First layer: updated apt-get" \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && TZ="Europe/London" \
@@ -33,22 +38,59 @@ RUN echo "First layer: updated apt-get" \
     \
     && DEBIAN_FRONTEND=noninteractive \
     && apt-get update  -y \
-    && apt-get install -y --no-install-recommends tzdata apt-utils \
+    && apt-get install -y tzdata apt-utils \
+    && ls -alth /usr/share/zoneinfo/ \
+    && ls -alth /usr/share/zoneinfo/${TZ} \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* \
     && echo "Pre-installation layer created (dev)" \
     || (echo "Unsupported distribution: ${distro}. Only 'ubuntu' or 'debian' are supported. Breaking the build" \
-        && exit 3)
-
-# todo: study: `-qq -y --no-install-recommends`
-#    && apt-get install -qq -y --no-install-recommends \
-
+        && exit 3 \
+       )
 # For lean first layer, append to `RUN` :
 #    && apt-get clean -y \
 #    && rm -rf /var/lib/apt/lists/* \
 
+# --no-install-recommends
+# study: `-qq -y --no-install-recommends`
+#
+# apt-get install
+#     -qq   # quiet (verbosity)
+#     -y (use with DEBIAN_FRONTEND=noninteractive )
+#     --no-install-recommends  # Only install the explicily mentioned packages, not the recommended ones
+#    --no-cache # Do not cache the package files
+#    && apt-get update --no-cache # No such thing?
+#
+# apt-get clean -y
+# Clean the package cache. Removes the local repository of retrieved package files. his frees up space by deleting .deb files from /var/cache/apt/archives.
+# clean up the local repository of retrieved package files:
+# deletes /deb files in /var/cache/apt/archives/ and /var/cache/apt/archives/partial/
+# i.e. actual downloaded packages that were installed on the system
+# metadata about what packages are available for installation is not deleted
+# actual packages (downloaded .deb files) are deleted, but the packages remain installed and functional
+
+# rm -rf /var/lib/apt/lists/*
+# reduce the image size after installing packages.
+# deletes information about what packages are available for installation.
+# no longer needed once the packages have been installed.
+# metadata about what packages are deleted
+# actual packages (downaded files) are not deleted, again, the packages remain installed and functional
+
+RUN : \
+   && apt-get update  -y \
+   && :
+# package "lists" ( "metadata") are updated, in /var/lib/apt/lists/
+# you can also --reinstall some package ".deb" files: /var/cache/apt/archives/
+# to downgrade:
+# dpkg -i /var/cache/apt/archives/older_version_package.deb
+# du -sh /var/cache/apt/archives/
+
 # End of distribution-specific part
 
+
+# Use --no-install-recommends to make things very tight
 RUN : && \
           apt-get install -qq -y --no-install-recommends \
                   autoconf automake ca-certificates clang cmake cppcheck \
@@ -100,6 +142,8 @@ RUN git clone -n https://github.com/llvm/llvm-project.git \
         [ "$(uname -m)" = "s390x" ]) \
     && rm -rf /tmp/* \
     && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
+
+ENV DEBIAN_FRONTEND=
 
 LABEL llvm_project_successfully_built=yes
 
