@@ -20,8 +20,24 @@ DOCKER_BUILD_SCRIPT="./build-mlir-docker.bash"
 
 # Start a tmux server if not running
 # tmux start-server # || :
+tmux -V
 # tmux ls   2> /dev/null  ||  :
 tmux ls || :
+
+# For convenience:
+cat << TMUX.CONF  > .local_mlirdb_tmux.conf
+# For setup:
+#   MacBook M1 : iTerm2 → ssh → buntu 22.04.4 LTS → tmux 3.2a
+
+# Enable mouse support
+set-option -g mouse on
+
+# Bind mouse wheel to scroll in copy mode
+bind -T copy-mode-vi WheelUpPane send-keys -X scroll-up
+bind -T copy-mode-vi WheelDownPane send-keys -X scroll-down
+TMUX.CONF
+
+tmux source-file .local_mlirdb_tmux.conf
 
 # Check if tmux session already exists
 tmux has-session -t $SESSION_NAME  # 2>/dev/null
