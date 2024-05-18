@@ -32,6 +32,9 @@ cat << TMUX.CONF  > .local_mlirdb_tmux.conf
 # Enable mouse support
 set-option -g mouse on
 
+# Increase scrollback buffer size to 100,000 lines (for a new tmux session only)
+set -g history-limit 100000
+
 # Bind mouse wheel to scroll in copy mode
 bind -T copy-mode-vi WheelUpPane send-keys -X scroll-up
 bind -T copy-mode-vi WheelDownPane send-keys -X scroll-down
