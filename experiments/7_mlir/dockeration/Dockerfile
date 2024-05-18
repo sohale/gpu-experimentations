@@ -7,18 +7,6 @@
 ARG BASE_IMAGE="ubuntu:jammy"
 FROM ${BASE_IMAGE}
 
-# Label the image for various checking and cleanup
-ARG LLVM_PROJECT_SHA1
-ARG LLVM_PROJECT_SHA1_DATE
-ARG LLVM_PROJECT_DOCKERFILE_SHA1
-# ARG ONNX_MLIR_PR_NUMBER
-# ARG ONNX_MLIR_PR_NUMBER2
-# ARG MLIR_PR_NUMBER
-LABEL llvm_project_sha1=${LLVM_PROJECT_SHA1}
-LABEL llvm_project_sha1_date=${LLVM_PROJECT_SHA1_DATE}
-LABEL llvm_project_dockerfile_sha1=${LLVM_PROJECT_DOCKERFILE_SHA1}
-# LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
-# LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
 
 # Standard dockerhub labels
@@ -229,15 +217,40 @@ RUN : \
 # Note: This is in root user
 # Note: WORKDIR is used
 RUN : \
-   && echo "cloning -n into: $(pwd), and ARG WORKDIR=${WORKDIR}" \
+   && echo "Cloning -n into: $(pwd), and ARG WORKDIR=${WORKDIR}" \
    && git clone -n https://github.com/llvm/llvm-project.git \
    :
+
+# The layer can potentially be "cache-bust"ed by date,
+# but currently it is not. Currently, this is a redundant step (unless this layer is manually cache-bust ed)
+RUN : \
+   && echo "pulling latest LLVM at $(date) , pwd=$(pwd), and ARG WORKDIR=${WORKDIR}" \
+   && cd ${WORK_DIR}/llvm-project \
+   && git pull \
+   :
+
+# Label the image for various checking and cleanup
+ARG LLVM_PROJECT_SHA1
+ARG LLVM_PROJECT_SHA1_DATE
+ARG LLVM_PROJECT_DOCKERFILE_SHA1
+# ARG ONNX_MLIR_PR_NUMBER
+# ARG ONNX_MLIR_PR_NUMBER2
+# ARG MLIR_PR_NUMBER
+# Don't label these at top. They are not yet relevant untilafter git clone layer.
+LABEL llvm_project_sha1=${LLVM_PROJECT_SHA1}
+LABEL llvm_project_sha1_date=${LLVM_PROJECT_SHA1_DATE}
+LABEL llvm_project_dockerfile_sha1=${LLVM_PROJECT_DOCKERFILE_SHA1}
+# LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
+# LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
 # After clone, build llvm-project and run tests
 ARG BUILD_SHARED_LIBS=OFF
 
 RUN : \
+    && echo "checkout and build: pwd=$(pwd), ARG WORKDIR=${WORKDIR}" \
     && cd llvm-project \
+    && cd ${WORK_DIR}/llvm-project \
+    # checkout does not fetch from interwebs \
     && git checkout ${LLVM_PROJECT_SHA1} \
     && mkdir -p build && cd build \
     # Build with clang since gcc on ppc64le doesn't support __builtin_thread_pointer

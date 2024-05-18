@@ -5,10 +5,13 @@ set -xu
 # SESSION_NAME="mlir-dev-docker-build-tmuxsession"
 # LOG_FILE="build1.stdout.log"
 # LOGERR_FILE="build1.stderr.log"
-SESSION_PREFIX="mlirdockerbuild"
-SESSION_NAME="${SESSION_PREFIX}1_tmuxsession"
-LOG_FILE="${SESSION_NAME}.stdout.log"
-LOGERR_FILE="${SESSION_NAME}.stderr.log"
+# SESSION_PREFIX="mlirdockerbuild"
+SESSION_PREFIX="mlirdbuild"
+SESSION_TIMESTAMP="$(date +'d%Y%m%d_t%H%M%S')"  # time of initiation
+SESSION_NAME="${SESSION_PREFIX}_${SESSION_TIMESTAMP}_tmuxsession"
+LOG_FILE="./tmux_logs/${SESSION_NAME}.stdout.log"
+LOGERR_FILE="./tmux_logs/${SESSION_NAME}.stderr.log"
+mkdir -p ./tmux_logs
 
 DOCKER_BUILD_SCRIPT="./build-mlir-docker.bash"
 # for testing this script:
@@ -42,6 +45,6 @@ export NC='\033[0m'  # Color Reset
 cmd1="tmux attach-session -t $SESSION_NAME"
 echo -e "${GREEN}$cmd1${NC}"
 echo "^ Run to attach to the tmux build session, if you want to see the output live, run:"
-
+echo "Control+B, then: ? for help, D to detach, q for back"
 # echo "$cmd1" >> ~/.bash_history
 # exec bash  # apply the new history entry
