@@ -17,7 +17,7 @@ LABEL llvm_project_dockerfile_sha1=${LLVM_PROJECT_DOCKERFILE_SHA1}
 LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
 LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
-ARG NPROC=2
+ARG NPROC=1
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
@@ -161,6 +161,8 @@ RUN : \
       ) \
    && rm -rf /tmp/* \
    && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
+
+# $(uname -m) ---> x86_64
 
 ENV DEBIAN_FRONTEND=
 
