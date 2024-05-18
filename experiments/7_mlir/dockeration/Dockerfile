@@ -17,12 +17,19 @@ LABEL llvm_project_dockerfile_sha1=${LLVM_PROJECT_DOCKERFILE_SHA1}
 LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
 LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
+
+LABEL maintainer="Sohail Siadat <sohale@gmail.com>"
+# LABEL version="0.01"
+
+# ARG: Only build time, not available at runtime. not preserved in the final image.
+# ENV: Only runtime, not available at build time. (during execusion of Docker image). persist (in the final image too?).
+# LABEL: metadata, only in Docker image, for informational & organizational purposes.
+
 ARG NPROC=1
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
-
-ENV TZ=Europe/London
+ARG TZ="Europe/London"
 
 # RUN apt-get update && apt-get install -y apt-utils
 
@@ -162,7 +169,8 @@ RUN : \
    && rm -rf /tmp/* \
    && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
 
-# $(uname -m) ---> x86_64
+# $(uname -m) ---> "x86_64"
+#                  "s390x":  IBM Z machine architecture
 
 ENV DEBIAN_FRONTEND=
 
