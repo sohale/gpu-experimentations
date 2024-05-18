@@ -21,8 +21,9 @@ LABEL description="A MLIR build including MLIR development environment"
 # LABEL: metadata, only in Docker image, for informational & organizational purposes.
 
 ARG NPROC=1
-ARG WORK_DIR=/workdir
-WORKDIR ${WORK_DIR}
+ARG BUILD_WORK_DIR=/workdir
+ENV WORK_DIR=${BUILD_WORK_DIR}
+WORKDIR ${BUILD_WORK_DIR}
 
 # We don't want this at runtime
 ARG TZ="Europe/London"
@@ -189,8 +190,9 @@ RUN : \
    && apt-get install -y \
          jq  \
    && jq --version \
-   :
+   && :
 
+# Caution: don't `\ :`
 
 # Install protobuf
 ARG PROTOBUF_VERSION=21.12
@@ -219,15 +221,18 @@ RUN : \
 RUN : \
    && echo "Cloning -n into: $(pwd), and ARG WORKDIR=${WORKDIR}" \
    && git clone -n https://github.com/llvm/llvm-project.git \
-   :
+   && :
 
 # The layer can potentially be "cache-bust"ed by date,
 # but currently it is not. Currently, this is a redundant step (unless this layer is manually cache-bust ed)
+# Note: ${WORK_DIR} is not defined? But is $BUILD_WORK_DIR?
 RUN : \
-   && echo "pulling latest LLVM at $(date) , pwd=$(pwd), and ARG WORKDIR=${WORKDIR}" \
-   && cd ${WORK_DIR}/llvm-project \
+   && pwd \
+   && find . \
+   && echo "Pulling latest LLVM at $(date) , pwd=$(pwd)" \
+   && cd llvm-project \
    && git pull \
-   :
+   && :
 
 # Label the image for various checking and cleanup
 ARG LLVM_PROJECT_SHA1
@@ -249,7 +254,6 @@ ARG BUILD_SHARED_LIBS=OFF
 RUN : \
     && echo "checkout and build: pwd=$(pwd), ARG WORKDIR=${WORKDIR}" \
     && cd llvm-project \
-    && cd ${WORK_DIR}/llvm-project \
     # checkout does not fetch from interwebs \
     && git checkout ${LLVM_PROJECT_SHA1} \
     && mkdir -p build && cd build \
@@ -270,7 +274,8 @@ RUN : \
         || [ "$(uname -m)" = "s390x" ]  \
       ) \
    && rm -rf /tmp/* \
-   && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
+   && echo "llvm-project commit $(git rev-parse HEAD) successfully built" \
+   && :
 
 # $(uname -m) ---> "x86_64"
 #                  "s390x":  IBM Z machine architecture
