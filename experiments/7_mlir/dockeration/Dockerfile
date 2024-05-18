@@ -2,6 +2,7 @@
 # syntax=docker/dockerfile:1.3
 # Necessary for new syntax suh as ARGs to be used in FROM
 
+# Latest (estimatted) image size: ~ 10.3GB
 
 ARG BASE_IMAGE="ubuntu:jammy"
 FROM ${BASE_IMAGE}
@@ -10,13 +11,14 @@ FROM ${BASE_IMAGE}
 ARG LLVM_PROJECT_SHA1
 ARG LLVM_PROJECT_SHA1_DATE
 ARG LLVM_PROJECT_DOCKERFILE_SHA1
-ARG ONNX_MLIR_PR_NUMBER
-ARG ONNX_MLIR_PR_NUMBER2
+# ARG ONNX_MLIR_PR_NUMBER
+# ARG ONNX_MLIR_PR_NUMBER2
+# ARG MLIR_PR_NUMBER
 LABEL llvm_project_sha1=${LLVM_PROJECT_SHA1}
 LABEL llvm_project_sha1_date=${LLVM_PROJECT_SHA1_DATE}
 LABEL llvm_project_dockerfile_sha1=${LLVM_PROJECT_DOCKERFILE_SHA1}
-LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
-LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
+# LABEL onnx_mlir_pr_number=${ONNX_MLIR_PR_NUMBER}
+# LABEL onnx_mlir_pr_number2=${ONNX_MLIR_PR_NUMBER2}
 
 
 # Standard dockerhub labels
@@ -178,7 +180,7 @@ RUN : \
 RUN : \
    && set -eux \
    && apt-get install \
-            -qq -y --no-install-recommends \
+            -y --no-install-recommends \
          autoconf automake clang cmake cppcheck \
          default-jdk-headless gcc g++ libncurses-dev \
          libtool make maven ninja-build openjdk-11-jdk-headless \
@@ -192,6 +194,15 @@ RUN : \
    && pip3 install --upgrade pip \
    && :
 # WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+# A few more cute & useful tools: jq xxd
+RUN : \
+   && set -eux \
+   && apt-get install -y \
+         jq  \
+   && jq --version \
+   :
+
 
 # Install protobuf
 ARG PROTOBUF_VERSION=21.12
@@ -213,10 +224,19 @@ RUN : \
     && curl -s ${JSONITER_URL}/${JSONITER_FILE} -o /usr/share/java/${JSONITER_FILE} \
     && :
 
-# Clone and build llvm-project and run tests
-ARG BUILD_SHARED_LIBS=OFF
+# Clone to save llvm-project in a seaprate folder to save time
+# On new realases, this needs to be done from scratch
+# Note: This is in root user
+# Note: WORKDIR is used
 RUN : \
-    && git clone -n https://github.com/llvm/llvm-project.git \
+   && echo "cloning -n into: $(pwd), and ARG WORKDIR=${WORKDIR}" \
+   && git clone -n https://github.com/llvm/llvm-project.git \
+   :
+
+# After clone, build llvm-project and run tests
+ARG BUILD_SHARED_LIBS=OFF
+
+RUN : \
     && cd llvm-project \
     && git checkout ${LLVM_PROJECT_SHA1} \
     && mkdir -p build && cd build \

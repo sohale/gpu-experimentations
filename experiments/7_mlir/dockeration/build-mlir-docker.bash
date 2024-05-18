@@ -21,12 +21,32 @@ docker buildx version || \
    docker buildx version
 }
 
+export LLVM_LATEST_RELEASE="$(./fetch_latest_release_llvm.bash)"
+
+: << COMMENT
+   ARG ARCH_DEFAULT=$(uname -m)
+   ARG BASE_IMAGE="ubuntu:jammy"
+   ARG LLVM_PROJECT_SHA1
+   ARG LLVM_PROJECT_SHA1_DATE
+   ARG LLVM_PROJECT_DOCKERFILE_SHA1   # only for label
+
+   ARG NPROC=1
+   ARG WORK_DIR=/workdir
+   ARG TZ="Europe/London"
+   ARG DevUser="myuser"
+   ARG ARCH_BUILD_TIME=$(uname -m)   # x86_64
+   ARG PROTOBUF_VERSION=21.12
+   ARG JSONITER_VERSION=0.9.23
+   ARG BUILD_SHARED_LIBS=OFF
+COMMENT
+
 # Featuring "SSH Forwarding":
 # DOCKER_BUILDKIT=1 \
 docker  build \
    --ssh default \
-   \
    --progress=plain \
+   \
+   --build-arg LLVM_PROJECT_SHA1="$LLVM_LATEST_RELEASE" \
    \
    -t mlir-v-tbc  \
    -f Dockerfile \
