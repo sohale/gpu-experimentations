@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # todo: move docker temp folder to the desired location (cloud container's volume)
+# mlir_dev_docker_build.sh
+
 set -eux
+
 
 # docker version
 docker --version
@@ -22,6 +25,8 @@ docker buildx version || \
 # DOCKER_BUILDKIT=1 \
 docker  build \
    --ssh default \
+   \
+   --progress=plain \
    \
    -t mlir-v-tbc  \
    -f Dockerfile \
