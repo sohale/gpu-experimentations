@@ -21,6 +21,9 @@ ARG NPROC=2
 ARG WORK_DIR=/workdir
 WORKDIR ${WORK_DIR}
 
+
+ENV TZ=Europe/London
+
 # RUN apt-get update && apt-get install -y apt-utils
 
 # ENV DEBIAN_FRONTEND=noninteractive
@@ -34,16 +37,24 @@ WORKDIR ${WORK_DIR}
 RUN : \
     && echo "First layer: updated apt-get" \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
-    && TZ="Europe/London" \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
     \
     && DEBIAN_FRONTEND=noninteractive \
     && apt-get update  -y \
-    && apt-get install -y tzdata apt-utils \
+    && apt-get install -y \
+           apt-utils \
+           ca-certificates curl wget bash \
+    \
+    && TZ="Europe/London" \
+    # tzdata: tzdata is the package that contains time zone and daylight-saving time dat
+    && apt-get install -y tzdata \
     && ls -alth /usr/share/zoneinfo/ \
     && ls -alth /usr/share/zoneinfo/${TZ} \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo ${TZ} > /etc/timezone \
+    # ^ Necessary too?
     && dpkg-reconfigure -f noninteractive tzdata \
+    \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
     && echo "Pre-installation layer created (dev)" \
@@ -91,13 +102,12 @@ RUN : \
 
 # End of distribution-specific part
 
-
 # Use --no-install-recommends to make things very tight
 RUN : \
    && apt-get install \
             -qq -y --no-install-recommends \
-         autoconf automake ca-certificates clang cmake cppcheck \
-         curl default-jdk-headless gcc g++ git libncurses-dev \
+         autoconf automake clang cmake cppcheck \
+         default-jdk-headless gcc g++ git libncurses-dev \
          libtool make maven ninja-build openjdk-11-jdk-headless \
          python3 python3-dev python3-distutils python3-numpy \
          python3-pip python3-pytest-xdist python3-setuptools \
@@ -121,19 +131,21 @@ RUN : \
 
 # Install jsoniter
 ARG JSONITER_VERSION=0.9.23
-RUN JSONITER_URL=https://repo1.maven.org/maven2/com/jsoniter/jsoniter/${JSONITER_VERSION} \
+RUN : \
+    && JSONITER_URL=https://repo1.maven.org/maven2/com/jsoniter/jsoniter/${JSONITER_VERSION} \
     && JSONITER_FILE=jsoniter-${JSONITER_VERSION}.jar \
     && curl -s ${JSONITER_URL}/${JSONITER_FILE} -o /usr/share/java/${JSONITER_FILE}
 
 # Clone and build llvm-project and run tests
 ARG BUILD_SHARED_LIBS=OFF
-RUN git clone -n https://github.com/llvm/llvm-project.git \
+RUN : \
+    && git clone -n https://github.com/llvm/llvm-project.git \
     && cd llvm-project \
     && git checkout ${LLVM_PROJECT_SHA1} \
     && mkdir -p build && cd build \
-# Build with clang since gcc on ppc64le doesn't support __builtin_thread_pointer
+    # Build with clang since gcc on ppc64le doesn't support __builtin_thread_pointer
     && CC=clang CXX=clang++ \
-       cmake -G Ninja ../llvm \
+         cmake -G Ninja ../llvm \
              -DLLVM_ENABLE_PROJECTS=mlir \
              -DLLVM_TARGETS_TO_BUILD="host" \
              -DCMAKE_BUILD_TYPE=Release \
@@ -141,16 +153,22 @@ RUN git clone -n https://github.com/llvm/llvm-project.git \
              -DLLVM_ENABLE_RTTI=ON \
              -DLLVM_ENABLE_LIBEDIT=OFF \
              -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
-    && cmake --build . --parallel ${NPROC} -- ${MAKEFLAGS} \
-    && (cmake --build . --parallel ${NPROC} --target check-mlir || \
-        [ "$(uname -m)" = "s390x" ]) \
-    && rm -rf /tmp/* \
-    && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
+   \
+   && cmake --build . --parallel ${NPROC} -- ${MAKEFLAGS} \
+   && ( \
+        cmake --build . --parallel ${NPROC} --target check-mlir \
+        || [ "$(uname -m)" = "s390x" ]  \
+      ) \
+   && rm -rf /tmp/* \
+   && echo "llvm-project commit $(git rev-parse HEAD) successfully built"
 
 ENV DEBIAN_FRONTEND=
 
-LABEL llvm_project_successfully_built=yes
+CMD ["bash"]
 
+# LABEL add metadata to a Docker image
+# For CI/CD criteria and Quaiity Gates (Verification) (ready for deployment) (debugging & build status)
+LABEL llvm_project_successfully_built=yes
 
 # https://github.com/sohale/neopiler/blob/62cfe86487ee9e78923578a339bec1675e704d28/toolchain/dockering/conan_with_clang.Dockerfile
 # https://github.com/onnx/onnx-mlir/blob/main/docker/Dockerfile.llvm-project
