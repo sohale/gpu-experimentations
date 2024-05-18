@@ -31,7 +31,8 @@ WORKDIR ${WORK_DIR}
 
 # Install basic tools: non-lean approach (apt-get update stays in the Docker layer)
 # $distro will be: "ubuntu"
-RUN echo "First layer: updated apt-get" \
+RUN : \
+    && echo "First layer: updated apt-get" \
     && distro=$(cat /etc/os-release|grep -Po '(?<=^ID=").*(?=")|(?<=^ID=)[^"].*[^"]') \
     && TZ="Europe/London" \
     && { [ "${distro}" = "debian" ] || [ "${distro}" = "ubuntu" ]; } \
@@ -46,9 +47,10 @@ RUN echo "First layer: updated apt-get" \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
     && echo "Pre-installation layer created (dev)" \
-    || (echo "Unsupported distribution: ${distro}. Only 'ubuntu' or 'debian' are supported. Breaking the build" \
-        && exit 3 \
-       )
+    || ( : \
+      && echo "Unsupported distribution: ${distro}. Only 'ubuntu' or 'debian' are supported. Breaking the build" \
+      && exit 3 \
+    )
 # For lean first layer, append to `RUN` :
 #    && apt-get clean -y \
 #    && rm -rf /var/lib/apt/lists/* \
