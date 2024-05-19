@@ -13,6 +13,7 @@ docker --version
 # Make sure buildx is installed
 docker buildx version || \
 {
+   # ./helpers/install_docker_buildx.bash
    mkdir -p ~/.docker/cli-plugins;
    BUILD_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
    echo "BUILD_VERSION: ${BUILD_VERSION}"
@@ -40,6 +41,10 @@ export LLVM_LATEST_RELEASE="$(./fetch_latest_release_llvm.bash)"
    ARG BUILD_SHARED_LIBS=OFF
 COMMENT
 
+
+# export MLIR_IMAGE_NAME="mlir-v-tbc"
+export MLIR_IMAGE_NAME="mlir-dev"
+
 # Featuring "SSH Forwarding":
 # DOCKER_BUILDKIT=1 \
 docker  build \
@@ -48,7 +53,7 @@ docker  build \
    \
    --build-arg LLVM_PROJECT_SHA1="$LLVM_LATEST_RELEASE" \
    \
-   -t mlir-v-tbc  \
+   -t $MLIR_IMAGE_NAME  \
    -f Dockerfile \
    .
 
@@ -57,3 +62,4 @@ docker  build \
    #  --secret id=secret2,src=secret2.txt \
 
 date
+date 1>&2
