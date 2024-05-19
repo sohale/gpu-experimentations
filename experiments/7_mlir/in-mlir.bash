@@ -27,23 +27,30 @@ docker run \
     \
     --env BASE_PATH="${BASE_PATH}" \
     --env _initial_cwd="$(pwd)" \
-    --env HOST_HOME="$HOME" \
+    --env HOST_HOME="${HOME}" \
+    --env GIT_REPO_ROOT="${GIT_REPO_ROOT}" \
     --volume "$GIT_REPO_ROOT":"$GIT_REPO_ROOT" \
     --volume "$WORK":"$WORK" \
     --workdir "${WORK}" \
     \
     --env MLIR_BIN="\mlir" \
+    --env MLIR_USER="myuser" \
     \
     ${MLIR_IMAGE_NAME}  \
     \
     bash -c "$(cat <<'EOF_STARTUP'
       echo "You are inside docker."
+      set -eux
+
+      # todo: add this to docker as ENV
+      # export PS1='temp: MLIR > ' # in case it breaks
+
       echo "You are: $HOME"
 
       export DEBIAN_FRONTEND=noninteractive
-      # not necessary, but very useful for debugging xwindows connection
-      apt update \
-         && apt install \
+      # not necessary, but useful for debugging & dev
+      # sudo apt update && \
+      sudo apt install \
             debconf dialog \
             apt-utils \
             strace \
@@ -53,8 +60,13 @@ docker run \
 
       # Then, continue interactively
       unset DEBIAN_FRONTEND
+      set +x  # echo off
 
-      echo "✨🔌🏛️🏁🏁☆✴︎❂⭐︎☞✻❋✼❉✱❁ℳ𝓜𝓛𝓘𝓡〖〗⎛⎞⎜⎟«»♞♘☃︎☀︎☼☁︎⛅︎🂡You are inside docker."
+      echo "✨🔌🏛️🏁🏁☆✴︎❂⭐︎☞✻❋✼❉✱❁ ℳ - 𝓜𝓛𝓘𝓡〖〗⎛⎞⎜⎟«»♞♘☃︎☀︎☼☁︎⛅︎🂡"
+      echo
+      echo "       ⛅︎"
+      echo "✨⭐︎ You are inside docker ⭐︎✨"
+      echo
 
       source ansi_colors.env.bash
 
@@ -68,13 +80,17 @@ docker run \
       # ispirational: zig, spark, rust, clangd, neovim, ANTLR, Conan,
 
       echo "« Key paths: »"
-      export PATH="$PATH:/opt/msvc/bin/$DESIRED_ARCH"
-      echo "Added to you path: /opt/msvc/bin/$DESIRED_ARCH"
+      # export PATH="$PATH:/opt/msvc/bin/$DESIRED_ARCH"
+      # echo "Added to you path: /opt/msvc/bin/$DESIRED_ARCH"
       echo "Docker's HOME=$HOME"
       echo "HOST_HOME=$HOST_HOME"
       echo "GIT_REPO_ROOT=$GIT_REPO_ROOT"
       echo "_initial_cwd=$_initial_cwd"
 
+      echo -n 'realpath ~  : '
+      realpath ~
+      realpath ~/.bashrc
+      ls -alth ~/.bashrc || :
 
       echo "« Key commands: »"
       echo "./scripts/inside_msvc-wine/compile1.bash" >>~/.bash_history
@@ -82,7 +98,17 @@ docker run \
       echo "./scripts/inside_msvc-wine/compile3.bash" >>~/.bash_history
       cat  ~/.bash_history
 
-      export PS1='\[\033[01;36m\]container\[\033[00m\]:\[\033[01;35m\]@\h 𝓜𝓛𝓘𝓡\[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami) \[\033[00m\] \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)\[\033[01;32m\] \$ \[\033[00m\]'
+      # not effetive
+      #  >> /home/myuser/.bashrc
+      #  >>~/.bashrc
+      cat <<-'__________BASHRC__________' >> /home/myuser/.bashrc
+
+         echo "inside .bashrc    \$\$=$$"
+         export PS1='♞𝓜𝓛𝓘𝓡♘ \[\033[01;36m\]container\[\033[00m\]:\[\033[01;35m\]@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami) \[\033[00m\] \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)\[\033[01;32m\] \$ \[\033[00m\]'
+
+__________BASHRC__________
+      #
+
       exec bash   # --norc --noprofile
 
       echo "Exiting exec bash-c inside docker"
