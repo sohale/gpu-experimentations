@@ -46,6 +46,7 @@ docker run \
       # export PS1='temp: MLIR > ' # in case it breaks
 
       echo "You are: $HOME"
+      nproc
 
       export DEBIAN_FRONTEND=noninteractive
       # not necessary, but useful for debugging & dev
@@ -113,7 +114,7 @@ docker run \
       cat <<-'__________BASHRC__________' >> /home/myuser/.bashrc
 
          echo "inside .bashrc    \$\$=$$"
-         export PS1='♞𝓜𝓛𝓘𝓡♘ \[\033[01;36m\]container\[\033[00m\]:\[\033[01;35m\]@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami) \[\033[00m\] \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)\[\033[01;32m\] \$ \[\033[00m\]'
+         export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[01;36m\]container\[\033[00m\]:\[\033[01;35m\]@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami) \[\033[00m\] \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)\[\033[01;32m\] \$ \[\033[00m\]'
 
 __________BASHRC__________
       #
