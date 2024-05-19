@@ -55,3 +55,5 @@ docker  build \
 # Also possible
    #  --secret id=secret1,src=secret1.txt \
    #  --secret id=secret2,src=secret2.txt \
+
+date

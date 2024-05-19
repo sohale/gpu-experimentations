@@ -21,7 +21,9 @@ LABEL description="A MLIR build including MLIR development environment"
 # LABEL: metadata, only in Docker image, for informational & organizational purposes.
 
 ARG NPROC=1
-ARG BUILD_WORK_DIR=/workdir
+
+# =/workdir
+ARG BUILD_WORK_DIR=/mlir
 ENV WORK_DIR=${BUILD_WORK_DIR}
 WORKDIR ${BUILD_WORK_DIR}
 
