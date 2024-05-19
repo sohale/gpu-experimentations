@@ -57,6 +57,15 @@ docker run \
             \
             tmux git \
             -y
+      # move pipx to here, or a later layer?
+      # unzip expect default-jdk pre-commit tree
+      # ncdu
+      # neovim
+      # wdiff
+      # if windows: mingw-w64 winehq-stable winbind
+      # if xwindows: xorg libx11-6  x11-apps xterm  #no: x11vnc xvfb
+      # if GPU: nvidia-cuda-toolkit
+      # if nwtwork: whois net-tools squid apache2-utils
 
       # Then, continue interactively
       unset DEBIAN_FRONTEND
