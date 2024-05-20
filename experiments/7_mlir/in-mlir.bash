@@ -119,22 +119,32 @@ docker run \
 
       echo "MLIR_BASE=${MLIR_BASE}"
       echo "MLIR_BINARY_DIR=${MLIR_BINARY_DIR}"
-
+      export B="${MLIR_BINARY_DIR}"
+      echo 'B=$MLIR_BINARY_DIR'
 
       echo "« Key commands: »"
+      echo -en "$BLUE_PALE"
       # echo "./scripts/inside_msvc-wine/compile3.bash" >>~/.bash_history
       echo "/mlir/llvm-project/build/bin/mlir-opt --version" >>~/.bash_history
       echo "$MLIR_BINARY_DIR/mlir-opt --version" >>~/.bash_history
       echo '$MLIR_BINARY_DIR/mlir-opt --version' >>~/.bash_history
       echo '$MLIR_BINARY_DIR/mlir-opt ' >>~/.bash_history
+      echo '$B/mlir-opt ' >>~/.bash_history
       cat  ~/.bash_history
+      echo -en "$COLOR_RESET"
 
 
       #  >> /home/myuser/.bashrc  == $HOME/.bashrc ==   ~/.bashrc
       cat <<-'__________BASHRC__________' >> ~/.bashrc
 
+         # PROMPT_COMMAND='err=$?; if [[ $err -ne 0 ]]; then _ps1_my_error="\\[\\033[0;31m\\]🔴 $err\[\033[00m\]"; else _ps1_my_error=""; fi'
+         PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="🔴${__exit_code}"; else _ps1_my_error=""; fi; }'
+
+         export PS4=" 🗣️  "
+         # \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)
          echo "inside .bashrc    \$\$=$$"
-         export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[01;36m\]container\[\033[00m\]:\[\033[01;35m\]@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami) \[\033[00m\] \[\033[01;33m\]$(cut -c1-12 /proc/1/cpuset)\[\033[01;32m\] \$ \[\033[00m\]'
+         export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
+
 
 __________BASHRC__________
       #

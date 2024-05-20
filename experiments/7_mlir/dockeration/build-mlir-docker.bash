@@ -3,6 +3,7 @@
 # todo: move docker temp folder to the desired location (cloud container's volume)
 # mlir_dev_docker_build.sh
 
+export PS4='\[\e[33m\]+ \[\e[0m\]'
 set -eux
 
 
@@ -44,6 +45,8 @@ COMMENT
 
 # export MLIR_IMAGE_NAME="mlir-v-tbc"
 export MLIR_IMAGE_NAME="mlir-dev"
+# a.k.a. 'tag'
+export MLIR_IMAGE_VER_="0.0.2"
 
 # Featuring "SSH Forwarding":
 # DOCKER_BUILDKIT=1 \
@@ -53,13 +56,24 @@ docker  build \
    \
    --build-arg LLVM_PROJECT_SHA1="$LLVM_LATEST_RELEASE" \
    \
-   -t $MLIR_IMAGE_NAME  \
+   -t $MLIR_IMAGE_NAME:${MLIR_IMAGE_VER_}  \
    -f Dockerfile \
    .
 
 # Also possible
    #  --secret id=secret1,src=secret1.txt \
    #  --secret id=secret2,src=secret2.txt \
+
+# We can also tag:
+# docker tag ${IMAGE_NAME}:${CURRENT_TAG} ${IMAGE_NAME}:${NEW_TAG}
+# docker tag mlir-dev:latest mlir-dev:0.0.1
+
+# docker save -o myimage.tar myimage:latest
+# docker image prune -a
+# docker load -i myimage.tar
+
+# Later use:
+# docker commit your_container_id_or_name myimage:latest
 
 date
 date 1>&2
