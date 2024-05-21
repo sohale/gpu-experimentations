@@ -13,9 +13,11 @@ which llvm-tblgen
 llvm-tblgen --version
 
 
+cd /home/ephemssss/gpu-experimentations/experiments/7_mlir/tablegen-example-1
 
 mkdir build -p
 cd build
+
 cmake -G Ninja ..
 ninja
 

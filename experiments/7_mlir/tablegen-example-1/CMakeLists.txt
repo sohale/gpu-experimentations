@@ -13,11 +13,14 @@ set(LLVM_DIR "/mlir/llvm-project/build/lib/cmake/llvm")
 set(MLIR_DIR "/mlir/llvm-project/build/lib/cmake/mlir")
 
 
+# Find LLVM and MLIR packages
 find_package(LLVM REQUIRED CONFIG)
 find_package(MLIR REQUIRED CONFIG)
 
 # include_directories(${LLVM_INCLUDE_DIRS})
 # include_directories(${MLIR_INCLUDE_DIRS})
+
+
 # Include LLVM and MLIR directories
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
