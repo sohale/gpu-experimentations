@@ -22,8 +22,7 @@ gitrepo_root
 export VSCODE_SETTINGSJSON="$REPO_ROOT/.vscode/settings.json"
 ls -alth $VSCODE_SETTINGSJSON
 
-export BACKUPS_DIR="$REPO_ROOT/.backups"
-mkdir -p "$BACKUPS_DIR"
+
 
 NEW_JSON_TAMPLATE='{
    "C_Cpp.intelliSenseEngine": "disabled",
@@ -61,10 +60,18 @@ grc diff $VSCODE_SETTINGSJSON $TEMP_JSONFILE \
 
 echo "^ Now go about and make these changes manually. (Never automate this)"
 
+function backup_vcsode_settings_jsonfile {
+set -u
+echo $SHELL | grep '/bash'
+export BACKUPS_DIR="$REPO_ROOT/.backups"
+mkdir -p "$BACKUPS_DIR"
 # TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 export BFN=$BACKUPS_DIR/vcsode_settings_json_$TIMESTAMP.json
 #todo:  make sure does not exist
 cp $VSCODE_SETTINGSJSON $BFN
 chmod -w $BFN
+ls -alth $BACKUPS_DIR/  # To bring to surface the backup files
+}
 
+backup_vcsode_settings_jsonfile
