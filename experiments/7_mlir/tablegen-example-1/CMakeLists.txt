@@ -43,9 +43,12 @@ add_public_tablegen_target(MyOpsIncGen)
 add_library(MyMLIRProject
   mydialect.cpp   # lib/MyDialect.cpp
   myops.cpp    # lib/MyOps.cpp
-  DEPENDS
-  MyOpsIncGen
+  # DEPENDS
+  # MyOpsIncGen
 )
+
+# Add dependency for TableGen generated files
+add_dependencies(MyMLIRProject MyOpsIncGen)
 
 target_link_libraries(MyMLIRProject PRIVATE MLIRIR)
 
