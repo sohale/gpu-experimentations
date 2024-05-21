@@ -4,20 +4,27 @@ raw1/terraform.tfstate
 raw1/terraform.tfstate.*
 raw1/hist
 
-#3tvm
+# messin
+# ../trash-lean/
+
+# 3tvm
+# messed git clone etc
+3tvm/tvm/
 
 # 4triton for Triton open-source ticket.
 4triton/triton
 4triton/venv-triton
 
-# 4leannet1 abdandoned. See leannn5 instead
+# 4leannet1 dismissed. See leannn5 instead
 4leannet1
+4leannet1/not.lean4.not/
 
 # leannn5 was successful in creating a working Lean4
 leannn5/trash
 leannn5/autocomplete.s
+leannn5/not.git/
 
-# open source. left for 7_mlif
+# open source. dismissed for 7_mlif
 6_mlir_arith_issue
 
 # 7_mlif: successful in creating a working Lean4
