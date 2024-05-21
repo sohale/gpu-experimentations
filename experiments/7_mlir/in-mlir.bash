@@ -150,6 +150,8 @@ __________BASHRC__________
       #
 
       exec bash   # --norc --noprofile
+      # check /home/myuser/.bashrc
+      cat /home/myuser/.bashrc
 
       echo "Exiting exec bash-c inside docker"
       echo "Exiting docker"
