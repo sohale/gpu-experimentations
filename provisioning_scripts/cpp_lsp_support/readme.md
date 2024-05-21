@@ -16,6 +16,9 @@ I did it first here: https://github.com/sohale/ifc2brep-0/tree/main/scripts/lsp.
 -->
 
 ## Steps:
+0. Following step 2.2 below, `Cmd`+`T` then `> clangd: Download language server`
+   * uses `.clangd`
+
 1. Install `clangd` ( I have it via clang 18)
    * Identify the path for `clangs`, e.g. `/usr/lib/llvm-18/bin/clangd`
 
@@ -62,7 +65,7 @@ I did it first here: https://github.com/sohale/ifc2brep-0/tree/main/scripts/lsp.
 
     * Note: Convert/Correct the paths if in Docker, Wine, etc
 
-5. Restart vscode by `> refresh window`
+5. Restart vscode by `Cmd`+`T` `> refresh window`
 
 6. Verification of clang after vscode restart:
     1. Verify `clangd` in `>clangd ...`
