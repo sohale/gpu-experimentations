@@ -12,8 +12,8 @@ function gitrepo_root {
    local SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
    cd $SCRIPT_DIR # wrong, no point in exporting this!
    export REPO_ROOT=$(git rev-parse --show-toplevel)
-   ls -alt $REPO_ROOT/ # verify it exists
-   ls -alt $REPO_ROOT/.git/ # verify it exists
+   ls -alt $REPO_ROOT/ 1>/dev/null # verify it exists
+   ls -alt $REPO_ROOT/.git/ 1>/dev/null # verify it exists
    # cd $REPO_ROOT
    cd $_prev_dir_
 

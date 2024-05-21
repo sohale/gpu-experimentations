@@ -24,6 +24,7 @@ gitrepo_root
 export VSCODE_SETTINGSJSON="$REPO_ROOT/.vscode/settings.json"
 ls -alth $VSCODE_SETTINGSJSON
 
+backup_vcsode_settings_jsonfile
 
 
 NEW_JSON_TAMPLATE='{
@@ -61,5 +62,3 @@ grc diff $VSCODE_SETTINGSJSON $TEMP_JSONFILE \
   || :
 
 echo "^ Now go about and make these changes manually. (Never automate this)"
-
-backup_vcsode_settings_jsonfile
