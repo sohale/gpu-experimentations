@@ -88,7 +88,8 @@ docker run \
       echo "✨⭐︎ You are inside docker ⭐︎✨"
       echo
 
-      source ansi_colors.env.bash
+      # source $GIT_REPO_ROOT/experiments/7_mlir/ansi_colors.env.bash
+      source $GIT_REPO_ROOT/provisioning_scripts/includes/ansi_colors.env.bash
 
       # already there:
       # pipx, pip3, python3, python3-pip, python3-venv
