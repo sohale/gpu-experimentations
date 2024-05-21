@@ -1,0 +1,25 @@
+# todo: document these attempt / experiments
+
+# 4triton for Triton open-source ticket.
+4triton/triton
+4triton/venv-triton
+
+# 4leannet1 abdandoned. See leannn5 instead
+4leannet1
+
+# leannn5 was successful in creating a working Lean4
+leannn5/autocomplete.s
+
+# open source. left for 7_mlif
+6_mlir_arith_issue
+
+# 7_mlif: successful in creating a working Lean4
+
+raw1/terraform.tfstate
+raw1/terraform.tfstate.*
+leannn5/trash
+
+raw1/hist
+
+7_mlir/dockeration/*.stderr.log
+7_mlir/dockeration/*.stdout.log
