@@ -5,7 +5,7 @@
 *.cubin
 *.fatbin
 
-secrets.tfvars
+
 
 .terraform/
 .terraform.lock.hcl
@@ -16,7 +16,12 @@ secrets.tfvars
 *.exec
 /.lake
 
+
+########################
+
 .vscode/
+
+secrets.tfvars
 
 # messin
 experiments/leannn5/not.git/
@@ -25,3 +30,5 @@ experiments/4leannet1/not.lean4.not/
 
 # messed git clone etc
 experiments/3tvm/tvm/
+
+.backups/

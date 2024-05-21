@@ -8,11 +8,13 @@
 export PS4="🗣️  "
 # SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 # timeline-react/clean-up.bash
+DOT="$(dirname "${BASH_SOURCE[0]}")"
 INCLUDES="$(dirname "${BASH_SOURCE[0]}")/../includes"
 echo "INCLUDES=$INCLUDES"
 source $INCLUDES/gitrepo_root.bash
 # source $INCLUDES/export_env.bash
 # source $INCLUDES/export_func.bash
+source $DOT/backup_vcsode_settings_jsonfile.bash.source
 
 ### MAIN ###
 set -eux
@@ -59,20 +61,5 @@ grc diff $VSCODE_SETTINGSJSON $TEMP_JSONFILE \
   || :
 
 echo "^ Now go about and make these changes manually. (Never automate this)"
-
-function backup_vcsode_settings_jsonfile {
-# input: $REPO_ROOT
-set -u
-echo $SHELL | grep -w 'bash'  # only accept bash
-export BACKUPS_DIR="$REPO_ROOT/.backups"
-mkdir -p "$BACKUPS_DIR"
-# TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-export BFN=$BACKUPS_DIR/vcsode_settings_json_$TIMESTAMP.json
-#todo:  make sure does not exist
-cp $VSCODE_SETTINGSJSON $BFN
-chmod -w $BFN
-ls -alth $BACKUPS_DIR/  # To bring to surface the backup files
-}
 
 backup_vcsode_settings_jsonfile
