@@ -61,8 +61,9 @@ grc diff $VSCODE_SETTINGSJSON $TEMP_JSONFILE \
 echo "^ Now go about and make these changes manually. (Never automate this)"
 
 function backup_vcsode_settings_jsonfile {
+# input: $REPO_ROOT
 set -u
-echo $SHELL | grep '/bash'
+echo $SHELL | grep -w 'bash'  # only accept bash
 export BACKUPS_DIR="$REPO_ROOT/.backups"
 mkdir -p "$BACKUPS_DIR"
 # TIMESTAMP=$(date +"%Y%m%d%H%M%S")
