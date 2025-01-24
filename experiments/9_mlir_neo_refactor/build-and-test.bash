@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -ex
 
 export PROGNAME=loop_vector_computation
@@ -5,7 +7,7 @@ export PROGNAME=loop_vector_computation
 # Assemble the LLVM IR Code
 # llvm-as loop_vector_computation.llvm
 # llvm-as loop_vector_computation.llvm  -o loop_vector_computation.bc
-llvm-as $PROGNAME.llvm  -o $PROGNAME.bc
+llvm-as $PROGNAME.ll  -o $PROGNAME.bc
 
 # Generate Native Assembly
 # llc loop_vector_computation.bc -o loop_vector_computation.s
