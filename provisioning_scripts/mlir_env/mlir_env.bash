@@ -134,14 +134,14 @@ docker run \
       echo "MLIR_BASE=${MLIR_BASE}"
       echo "B=MLIR_BINARY_DIR=${MLIR_BINARY_DIR}"
 
-      echo "« Key commands: »"
+      echo -e "\n« Key commands: »"
       echo -en "$BLUE_PALE"
-      echo '$B/mlir-opt --version' >>~/.bash_history
-      echo '$B/mlir-opt ' >>~/.bash_history
-      echo "$B/mlir-opt --version" >>~/.bash_history
-      echo '$B/mlir-opt ' >>~/.bash_history
+      echo '    $B/mlir-opt --version' >>~/.bash_history
+      echo '    $B/mlir-opt ' >>~/.bash_history
+      echo "    $B/mlir-opt --version" >>~/.bash_history
+      echo '    $B/mlir-opt ' >>~/.bash_history
       cat  ~/.bash_history
-      echo -en "$COLOR_RESET"
+      echo -en "$COLOR_RESET\n"
 
       $MLIR_BINARY_DIR/mlir-opt --version
 
@@ -172,3 +172,4 @@ EOF_STARTUP
 # [2] forked from: /home/ephemssss/gpu-experimentations/experiments/7_mlir/in-mlir.bash
 # [3] was in gpu-experimentations/experiments/8_mlir_nn/
 # [4] Uses Dockerfile: experiments/7_mlir/dockeration/Dockerfile
+#        which is built in experiments/7_mlir/dockeration/build-mlir-docker.bash
