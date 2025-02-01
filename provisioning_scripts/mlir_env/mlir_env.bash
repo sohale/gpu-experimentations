@@ -1,6 +1,8 @@
 #!/bin/bash
-# Swithes to an environment (in docker) where MLIR is available:
-# [2]
+
+# Swithes to an environment (in docker) where MLIR is available.
+# Uses Dockerfile: experiments/7_mlir/dockeration/Dockerfile
+# [1][2][3][4]
 
 set -eux
 
@@ -12,9 +14,10 @@ docker images
 # For docker:
 # for sake of git commands in docker
 export GIT_REPO_ROOT="$HOME/gpu-experimentations"
-export BASE_PATH="$GIT_REPO_ROOT/experiments/8_mlir_nn"
 # The work done inside MLIR. Rename: MLIR_WORK
 export WORK="$GIT_REPO_ROOT/experiments/8_mlir_nn"
+# Why?
+# export BASE_PATH="$GIT_REPO_ROOT/experiments/8_mlir_nn"
 
 # docker image name
 export DOCKER_MLIR_IMAGE_NAME="mlir-dev"
@@ -34,12 +37,13 @@ export DOCKER_MLIR_USER="myuser"
 #   --volume "/home/ephemssss/novorender/oda-sdk":"/home/ephemssss/novorender/oda-sdk" \
 #    --workdir "$(pwd)" \
 
+#     --env BASE_PATH="${BASE_PATH}" \
+
 docker run \
     --interactive --tty --rm \
     \
     --net=host \
     \
-    --env BASE_PATH="${BASE_PATH}" \
     --env _initial_host_cwd="$(pwd)" \
     --env HOST_HOME="${HOME}" \
     --env GIT_REPO_ROOT="${GIT_REPO_ROOT}" \
@@ -166,3 +170,5 @@ EOF_STARTUP
 
 # [1] Based on github.com/sohale/ifc2brep-0/scripts/wine_init_sol3.bash
 # [2] forked from: /home/ephemssss/gpu-experimentations/experiments/7_mlir/in-mlir.bash
+# [3] was in gpu-experimentations/experiments/8_mlir_nn/
+# [4] Uses Dockerfile: experiments/7_mlir/dockeration/Dockerfile
