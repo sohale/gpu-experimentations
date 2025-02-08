@@ -1,8 +1,11 @@
 // #include <cstdlib>
 #include <cuda_runtime.h>
 
-#define N 1024 // Matrix dimension (adjust as needed)
-#define M 256  // Number of input vectors in a batch
+/*
+Notes:
+    batch (ML lingo) = block of stream (CE lingo)
+*/
+
 
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n,
                                     int m) {
