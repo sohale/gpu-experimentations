@@ -9,3 +9,6 @@ Precedence:
 
 * A previous comprehensive Terraform I wrote: (private, never presented)
     * https://github.com/sohale/pocs_for_nikolai/blob/main/terraform/environments/neurotalk/main.tf
+
+LLM:
+* https://chatgpt.com/c/67a77c97-d4ac-8011-8ada-cee7963ab62f
