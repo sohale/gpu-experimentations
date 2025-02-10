@@ -1,6 +1,8 @@
 
 ```mermaid
 sequenceDiagram
+
+
     actor localuser as Manual trigger<br/> (Local Machine)
     participant localtf as TF<br/>(Local M.)
 
@@ -20,6 +22,8 @@ sequenceDiagram
     %% startup (remote)
     end
 
+    %% autonumber
+
     rect rgb(254, 240, 255)
     %% "create" did not work
     %% participant remotedocker as Docker
@@ -28,31 +32,44 @@ sequenceDiagram
 
 
     remotemanual->>remotemachine: `dot_bashrc.bash`,`patch_bashrc.sh`
+    %% the `refresh_ssh_agent.env` is applied as part of `dot_bashrc.bash`, but also 
+    %% remotemanual->>remotemachine: patch_bashrc.sh
     %% `patch_bashrc.sh` is not for this. But can be a good extra `.bashrc`. It shall run only once.
-    %% remotemanual->>remotemachine:patch_bashrc.sh
 
-    remotemanual->>remotemachine: `system_hardware_spec_info.bash`<br/>...
+    %% can be done later or earlier
+    %% remotemanual->>remotemachine: `system_hardware_spec_info.bash`<br/>...
+
 
     remotemanual->>remotemachine: inception_script.tf-template.bash`
     %% remotemachine-->-remotemanual: (done)
 
     remotemanual->>+remotemachine: `inception_script_manual.bash`
 
-    remotemachine->>remotemachine: `ghcli-install.bash`<br/>`ghcli-login.bash`<br/> `refresh_ssh_agent.env`
+    remotemachine->>remotemachine: `ghcli-install.bash`, `ghcli-login.bash` <br/> `refresh_ssh_agent.env` (as part of `inception_script_manual`)
+    %% the `refresh_ssh_agent.env` is applied also at `dot_bashrc.bash`
     %% remotemachine->>remotemachine: `ghcli-login.bash`
     %% remotemachine->>remotemachine: `refresh_ssh_agent.env`
+
+    remotemachine-->>-remotemanual: (ready)
+
+    remotemanual->>+remotemachine: `docker ...`
 
     create participant remotedocker as Docker
     remotemachine->>remotedocker: `docker`
 
+    remotemanual->>remotedocker: `exit`
+
     destroy remotedocker
     remotedocker--xremotemachine: `exit`
+    remotemachine--x-remotemanual: .
 
-    remotemachine-->>-remotemanual: (ready)
 
-    remotemanual->>remotemachine:...
+    remotemanual->>remotemachine: `system_hardware_spec_info.bash`, ...
 
     end
+
+    %% out of nowhere
+    localuser->>localtf: `UP show_outputs` , `UP ssh_into` <br/> `UP other ...` , `UP bash`
 
     localuser->>localtf: `UP tfdestroy`
     localtf-->>remotemachine: destroy
@@ -63,7 +80,7 @@ sequenceDiagram
 
     destroy remotemachine
     remotemachine--xlocaltf: .
-    localuser->>localtf: `UP tfinit`
+    localuser->>localtf: `UP tfplan` , `UP tfvalidate`
 
 
 ```
