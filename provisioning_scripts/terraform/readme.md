@@ -22,7 +22,7 @@ sequenceDiagram
 
     rect rgb(254, 240, 255)
     %% "create" did not work
-    participant remotedocker as Docker
+    %% participant remotedocker as Docker
     %% participant remotestartup as Bash<br/>Session
     actor remotemanual as Remote<br/>Manual
 
@@ -32,8 +32,11 @@ sequenceDiagram
     %% remotemachine->>remotemachine: `ghcli-login.bash`
     %% remotemachine->>remotemachine: `refresh_ssh_agent.env`
 
-    remotemachine->>+remotedocker: `docker`
-    remotedocker-->>-remotemachine: `exit`
+    create participant remotedocker as Docker
+    remotemachine->>remotedocker: `docker`
+
+    destroy remotedocker
+    remotedocker--xremotemachine: `exit`
 
     remotemachine-->>-remotemanual: (ready)
 
@@ -49,6 +52,9 @@ sequenceDiagram
 
     Note over remotemachine,remotemanual: Remote Machine (GPU)
 
+    destroy remotemachine
+    remotemachine--xlocaltf: .
+    localuser->>localtf: `UP tfinit`
 
 
 ```

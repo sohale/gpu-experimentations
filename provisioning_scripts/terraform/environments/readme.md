@@ -30,8 +30,7 @@
 
 
 │   │   │       ├── ghcli-install.bash        # Remote Machine.  Installation-Time (machine provisioning).  Picks the generated.
-│   │   │       ├── ghcli-login copy.bash    # run by inception_script_manual.bash on Remote Machine. Triggerd manually (since ht elatter is so).
-│   │   │       ├── ghcli-login.bash
+│   │   │       ├── ghcli-login.bash    # run by inception_script_manual.bash on Remote Machine. Triggerd manually (since ht elatter is so).
 │   │   │       ├── inception_script.tf-template.bash
 │   │   │       ├── inception_script_manual.bash  # copied to Remote, and shall be run manually in RM terminal.
 │   │   │       └── system_hardware_spec_info.bash
