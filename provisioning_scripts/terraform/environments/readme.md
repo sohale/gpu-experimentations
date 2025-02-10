@@ -21,7 +21,14 @@
 │   │   │   ├── local_manual__setup_at_creation.bash  # Run automatically (via upload_scripts_to_there.bash , called by up). aka SCRIPT1
 │   │   │   ├── readme.md
 │   │   │   └── scripts_to_push
-│   │   │       ├── dot_bashrc.bash           # Remote Machine. Shell-Time. Picks the generated "refresh_ssh_agent.env"
+│   │   │       ├── dot_bashrc.bash           # Remote Machine. Shell-Time. Picks the generated "refresh_ssh_agent.env" (removed. was: environments/cuda-ptx-hardcoded-dev-experiments/environment-box/scripts_to_push/dot_bashrc.bash )
+     The `refresh_ssh_agent.env` (Which is creaated in ..., now has to be executed manually)
+     But also via `inception_script_manual.bash`, which is ...
+     inception_script_manual.bash"
+  remote name: SCRIPT_FILE_REMOTE_PREDICTED_NAME="$TARGET_SCRIPTS_DIR/inception_script_manual.bash"
+  but I see another name: my_scripts_put_here_via_scp (but it is skipped)
+
+
 │   │   │       ├── ghcli-install.bash        # Remote Machine.  Installation-Time (machine provisioning).  Picks the generated.
 │   │   │       ├── ghcli-login copy.bash    # run by inception_script_manual.bash on Remote Machine. Triggerd manually (since ht elatter is so).
 │   │   │       ├── ghcli-login.bash

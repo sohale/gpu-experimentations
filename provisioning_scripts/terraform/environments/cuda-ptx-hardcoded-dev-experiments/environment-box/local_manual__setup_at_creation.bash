@@ -63,6 +63,7 @@ set -x
 : || \
 scp_file "$SCRIPT_FILE" "/home/paperspace/my_scripts_put_here_via_scp.bash"
 # SCRIPT_FILE is: inception_script_manual.bash"
+# note: SKIPPED ^
 
 # todo:
 # scp_file "$SCRIPT_FILE" "/home/paperspace/my_scripts_put_here_via_scp.bash"
