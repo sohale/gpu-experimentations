@@ -75,6 +75,8 @@
     bash "$TARGET_SCRIPTS_DIR__/ghcli-install.bash"
     bash "$TARGET_SCRIPTS_DIR__/ghcli-login.bash"
 
+    # This script applies refresh_ssh_agent.env, but it shall be done in startup script for session (.bashrc) or manually. (currently, manually)
+    # Since `refresh_ssh_agent.env` is used in two places, I am saving it in a file.
     source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
     {
     gh --version
@@ -87,11 +89,24 @@
     git clone git@github.com:sohale/pocs_for_nikolai.git
     #  https://github.com/sohale/pocs_for_nikolai.git
 
+    # docker does not need be here, unless we want to work strictly within Docker
+    #    I think the idea was that everything to be done inside the docker, to be one safe side regarding installging NVidia tools
+    #    But it will not keep the history.
+    #    Maybe I should just share the history (with docker host, i.e. TF's remote GPU machine)
+    #         & mount the volumes, etc?
     cd ~/oggi
     R="$(realpath .)"
-    echo "R=$R"
-    docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
 
 
     echo "You need to do this manually: ✋ exports:
-      source /home/paperspace/scripts-sosi/refresh_ssh_agent.env"
+
+      source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
+
+
+      docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
+
+or:
+
+      R=$R
+      "'docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3'"
+      "
