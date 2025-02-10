@@ -23,6 +23,7 @@ export EXPERIMENT_DIR="$REPO_ROOT/experiments/11_matrix_cuda"
 # export EXPERIMENT_TFDIR="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments"
 export TF_BASEDIR="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments"
 
+export RUNTIME="$TF_BASEDIR/runtime"
 
 
 # export EXPERIMENT_TFVARS="$EXPERIMENT_DIR/tfvarconfig"
@@ -32,16 +33,17 @@ mkdir -p "$EXPERIMENT_TFVARS"
 
 
 
-# The CWD of the terraform command:
-TF_MAIN_TF_DIR="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments"
-# rename: TF_MAIN_TF_DIR
+# TF_MAIN_TF_DIR and TF_BASEDIR are the same, here in this new organisation.
+# TF_MAIN_TF_DIR: is : # The CWD of the terraform command:
+# The CWD of the terraform command: (where the main.tf is): = TF_MAIN_TF_DIR = TF_MAIN_CWD
+TF_MAIN_TF_DIR="$TF_BASEDIR"
 if [ ! -f "$TF_MAIN_TF_DIR/main.tf" ]; then
   echo "Error: Terraform configuration files not found in the specified directory ($TF_MAIN_TF_DIR)."
   exit 1
 fi
 
 
-TF_STATE_FOLDER="$TF_BASEDIR/runtime/terraform_state"
+TF_STATE_FOLDER="$RUNTIME/terraform_state"
 TF_STATE_FILE="$TF_STATE_FOLDER/terraform.tfstate"
 TF_DIFF_OUT_FILE="$TF_STATE_FOLDER/plan_delta.dfplan"
 mkdir -p "$TF_STATE_FOLDER"
@@ -72,7 +74,7 @@ test -L "$TF_SECRETS_VARFILE"
 test -f "$TF_MAIN_TF_DIR/main.tf"
 test -f "$TF_SECRETS_VARFILE"
 test -f "$TF_PROJ_VARFILE"
-test -d "$EXPERIMENT_TFVARS"    
+test -d "$EXPERIMENT_TFVARS"
 
 
 
@@ -88,6 +90,11 @@ terraform init \
     -var-file="$TF_SECRETS_VARFILE" \
     -backend-config="$TF_STATE_FILE" \
      || :
+
+# How to fix this?
+# "backend-config was used without a "backend" block in the configuration"
+# is the "-backend-config=" to "override the default local backend configuration"?
+#   What does it mean?
 
 # This `-backend-config=` perhaps implied the init should be expected to be already there?
 #    -backend-config="$TF_STATE_FILE" \
@@ -172,7 +179,9 @@ function _capture_outputs {
     # you need to wait inside a "$( cat <$PIPE1 )"
 
     # todo: change if necessary. not revised
-    TEMP_FOLDER="$REPO_ROOT/experiments/11_matrix_cuda/runtime/tf-temp-runtime"
+    # TEMP_FOLDER="$REPO_ROOT/experiments/11_matrix_cuda/runtime/tf-temp-runtime"
+    TEMP_FOLDER="$RUNTIME/tf-temp-runtime"
+    test -d $TEMP_FOLDER
     PIPE_TEMP_FILENM="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
 
     export PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
@@ -194,6 +203,8 @@ function _capture_outputs {
     local machine_tuple_used_as_string="$(
       terraform output -json machine_tuple_used | jq -r '. | join("-")'
     )"
+    # dodo: this ^ can cause error ^: Output "machine_tuple_used" not found
+
     echo 1>&2 "machine_tuple_used_as_string=$machine_tuple_used_as_string"
     # cat < `use machine_.v2.env.buffer` > machine_.v2.env.buffer
     # cat <$PIPE1 > "machine_${machine_tuple_used_as_string}.env"
