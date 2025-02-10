@@ -18,7 +18,7 @@
 ├── environments
 │   ├── cuda-ptx-hardcoded-dev-experiments
 │   │   ├── environment-box
-│   │   │   ├── local_manual__setup_at_creation.bash  # Run automatically (via upload_scripts_to_there.bash , called by up). aka SCRIPT1
+│   │   │   ├── local_manual__setup_at_creation.bash  # Run automatically (via upload_scripts_to_there.bash , called by up). aka SCRIPT1, triggered by? UP script?! why show_output?!
 │   │   │   ├── readme.md
 │   │   │   └── scripts_to_push
 │   │   │       ├── dot_bashrc.bash           # Remote Machine. manually (later: Shell-Time). Picks the generated "refresh_ssh_agent.env" (removed. was: environments/cuda-ptx-hardcoded-dev-experiments/environment-box/scripts_to_push/dot_bashrc.bash )

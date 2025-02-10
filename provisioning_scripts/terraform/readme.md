@@ -31,6 +31,31 @@ sequenceDiagram
     actor remotemanual as Remote<br/>Manual
 
 
+    %% out of nowhere (1)
+    localuser->>+localtf: `UP show_outputs`
+    %% localtf->>remotemachine: `upload_scripts_to_there.bash`<br/> (copies inception_script_manual.bash )
+    localtf->>localtf: `upload_scripts_to_there.bash`
+    localtf->>remotemachine: Copies: `inception_script_manual.bash`
+    localtf->>localtf: Runs: `local_manual__setup_at_creation.bash`
+    %% remotemachine->>remotemachine: runs: local_manual__setup_at_creation.bash
+    localtf->>remotemachine: Copies: `inception_script_manual.bash`
+    %% runs locally:
+    %%   local_manual__setup_at_creation.bash
+    %% uploads scripts:
+    %%   inception_script_manual.bash
+    %%   (not all?)
+    %% the main.tf copies:
+    %%    inception_script.tf-template.bash
+    %% not!!:
+    %% localtf--x-localuser: (ready)
+    localtf->>+remotemachine: ssh session (interactive)
+    remotemachine-->remotemanual: give the control(!)
+    remotemachine--x-localtf: exit
+    %%      ssh session end
+    localtf--x-localuser: (done)
+
+
+
     remotemanual->>remotemachine: `dot_bashrc.bash`,`patch_bashrc.sh`
     %% the `refresh_ssh_agent.env` is applied as part of `dot_bashrc.bash`, but also 
     %% remotemanual->>remotemachine: patch_bashrc.sh
@@ -45,7 +70,7 @@ sequenceDiagram
 
     remotemanual->>+remotemachine: `inception_script_manual.bash`
 
-    remotemachine->>remotemachine: `ghcli-install.bash`, `ghcli-login.bash` <br/> `refresh_ssh_agent.env` (as part of `inception_script_manual`)
+    remotemachine->>remotemachine: `ghcli-install.bash`, `ghcli-login.bash` <br/> `refresh_ssh_agent.env` (as part of `inception_script_manual`)<br/> `system_hardware_spec_info`
     %% the `refresh_ssh_agent.env` is applied also at `dot_bashrc.bash`
     %% remotemachine->>remotemachine: `ghcli-login.bash`
     %% remotemachine->>remotemachine: `refresh_ssh_agent.env`
@@ -68,8 +93,10 @@ sequenceDiagram
 
     end
 
-    %% out of nowhere
-    localuser->>localtf: `UP show_outputs` , `UP ssh_into` <br/> `UP other ...` , `UP bash`
+
+    %% out of nowhere (2)
+    localuser->>localtf: `UP ssh_into` <br/> `UP other ...` , `UP bash`
+
 
     localuser->>localtf: `UP tfdestroy`
     localtf-->>remotemachine: destroy
@@ -84,7 +111,7 @@ sequenceDiagram
 
 
 ```
-
+<!-- https://mermaid.js.org/syntax/sequenceDiagram.html -->
 
 ## Steps
 (See pocs_for_nikolai: `/README.md` )
@@ -117,6 +144,18 @@ Then! (Currenlty auotmatically done as the last part of `inception_script_manual
 * git clone
 * docker run
 
+## Scripting
+* separate translatent helper scripts
+* some are run as part of `inception_script_manual.bash`, etc
+* Two main ones:
+* inception_script.tf-template.bash
+* ...
+* The `show_output` actually runs the ssh session?! and does the actual update?
+    * It shall change name
+
+## Internals
+### Scripts...
+* The `inception_script.tf-template.bash` has two verisons, same name! But on differnt computers? So they won't be confused? (todo: check)
 
 ## Precedence and Forking Lineage:
 

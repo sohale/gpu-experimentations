@@ -2,6 +2,10 @@ set -eu
 # set -x
 set -x
 
+# previous name: up.bash
+# previous name: up-matmul-cuda-experiment.bash
+
+
 echo 'usage:
 bash provisioning_scripts/terraform/common/localmachine/up-matmul-cuda-experiment.bash [subcommand]
 example:
@@ -37,6 +41,7 @@ mkdir -p "$EXPERIMENT_TFVARS"
 # TF_MAIN_TF_DIR: is : # The CWD of the terraform command:
 # The CWD of the terraform command: (where the main.tf is): = TF_MAIN_TF_DIR = TF_MAIN_CWD
 TF_MAIN_TF_DIR="$TF_BASEDIR"
+test -f "$TF_MAIN_TF_DIR/main.tf"  # "Error: Terraform configuration files not found in the specified directory ($TF_MAIN_TF_DIR)."
 if [ ! -f "$TF_MAIN_TF_DIR/main.tf" ]; then
   echo "Error: Terraform configuration files not found in the specified directory ($TF_MAIN_TF_DIR)."
   exit 1
@@ -83,6 +88,7 @@ _scprefix="________subcommand___"
 
 function ________subcommand___tfinit {
 # Does  TF_STATE_FILE override  terraform/environments/neurotalk/backend.tf ?
+
 cd "$TF_MAIN_TF_DIR" && pwd
 # terraform init -var-file="secrets.tfvars"  -var-file="tfconfig.tfvars"
 terraform init \
@@ -262,10 +268,20 @@ function ________subcommand___other {
 # command_via_ssh
 
 function ________subcommand___show_outputs {
+
+    # Oh, no, it does a lot more:
+    #     capture outputs
+    #     refresh
+    #     start the machine?!
+    #     copies scripts (for manual execution)
+    #     extracts machnie name? (machine id?)
+    #     ...
+    #    goes into ssh?
+
     cd "$TF_MAIN_TF_DIR" && pwd
     echo -e "\n\n\n"
 
-    # almost apply, but refreshes in cast I have modified the outputs.tf between the last tfapply and this
+    # almost apply, but refreshes in case I have modified the outputs.tf between the last tfapply and this
     # runs the pipe of "apply" -> "collect outputs"
     #   in fact, outputs aee only ... as if we do a "terraform refresh" (whouisl be somehow called teraform popluate output or simply "terraform output" but that is given another meaning. note: that reverse-grammar ... is here )
     #   no: tf refresh, actully seeds it form the remote "resource" (not the local state file)
@@ -290,6 +306,7 @@ function ________subcommand___show_outputs {
 
     echo 1>&2 "show_outputs: going to:  pspace"
 
+    # this starts too?!
     {
       echo
       pspace machine list
@@ -339,6 +356,7 @@ function ________subcommand___show_outputs {
 }
 
 function ________subcommand___bash {
+
     echo "Runs an interactive subshell in the remove machine UP-ed by terraform"
 
     cd "$TF_MAIN_TF_DIR" && pwd
@@ -361,6 +379,9 @@ EOF_STARTUP
 
 
 function ________subcommand___tfapply {
+
+    # does not the machine? or does it?
+    # need to run `show_output` too?
 
     cd "$TF_MAIN_TF_DIR" && pwd
 
@@ -447,6 +468,7 @@ _luxargs="$(which luxargs || echo -n "" )"
 _luxargs="${_luxargs:-""}"
 
 
+# Necessary?
 set -u
 if $_luxargs [ -z "${sub_command}" ]; then
 
