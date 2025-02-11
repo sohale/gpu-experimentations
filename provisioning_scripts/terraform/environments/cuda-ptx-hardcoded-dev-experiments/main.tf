@@ -28,9 +28,9 @@ resource "paperspace_script" "my-startup-script-1" {
 
 
   script_text = templatefile(
-    // "${path.module}/inception_script.tf-template.bash"
+     # "${path.module}/inception_script.tf-template.bash"
     "${path.module}/environment-box/scripts_to_push/inception_script.tf-template.bash"
-    // should I change ${path.module}? Previously, it was a symbolic link.
+      # should I change ${path.module}? Previously, it was a symbolic link.
     , {
       input_public_ip = var.input_public_ip
     }

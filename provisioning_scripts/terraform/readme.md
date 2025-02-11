@@ -35,10 +35,10 @@ sequenceDiagram
     localuser->>+localtf: `UP show_outputs`
     %% localtf->>remotemachine: `upload_scripts_to_there.bash`<br/> (copies inception_script_manual.bash )
     localtf->>localtf: `upload_scripts_to_there.bash`
-    localtf->>remotemachine: Copies: `inception_script_manual.bash`
+    localtf->>remotemachine: Copies:<br/>`inception_script_manual.bash`
     localtf->>localtf: Runs: `local_manual__setup_at_creation.bash`
     %% remotemachine->>remotemachine: runs: local_manual__setup_at_creation.bash
-    localtf->>remotemachine: Copies: `inception_script_manual.bash`
+    localtf->>remotemachine: Copies:<br/>`inception_script_manual.bash`,<br/>gh-secret (`ghcli-token-1.txt`, a<br/> precursor to remote's<br/> `~/secrets/ghcli-token.txt`),
     %% runs locally:
     %%   local_manual__setup_at_creation.bash
     %% uploads scripts:

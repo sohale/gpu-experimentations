@@ -15,42 +15,22 @@ bash provisioning_scripts/terraform/common/localmachine/up-matmul-cuda-experimen
 # TF_LOG=DEBUG
 
 export REPO_ROOT="$HOME/gpu-experimentations"
+# source ~/gpu-experimentations/provisioning_scripts/terraform/common/localmachine/folders_structure.source.bash
+source "$REPO_ROOT/provisioning_scripts/terraform/common/localmachine/folders_structure.source.bash"
+# export REPO_ROOT="$HOME/gpu-experimentations"
+# Uses:
+echo "$REPO_ROOT $EXPERIMENT_DIR $TF_BASEDIR $RUNTIME $EXPERIMENT_TFVARS $TF_MAIN_TF_DIR"> /dev/null
 
 _THIS_SCRIP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 FROMLOCAL_SCRUPTS="$_THIS_SCRIP_DIR"
 
 # terraform plan ... -target=resource
 
-# On: local machine or workstation
-export EXPERIMENT_DIR="$REPO_ROOT/experiments/11_matrix_cuda"
-# old: EXPERIMENT_DIR="$REPO_ROOT/demo_neurotalk"
-# export EXPERIMENT_TFDIR="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments"
-export TF_BASEDIR="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments"
-
-export RUNTIME="$TF_BASEDIR/runtime"
-
-
-# export EXPERIMENT_TFVARS="$EXPERIMENT_DIR/tfvarconfig"
-export EXPERIMENT_TFVARS="$TF_BASEDIR/tfvarconfig"
-# export EXPERIMENT_TFVARS="$TF_BASEDIR/config"
 mkdir -p "$EXPERIMENT_TFVARS"
 
-
-
-# TF_MAIN_TF_DIR and TF_BASEDIR are the same, here in this new organisation.
-# TF_MAIN_TF_DIR: is : # The CWD of the terraform command:
-# The CWD of the terraform command: (where the main.tf is): = TF_MAIN_TF_DIR = TF_MAIN_CWD
-TF_MAIN_TF_DIR="$TF_BASEDIR"
 test -f "$TF_MAIN_TF_DIR/main.tf"  # "Error: Terraform configuration files not found in the specified directory ($TF_MAIN_TF_DIR)."
-if [ ! -f "$TF_MAIN_TF_DIR/main.tf" ]; then
-  echo "Error: Terraform configuration files not found in the specified directory ($TF_MAIN_TF_DIR)."
-  exit 1
-fi
 
 
-TF_STATE_FOLDER="$RUNTIME/terraform_state"
-TF_STATE_FILE="$TF_STATE_FOLDER/terraform.tfstate"
-TF_DIFF_OUT_FILE="$TF_STATE_FOLDER/plan_delta.dfplan"
 mkdir -p "$TF_STATE_FOLDER"
 
 # was: "tfconfig.tfvars"
@@ -187,6 +167,9 @@ function _capture_outputs {
     # todo: change if necessary. not revised
     # TEMP_FOLDER="$REPO_ROOT/experiments/11_matrix_cuda/runtime/tf-temp-runtime"
     TEMP_FOLDER="$RUNTIME/tf-temp-runtime"
+    mkdir -p "$TEMP_FOLDER"
+    # This seems to be the only place this is used?
+
     test -d $TEMP_FOLDER
     PIPE_TEMP_FILENM="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
 

@@ -44,10 +44,19 @@
     # todo: move to:
     #  terraform/environments/neurotalk/scrupts_to_push/system_hardware_spec_info.bash
 
+    # I am Remote.
+
+    # injected during this provisioning (not tfplly, but after that: show_resutls)
+    # SCRIPTS_PLACED -> SCRIPTS_BASE -> SCRIPTS_BASE_REMOTE
+    SCRIPTS_BASE_REMOTE="/home/paperspace/scripts-sosi"
+    # must be already there, since we need environment_boxes/neurotalk/scripts_to_push to have been copied there
+    mkdir -p "$SCRIPTS_BASE_REMOTE"
+
+
     # going to run: environment_boxes/neurotalk/scripts_to_push/system_hardware_spec_info.bash
     # no, "map"  "environment_boxes/neurotalk/scripts_to_push/" to "TARGET_SCRIPTS_DIR" (the version of it in terraform/common/localmachine/upload_scripts_to_there.bash)
     # TARGET_SCRIPTS_DIR__
-    TARGET_SCRIPTS_DIR__="/home/paperspace/scripts-sosi/scripts_to_push"
+    TARGET_SCRIPTS2PUSH_DIR__="$SCRIPTS_BASE_REMOTE/scripts_to_push"
     # here, TARGET means remote, dont call it target
     # REMOTE_SCRIPTS_DIR: name ( it is already there)
     # TARGET_SCRIPTS_DIR: verb ( it is going to be there)
@@ -55,7 +64,7 @@
     # another differece with otmasl referemvdes
     # separate source & separate starts
     # sudo environment_boxes/neurotalk/scripts_to_push/system_hardware_spec_info.bash
-    sudo bash "$TARGET_SCRIPTS_DIR__/system_hardware_spec_info.bash"
+    sudo bash "$TARGET_SCRIPTS2PUSH_DIR__/system_hardware_spec_info.bash"
     # these commands have travelled ...
 
 
@@ -65,19 +74,16 @@
     OGGI="~/oggi"
     mkdir -p ~/oggi
 
-    # injected during this provisioning (not tfplly, but after that: show_resutls)
-    SCRIPTS_PLACED="~/scripts-sosi"
-    # must be already there, since we need environment_boxes/neurotalk/scripts_to_push to have been copied there
-    mkdir -p "$SCRIPTS_PLACED"
+
 
 
     # environment_boxes/neurotalk/scripts_to_push/ghcli-install.bash
-    bash "$TARGET_SCRIPTS_DIR__/ghcli-install.bash"
-    bash "$TARGET_SCRIPTS_DIR__/ghcli-login.bash"
+    bash "$TARGET_SCRIPTS2PUSH_DIR__/ghcli-install.bash"
+    bash "$TARGET_SCRIPTS2PUSH_DIR__/ghcli-login.bash"
 
     # This script applies refresh_ssh_agent.env, but it shall be done in startup script for session (.bashrc) or manually. (currently, manually)
     # Since `refresh_ssh_agent.env` is used in two places, I am saving it in a file.
-    source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
+    source $SCRIPTS_BASE_REMOTE/refresh_ssh_agent.env
     {
     gh --version
     gh auth status

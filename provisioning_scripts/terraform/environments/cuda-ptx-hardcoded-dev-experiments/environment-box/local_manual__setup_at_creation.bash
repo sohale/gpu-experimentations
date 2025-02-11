@@ -31,21 +31,6 @@ grc diff <(echo "$REMOTE_HOME_ABS_DIR") <(echo "/home/paperspace")
 # note: we are in the local machine, in this script
 
 
-# From the point of view of the remote machine:
-# SCRIPTS_PLACED_THERE='$HOME/scripts-sosi/'  # there 's 'HOME' (not "")
-SCRIPTS_PLACED_THERE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
-# == REMOTE_SCRIPTS_FOLDER
-
-# be careful: tjis is ther first ever comnand on the remote machine
-# should not start with this
-# it can break, etc
-#...
-# update:
-# yes, a "yes" from stdio
-ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
-    "mkdir -p $SCRIPTS_PLACED_THERE/"
-    # 'mkdir -p "$HOME/scripts-sosi/"'
-    # todo: mkdir -p "$REMOTE_HOME_ABS_DIR/scripts-sosi/"'
 
 ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
     "mkdir -p $REMOTE_HOME_ABS_DIR/secrets/"
@@ -61,37 +46,74 @@ ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
 set -x
 # skipping: Now as part of "scp -r" command below.
 : || \
-scp_file "$SCRIPT_FILE" "/home/paperspace/my_scripts_put_here_via_scp.bash"
+scp_file "$SCRIPT_FILE" "$REMOTE_HOME_ABS_DIR/my_scripts_put_here_via_scp.bash"
 # SCRIPT_FILE is: inception_script_manual.bash"
 # note: SKIPPED ^
 
 # todo:
-# scp_file "$SCRIPT_FILE" "/home/paperspace/my_scripts_put_here_via_scp.bash"
+# scp_file "$SCRIPT_FILE" "REMOTE_HOME_ABS_DIR/my_scripts_put_here_via_scp.bash"
 
 # ls environment_boxes/neurotalk/scripts_to_push/system_hardware_spec_info.bash
 
-
-HERE_LOCAL="$REPO_ROOT"
+# SCRIPTS_DIR_LOCAL:
+# HERE_LOCAL="$REPO_ROOT"
 # LOCAL_SCRIPTS_FOLDER
 # LOCAL_HERE_SCRIPTS_FOLDER="$HERE_LOCAL/environment_boxes/neurotalk/scripts_to_push"
-LOCAL_HERE_SCRIPTS_FOLDER="$HERE_LOCAL/environment_box/scripts_to_push"
+# LOCAL_HERE_SCRIPTS_FOLDER="$TF_BASEDIR/environment-box/scripts_to_push"
+# LOCAL_SCRIPTS_FOLDER -> LOCAL_HERE_SCRIPTS_FOLDER -> SCRIPTS_FOLDER_LOCAL -> SCRIPTS_DIR_LOCAL
+# LOCAL_HERE_SCRIPTS_FOLDER, SCRIPTS_FOLDER
+# SCRIPTS_DIR_LOCAL
 
-# alternativd naming: LOCAL_SCRIPTS_FOLDER, REMOTE_SCRIPTS_FOLDER
+# From the point of view of the remote machine:
+# REMOTE_SCRIPTS_FOLDER , SCRIPTS_PLACED_THERE -> SCRIPTS_FOLDER_REMOTE -> SCRIPTS_DIR_REMOTE
+# SCRIPTS_DIR_REMOTE='$HOME/scripts-sosi/'  # there 's 'HOME' (not "")
+# export SCRIPTS_DIR_REMOTE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
+export SCRIPTS_BASE_REMOTE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
+export SCRIPTS2PUSH_DIR_REMOTE="$SCRIPTS_BASE_REMOTE/scripts_to_push"
 
+
+# alternative naming: LOCAL_SCRIPTS_FOLDER, SCRIPTS_DIR_REMOTE
+# alternative naming: SCRIPTS_DIR_LOCAL, SCRIPTS_DIR_REMOTE
+# alternative naming: .., SCRIPTS_BASE_REMOTE
+# alternative naming: SCRIPTS2PUSH_DIR_LOCAL, SCRIPTS2PUSH_DIR_REMOTE
+
+set -u
+echo "$SCRIPTS2PUSH_DIR_LOCAL" > /dev/null
+test -d "$SCRIPTS2PUSH_DIR_LOCAL"
+
+
+# be careful: this is the first ever comnand on the remote machine
+# should not start with this
+# it can break, etc
+#...
+# update:
+# yes, a "yes" from stdio
+ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
+    "mkdir -p $SCRIPTS_BASE_REMOTE/"
+
+#########################
+# Bulk-copy the scripts:
+#########################
 # scp_file
 scp \
     -r \
     $SSH_CLI_OPTIONS \
-    "$LOCAL_HERE_SCRIPTS_FOLDER/" \
-    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS_PLACED_THERE/"
+    "$SCRIPTS2PUSH_DIR_LOCAL/" \
+    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
 
-# rsync -avz --delete "$LOCAL_HERE_SCRIPTS_FOLDER/"  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS_PLACED_THERE/"
+# why "delete" ??
+# rsync -avz --delete "$SCRIPTS2PUSH_DIR_LOCAL/"  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
 echo "recursive scp done."
 
+#########################
+# Copy the secret
+#########################
 # secret
 # Now, instead, copied by TF!
 # Keep separate from the one by TF
 scp \
     $SSH_CLI_OPTIONS \
-    "$HERE_LOCAL/demo_neurotalk/secrets/ghcli-token.txt" \
+    "$EXPERIMENT_TFVARS/ghcli-token.txt" \
     "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$REMOTE_HOME_ABS_DIR/secrets/ghcli-token-1.txt"
+
+# Compromise: $EXPERIMENT_TFVARS is used for non-TF secret too.
