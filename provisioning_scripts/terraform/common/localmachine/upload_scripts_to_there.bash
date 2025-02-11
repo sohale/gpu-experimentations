@@ -5,10 +5,19 @@ set -eu
 # wrong filename
 # upload_scripts_to_there.bash
 # ->
-# local_manuatrigger.bash
+# local_manualtrigger.bash
+
 # move this:
 # provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/local_manual__setup_at_creation.bash
 # merge that into this
+
+# suffix "__setup_at_creation" should be used instead, for:
+# inception_script.tf-template.bash
+# —>
+# inception_script_auto_remote.template.bash
+# inception_script_autosetupatcreation_remote.template.bash
+
+
 
 # The upload_scripts ... should not be a file, but, a fucniton
 
@@ -23,8 +32,12 @@ set -eu
 # put in the right place.s
 # for ssh and scp commands, respectively
 export REMOTE_SSH_ADDR="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
-export REMOTE_SCP_REF="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
+export REMOTE_SCP_REF="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"  # we use SSH_CLI_OPTIONS instead
 export REMOTE_HOME_ABS_DIR="/home/$PAPERSPACE_USERNAME"
+
+# Decide between $SSH_CLI_OPTIONS vs $REMOTE_SSH_ADDR approach. (remove REMOTE_SSH_ADDR, and, REMOTE_SCP_REF )
+
+set -u ; echo "$SSH_CLI_OPTIONS" > /dev/null  # assert env
 
 set -u ; echo "$REMOTE_HOME_ABS_DIR" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
 
@@ -71,9 +84,85 @@ function scp_file {
 
 }
 
+
+function upload_scripts2 {
+    # move local_manual__setup_at_creation.bash to here:
+    echo "v0.0.4 : manually-triggred (button/script)"
+
+    # for ssh and scp commands, respectively
+    set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
+
+    grc diff <(echo "$REMOTE_HOME_ABS_DIR") <(echo "/home/paperspace")
+
+    # note: we are in the local machine, in this script
+
+    export SCRIPTS_BASE_REMOTE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
+    export SCRIPTS2PUSH_DIR_REMOTE="$SCRIPTS_BASE_REMOTE/scripts_to_push"
+
+    set -u
+    echo "$SCRIPTS2PUSH_DIR_LOCAL" > /dev/null
+    test -d "$SCRIPTS2PUSH_DIR_LOCAL"
+
+
+
+    # be careful: this is the first ever comnand on the remote machine
+    # should not start with this
+    # it can break, etc
+    # update:
+    # yes, a "yes" from stdio
+    ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
+        "mkdir -p $SCRIPTS_BASE_REMOTE/"
+
+
+    #########################
+    # Bulk-copy the scripts:
+    #########################
+    # scp_file
+    scp \
+        -r \
+        $SSH_CLI_OPTIONS \
+        "$SCRIPTS2PUSH_DIR_LOCAL/" \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
+    # why "delete" ??
+    # rsync -avz --delete "$SCRIPTS2PUSH_DIR_LOCAL/"  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
+    echo "recursive scp done."
+}
+
+function send_github_secret {
+
+    set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null
+
+    # run on remote machine:
+    ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
+        "mkdir -p $REMOTE_HOME_ABS_DIR/secrets/"
+
+    #########################
+    # Copy the secret
+    #########################
+    # secret
+    # Now, instead, copied by TF!
+    # Keep separate from the one by TF
+    scp \
+        $SSH_CLI_OPTIONS \
+        "$EXPERIMENT_TFVARS/ghcli-token.txt" \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$REMOTE_HOME_ABS_DIR/secrets/ghcli-token-1.txt"
+    # ^ Compromise: $EXPERIMENT_TFVARS is used for non-TF secret too.
+
+}
+
+
+
 #- function ssh_go_into_shell
 
-function upload_scripts_legacy {
+# function upload_scripts_legacy {
+function run_script_carefully {
+    # previously: upload_scripts -> upload_scripts_legacy -> run_script_carefully -> run_script_carefully_deprecated
+
+    # the idea seems to have been carefuullhy run a scripy, using ansi color, functin scp_file, perhaps SSH_CLI_OPTIONS
+
+    exho "deprecated: upload_scripts_legacy"
+    exit 100
+
     # Three types of scripts to upload:
     #1. by TF
     #2. by this script: inception_script_manual.bash
@@ -140,11 +229,22 @@ function upload_scripts_legacy {
     # remote_command_via_ssh "bash"
 
 }
+: || '
+    cat "$SCRIPT1_MSAC_LOCAL" \
+      | { echo -e "$BLUE"; cat; echo -e "$NC"; }
+'
 
 
-upload_scripts_legacy
-# upload_scripts
+
+
 # ssh_go_into_shell
+# upload_scripts
+# upload_scripts_legacy  # nw covered by upload_scripts2, send_github_secret
+# run_script_carefully_deprecated
+
+
+upload_scripts2
+send_github_secret
 
 
 # This si after upload, but are doign already things. (Note: tehis file name needs ot be changed)

@@ -1,6 +1,12 @@
 #!/bin/bash
-# this is a terraform template, i.e. the paerts  `\$\{var. ... }` in this file (I cannot write them without escaping, or maybe ${input_public_ip}, even in the comments) will be replaced by terraform
+
+# this is a terraform template, i.e. the parts  `\$\{var. ... }` in this file (I cannot write them without escaping, or maybe ${input_public_ip}, even in the comments) will be replaced by terraform
+
+# This is executed in rioot user: by tf provisioning.
 # Avoid `$ {}` syntax of bash, since it is template-instantiated by terraform.
+echo -e "\n [$0] \n$(date)" >> ~/.sosi-footprints.log
+# ~/.sosi-footprints
+
 # Not the startup.
 # Provisioning. Creation, Genesis, Inception
 # By terraform:
@@ -36,6 +42,7 @@
       LOG_FILE="$PING_FILE"  # ../logfile.log"
       exec > >(tee -a "$LOG_FILE") 2>&1
 
+date >> ~/.sosi-footprints.log
 
 WEBSERVER_DIR="/var/www/html"
 sudo mkdir -p "$WEBSERVER_DIR/"
@@ -46,6 +53,8 @@ echo "Hello, World," > $INDEX_HTML
 # Note: input_public_ip is baked into it by `templatefile()`, not by bash:
 echo " from public-ip: ${input_public_ip}" >> $INDEX_HTML
 echo " from whoami: $(whoami)" >> $INDEX_HTML
+
+date >> ~/.sosi-footprints.log
 
 ufw allow 8080
 sudo ufw allow 22  # keep allowing ssh too
@@ -58,9 +67,14 @@ nohup busybox \
       -h "$WEBSERVER_DIR" \
       &
 
+date >> ~/.sosi-footprints.log
+
 echo "cat $ADIR"/'**/*'
 echo cat $INDEX_HTML
 echo "http://${input_public_ip}:8080/"
 
 # ^ only works correctly if `run_once=false` (e.g. runs each time the machine is turned)
 # especially for "httpd"
+
+date >> ~/.sosi-footprints.log
+echo >> ~/.sosi-footprints.log

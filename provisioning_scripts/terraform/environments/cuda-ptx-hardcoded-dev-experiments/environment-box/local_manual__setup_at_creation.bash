@@ -1,8 +1,12 @@
+echo "DEPRECATED. PLEASE USE THIS SCRIPT."
+exit 100
+
 set -eux
 echo "v0.0.3 : manually-triggred (button/script)"
 # repeated
 # run directly? or by? provisioning_scripts/terraform/common/localmachine/upload_scripts_to_there.bash ?
 
+echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 # set -eu
 
 # names:

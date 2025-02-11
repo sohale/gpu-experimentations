@@ -7,6 +7,7 @@
 # docker_user_fix.bash
 # Differnt to  local_manual__setup_at_creation.bash . That is from direct scripts
 #
+echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 
 
 
