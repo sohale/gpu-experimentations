@@ -15,8 +15,7 @@ set -eu
 
 
 
-# set -u ; echo "$REMOTE_HOME_ABS_DIR" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
-# set -u ; echo "$REMOTE_HOME_ABS_DIR" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
+set -u ; echo "$REMOTE_HOME_ABS_DIR" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
 
 export SCRIPTS_BASE_REMOTE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
 export SCRIPTS2PUSH_DIR_REMOTE="$SCRIPTS_BASE_REMOTE/scripts_to_push"

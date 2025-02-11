@@ -1,6 +1,6 @@
 #!/bin/bash
 # this is a terraform template, i.e. the paerts  `\$\{var. ... }` in this file (I cannot write them without escaping, or maybe ${input_public_ip}, even in the comments) will be replaced by terraform
-
+# Avoid `$ {}` syntax of bash, since it is template-instantiated by terraform.
 # Not the startup.
 # Provisioning. Creation, Genesis, Inception
 # By terraform:
