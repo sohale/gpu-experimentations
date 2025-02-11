@@ -2,6 +2,13 @@ set -eu
 # run on (from) Local Machine.
 # triggered by user (should be automated), via up-....bash (`show_outputs` mode).
 
+# wrong filename
+# upload_scripts_to_there.bash
+# ->
+# local_manuatrigger.bash
+# move this:
+# provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/local_manual__setup_at_creation.bash
+# merge that into this
 
 # The upload_scripts ... should not be a file, but, a fucniton
 
@@ -13,7 +20,11 @@ set -eu
 # provisioning_scripts/terraform/common/localmachine/upload_scripts_to_there.bash
 # provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/local_manual__setup_at_creation.bash
 
-
+# put in the right place.s
+# for ssh and scp commands, respectively
+export REMOTE_SSH_ADDR="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
+export REMOTE_SCP_REF="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
+export REMOTE_HOME_ABS_DIR="/home/$PAPERSPACE_USERNAME"
 
 set -u ; echo "$REMOTE_HOME_ABS_DIR" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
 
@@ -34,7 +45,8 @@ set -u ; echo "$SCRIPTS2PUSH_DIR_LOCAL" > /dev/null  # assert env $SCRIPTS2PUSH_
 
 
 # ok it seems we need to do proper ...
-function command_via_ssh {
+# old name: command_via_ssh
+function remote_command_via_ssh {
 
   # local command_arg_array=("${@}") # local args=("$@")
 
@@ -44,7 +56,7 @@ function command_via_ssh {
     #"$command"
 }
 
-
+# cancelled, not used
 function scp_file {
   # ssh_cp or cp_via_ssh
   local FILE="${1}"
@@ -61,7 +73,7 @@ function scp_file {
 
 #- function ssh_go_into_shell
 
-function upload_scripts {
+function upload_scripts_legacy {
     # Three types of scripts to upload:
     #1. by TF
     #2. by this script: inception_script_manual.bash
@@ -98,10 +110,10 @@ function upload_scripts {
     # todo: rename variable: SCRIPT1 -> SCRIPT1_MSAC_LOCAL
 
     SCRIPT1_MSAC_LOCAL="$REPO_ROOT/provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/local_manual__setup_at_creation.bash"
-    echo "# Do these in the remote machine: "
+    # WRONG!!!! echo "# Do these in the remote machine: "
     # cat "$SCRIPT3_ISM_FILE_LOCAL" \
-    cat "$SCRIPT1_MSAC_LOCAL" \
-      | { echo -e "$BLUE"; cat; echo -e "$NC"; }
+    # cat "$SCRIPT1_MSAC_LOCAL" \
+    #  | { echo -e "$BLUE"; cat; echo -e "$NC"; }
 
     #SSH_CLI_OPTIONS=...  # was
     #or source ... .env  # to do?
@@ -125,19 +137,20 @@ function upload_scripts {
     # not thongs about lovally (updatig the local ssh ?)
 
     # go_ssh
-    # command_via_ssh "bash"
+    # remote_command_via_ssh "bash"
 
 }
 
 
-upload_scripts
+upload_scripts_legacy
+# upload_scripts
 # ssh_go_into_shell
 
 
 # This si after upload, but are doign already things. (Note: tehis file name needs ot be changed)
-command_via_ssh "sudo apt update -y"
-command_via_ssh "sudo apt install tree"
-command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
+remote_command_via_ssh "sudo apt update -y"
+remote_command_via_ssh "sudo apt install tree"
+remote_command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
 
 ###########################
 # Sending a message to the user
@@ -174,7 +187,8 @@ grc diff <(basename "$SCRIPT3_ISM_FILE_LOCAL") <(basename "$SCRIPT3ISM_FILE_REMO
 
 
 # We are in local machine, but below will appeat (as if ) on remote machine. We are at the edge (hence, this line needs to move up, just before the ssh command!)
-echo 1>&2 -e "Upload done. Now,
-TIME to 🫱nually run this script:
+echo 1>&2 -e "Upload done.
+Now, it's
+TIME to 🫱nually run this script on Remote Machine:
     🫱    bash $SCRIPT3ISM_FILE_REMOTE_PREDICTED_NAME
     "

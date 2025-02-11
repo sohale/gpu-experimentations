@@ -317,10 +317,10 @@ function ________subcommand___show_outputs {
         "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" "sudo touch /i-was-here"
 
 
-
 # This option controls the behavior of SSH when connecting to a new host for the first time or if the host key has changed.
 # Disabling StrictHostKeyChecking and using /dev/null for UserKnownHostsFile means that you are not verifying the host's identity,
 # (otherwise) prevents "man-in-the-middle" attacks.
+
 
     export SSH_CLI_OPTIONS
     # export -f scp_file

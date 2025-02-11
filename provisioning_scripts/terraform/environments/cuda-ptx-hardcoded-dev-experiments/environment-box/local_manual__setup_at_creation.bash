@@ -19,12 +19,10 @@ echo "v0.0.3 : manually-triggred (button/script)"
 # NOW I CAN
 # do any ssh mkdir -p etc
 
-# see the function command_via_ssh
+# see the function remote_command_via_ssh
 
 # for ssh and scp commands, respectively
-REMOTE_SSH_ADDR="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
-REMOTE_SCP_REF="$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
-REMOTE_HOME_ABS_DIR="/home/$PAPERSPACE_USERNAME"
+set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
 
 grc diff <(echo "$REMOTE_HOME_ABS_DIR") <(echo "/home/paperspace")
 
@@ -45,13 +43,11 @@ ssh $SSH_CLI_OPTIONS "$REMOTE_SSH_ADDR" \
 #    SCRIPT_FILE=.... --> scripts_to_push/inception_script_manual.bash
 set -x
 # skipping: Now as part of "scp -r" command below.
-: || \
-scp_file "$SCRIPT_FILE" "$REMOTE_HOME_ABS_DIR/my_scripts_put_here_via_scp.bash"
+# todo:
+# : || \
+# scp_file "$SCRIPT_FILE" "$REMOTE_HOME_ABS_DIR/my_scripts_put_here_via_scp.bash"
 # SCRIPT_FILE is: inception_script_manual.bash"
 # note: SKIPPED ^
-
-# todo:
-# scp_file "$SCRIPT_FILE" "REMOTE_HOME_ABS_DIR/my_scripts_put_here_via_scp.bash"
 
 # ls environment_boxes/neurotalk/scripts_to_push/system_hardware_spec_info.bash
 
@@ -117,3 +113,8 @@ scp \
     "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$REMOTE_HOME_ABS_DIR/secrets/ghcli-token-1.txt"
 
 # Compromise: $EXPERIMENT_TFVARS is used for non-TF secret too.
+
+: || '
+    cat "$SCRIPT1_MSAC_LOCAL" \
+      | { echo -e "$BLUE"; cat; echo -e "$NC"; }
+'

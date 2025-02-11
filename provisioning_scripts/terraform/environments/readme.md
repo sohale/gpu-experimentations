@@ -86,5 +86,15 @@ I must extract out Docker from inception_script_manual.bash, since, it was probe
 %% `patch_bashrc.sh` is not for this. But can be a good extra `.bashrc`. It shall run only once.
 
 
+up-matmul-cuda-experiment.bash::show_output
+->
+upload_scripts_to_there.bash
+->
+local_manual__setup_at_creation.bash
+
+
+inception_script_manual.bash
+(copied? no!)
+
 │   │   ├── inception_script.tf-template.bash -> ....
 │   │   ├── machine_.env
