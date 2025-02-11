@@ -6,29 +6,40 @@ variable "team_id" {
   type        = string
 }
 
+# relationship between:
+# Private workspace ( workspace: (I avoid saying under the "user")
+# user? team?
+# project
+
+
+/*
+# Project is only defined on "Gradient" part of "Paperspace" (It has three spaces: Core, Gradient, Paperspace)
 variable "project_id" {
   description = "The ID of my project"
   type        = string
 }
-
 variable "project_name" {
   description = "Dummy: The name of my project"
   type        = string
 }
+*/
 
 variable "api_key" {
   description = "My Paperspace API key to connect to provider"
   type        = string
 }
 
+/*
 # todo: make use of such "secret name" in the terraform code
 # https://console.paperspace.com/t10oyrfnaf/projects/pudltta9b1i/settings
 # is a "shared secret" (?)
 
-variable "apikey_secret_name" {
+variable "project_apikey_secretname" {
   description = "The name (key) of the secret that has the API Key. Currently not used."
   type        = string
+  // Formerly "apikey_secret_name", now "project_apikey_secretname"
 }
+*/
 
 variable "github-cli-pat" {
   description = "my Github PAT to connect to my github account and repos from that remove machine. Thes string is one of the secrets, is on t local side, but then will be saved on the remote-machine's side."
@@ -118,16 +129,19 @@ variable "input_public_ip" {
 
 
 variable "region_pdefault" {
-  description = "Region to deploy the instanc?? (when region_parameter is not speciied)" # in the prociver block
+  description = "when region_parameter is not speciied, this will be the default value" # in the prociver block
   type        = string
+  default = "Europe (AMS1)"
   #default     = "AMS1" ?"eu-west-1"  # Europe region
   #"East Coast (NY2)"
+  # a param of "provider"
 }
 variable "region_parameter" {
   description = "Region to deploy the instance??. Is optional (in papersapce), defaults to provider region if not specified."
   type        = string
   #default     = "AMS1" ?"eu-west-1"  # Europe region
   # "East Coast (NY2)" // optional, defaults to provider region if not specified
+  # a param of "machine"
 }
 
 // "instance_type" = machine_type
@@ -135,7 +149,9 @@ variable "machine_type" {
   description = "Type of GPU instance to deploy"
   type        = string
   # default     = "A5000"
+  # Machine Types: https://docs.digitalocean.com/products/paperspace/machines/details/machine-types/
 }
+
 # rename to : machine_name
 variable "instance_name" {
   description = "Name of the GPU instance"
@@ -203,6 +219,7 @@ t9taj00e  centos-220817             CentOS 7 Server                      null
 
 # https://docs.digitalocean.com/products/paperspace/machines/details/features/
 # https://docs.digitalocean.com/products/paperspace/machines/details/pricing/
+# https://docs.digitalocean.com/products/paperspace/machines/details/machine-types/#hardware-specs
 
 /*
 GPU+ (M4000)

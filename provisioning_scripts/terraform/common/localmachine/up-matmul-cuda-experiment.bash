@@ -451,8 +451,6 @@ _luxargs="$(which luxargs || echo -n "" )"
 _luxargs="${_luxargs:-""}"
 
 
-# Necessary?
-set -u
 if $_luxargs [ -z "${sub_command}" ]; then
 
   subcommands_usage

@@ -8,14 +8,19 @@
 
 # team_u = "entobrain"
 team_id="tqpio01i96"
+/*
 project_id="p0k609uoxdl"
 project_name = "entobrain-dl1"
-
-apikey_secret_name="entobrain_apikey"
+project_apikey_secretname="entobrain_apikey"
+*/
+/*
+ It is meaningless to parametrise this:
+region_pdefault="Europe (AMS1)"
+*/
 
 input_public_ip="9.9.9.9"
 
-instance_name = "Physical A-5000 (by Terraform)"
+instance_name = "Physical HHHH (by Terraform)"
 
 
 # machine_image_template = "twnlo3zj"  # (A5000?)
@@ -26,7 +31,9 @@ instance_name = "Physical A-5000 (by Terraform)"
 machine_image_template = "twnlo3zj"
 machine_type="A5000"
 
-region_pdefault="Europe (AMS1)"
+# removed:
+# region_pdefault="Europe (AMS1)"
+
 region_parameter="Europe (AMS1)"
 
 ssh_keypair_name_inputparam="paperspace_sosi_fromlinux"

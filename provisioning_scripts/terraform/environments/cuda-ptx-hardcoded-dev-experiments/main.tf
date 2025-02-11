@@ -5,6 +5,29 @@ data "paperspace_template" "nvidia-cuda-vm-machine-species-template" {
   // A psecifi species of machine !
   id = var.machine_image_template
 }
+# Should match: `paperspace_machine.template_id`
+# For possible values run:
+#     `pspace os-template list`
+# See https://docs.digitalocean.com/reference/paperspace/pspace/api-reference/#tag/OS-Templates/operation/osTemplates-list
+/*
+ID        NAME                      OPERATINGSYSTEMLABEL                 DEFAULTSIZEGB
+tk9izniv  w22-grid-220727           Windows 10 (Server 2022) - Licensed  null
+taoz1uxr  w22-gpu-220727            Windows 10 (Server 2022) - Licensed  null
+tnr2oh1m  w22-cpu-220727            Windows 10 (Server 2022) - Licensed  null
+tv00h6iv  w12-grid-11               Windows 2012 R2 Datacenter           null
+tl1h5hec  w10pro-grid-220727        Windows 10 (Pro) - Unlicensed        null
+ta1b3le7  w10pro-gpu-220727         Windows 10 (Pro) - Unlicensed        null
+t17d1a6i  prod-u22-gpu-241021       Ubuntu 22.04 Desktop                 null
+t0nspur5  prod-u22-cpu-241018       Ubuntu 22.04 Server                  null
+tkni3aa4  prod-u20-cpu-241101       Ubuntu 20.04 Server                  null
+t7vp562h  mliab-u22-241108-h100     Ubuntu 22.04                         100
+tilqt47t  mliab-u22-241108-1x-h100  Ubuntu 22.04                         100
+tqqsxr6b  mliab-u22-241101-1x-a100  Ubuntu 22.04                         100
+tvimtol9  mliab-u22-241101          Ubuntu 22.04                         100
+twnlo3zj  mliab-u20-241101          Ubuntu 20.04                         null
+t9taj00e  centos-220817             CentOS 7 Server                      null
+*/
+
 
 # Thos creates a user in the team (?)
 data "paperspace_user" "lead-engineer-user" {
@@ -88,6 +111,14 @@ resource "paperspace_machine" "my-gpu-machine-1" {
   shutdown_timeout_in_hours = 1
   # live_forever = true # enable this to make the machine have no shutdown timeout
 
+  # More properties: https://github.com/Paperspace/terraform-provider-paperspace/blob/master/pkg/provider/resource_machine.go
+  # Details of values, etc https://docs.digitalocean.com/reference/paperspace/pspace/api-reference/
+
+  #  --machine-type
+  #  --template-id
+
+  # Intereting:
+  #    is_managed
   /*
   # as determined in terraform/common/per-provider/paperspace/setup_anew_ssh.bash
   key_pair_name = "paperspace_sosi_fromlinux"
@@ -123,6 +154,8 @@ resource "paperspace_machine" "my-gpu-machine-1" {
 # one folder for all, even one file for all, maybe
 
 resource "null_resource" "copy_github_cli_pat" {
+
+  # ugly?
   depends_on = [paperspace_machine.my-gpu-machine-1]
 
   provisioner "remote-exec" {
