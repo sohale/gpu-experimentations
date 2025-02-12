@@ -233,7 +233,9 @@ resource "null_resource" "copy_github_cli_pat" {
     inline = [
       "mkdir -p /home/${var.remote_linux_username}/secrets/",
       "echo '${var.github-cli-pat}' > /home/${var.remote_linux_username}/secrets/github_pat.txt",
-      "chmod 600 /home/${var.remote_linux_username}/secrets/github_pat.txt"
+      "chmod 600 /home/${var.remote_linux_username}/secrets/github_pat.txt",
+      "cd /home/${var.remote_linux_username}/secrets/",
+      "cp github_pat.txt github_pat.initially-by-tf.txt",
     ]
     # Notes on 600:
     #     600 =  (owner:,group:,others:) = ("rw") ("") ("")

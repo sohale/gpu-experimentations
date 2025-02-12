@@ -82,6 +82,7 @@ output "applied_info" {
 }
 
 # debugging and tracing
-output "🐞 user_data" {
+# invalid output name: "🐞 user_data"
+output "user_data" {
   value = data.paperspace_user.lead-engineer-user
 }
