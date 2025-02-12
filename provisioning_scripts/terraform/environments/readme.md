@@ -1,4 +1,4 @@
-
+```txt
 .
 ├── common
 │   ├── localmachine
@@ -81,7 +81,7 @@ I must extract out Docker from inception_script_manual.bash, since, it was probe
 └── readme.md
 
 17 directories, 52 files
-
+```
 
 %% `patch_bashrc.sh` is not for this. But can be a good extra `.bashrc`. It shall run only once.
 

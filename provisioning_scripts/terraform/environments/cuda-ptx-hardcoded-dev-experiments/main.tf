@@ -218,7 +218,7 @@ resource "null_resource" "copy_github_cli_pat" {
     connection {
       type     = "ssh"
       user     = var.remote_linux_username
-      # not input_public_ip, nad not the output (despite )
+      # not input_public_ip, and not the output (despite )
       #host     = paperspace_machine.my-gpu-machine-1.public_ip
       #host     = outputs.public_ip_outcome
       #host     = var.public_ip_outcome

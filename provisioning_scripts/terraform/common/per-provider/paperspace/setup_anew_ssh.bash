@@ -1,6 +1,10 @@
+# Creates a new ssh on a local machine (or laptop): Local side.
+#   The key pair can be used by: `main.tf` and `??` (TBC.).
+#   TBC: Each script that does send, create, setup (locally), activate (remote-ly), to be determined.
+
+# Manual utility for generating a new ssh key pair for: `ssh` and github access. Example: `paperspace_sosi_fromlinux`
 # Is this used? yes, but not in the scirpts.
 # Is this deprecated? No. But it is not essential.
-# Manual utility for generating a new ssh key pair for: `ssh` and github access. Example: `paperspace_sosi_fromlinux`
 # This automates creating of key-pairs.
 # Forked from: /myvol/pocs_for_nikolai/terraform/common/per-provider/paperspace/setup_anew_ssh.bash
 # But the script itself is safe to run since everyting is a dry-run, via '_dr'
