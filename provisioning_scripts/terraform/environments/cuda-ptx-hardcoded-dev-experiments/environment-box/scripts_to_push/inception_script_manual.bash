@@ -92,9 +92,10 @@ echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 
     #ODDI_PATHJ=
     cd ~/oggi
-    { ls -alth ~/oggi/pocs_for_nikolai && echo "already cloned"; } || \
-    git clone git@github.com:sohale/pocs_for_nikolai.git
+    { ls -alth ~/oggi/gpu-experimentations && echo "already cloned"; } || \
+    # git clone git@github.com:sohale/pocs_for_nikolai.git
     #  https://github.com/sohale/pocs_for_nikolai.git
+    git clone git@github.com:sohale/gpu-experimentations.git
 
     # docker does not need be here, unless we want to work strictly within Docker
     #    I think the idea was that everything to be done inside the docker, to be one safe side regarding installging NVidia tools
@@ -106,14 +107,11 @@ echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 
     set +x # echo off
     echo "You need to do this manually: ✋ exports:
-
+      ✋
       source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
-
-
       docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
 
 or:
-
       R=$R
       "'docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3'"
       "
