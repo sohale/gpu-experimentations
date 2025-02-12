@@ -244,6 +244,7 @@ function run_script_carefully {
 
 
 upload_scripts2
+
 send_github_secret
 
 

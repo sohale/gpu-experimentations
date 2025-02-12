@@ -2,13 +2,18 @@ provider "paperspace" {
 
   api_key = var.api_key
 
+  # region =
   # The following may be worng: this may be "Provider/agent/server's region"
   # This is the "default" (a provider-level default), when `var.region_parameter` (?) is not specified (in the `main.tf`).
   # It is meaningless to parametrise it (`region  = var.region_pdefault` )
   # It is also "provider-level": ince per provider
   # Also it is about the agent that does that?
-  region = "Europe (AMS1)"
+  # region = "Europe (AMS1)"
   #    "East Coast (NY2)",	"West Coast (CA1)",	"Europe (AMS1)"
+  # If default
+  # region = "Europe (AMS1)"
+  # If it's provider-agent's region:
+  region = var.region_parameter
 
   # arguments:
   # api_key: $PAPERSPACE_API_KEY

@@ -80,3 +80,8 @@ output "applied_info" {
     tfuser            = data.paperspace_user.lead-engineer-user
   }
 }
+
+# debugging and tracing
+output "🐞 user_data" {
+  value = data.paperspace_user.lead-engineer-user
+}

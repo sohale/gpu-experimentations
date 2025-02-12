@@ -1,10 +1,18 @@
 # Not the values, but the space holding (or not holding) these values
 # inputs
 
+/*
 variable "team_id" {
   description = "The ID of my Paperspaces team"
   type        = string
+
+  # Variables not allowed:
+  # default=data.paperspace_user.lead-engineer-user.team_id
+
+  # Compare: Alternative: Progrmmaticaly (dynamically) fetch the team ID associated with a specific user:
+  # team_id = data.paperspace_user.lead-engineer-user.team_id
 }
+*/
 
 # relationship between:
 # Private workspace ( workspace: (I avoid saying under the "user")
@@ -125,6 +133,18 @@ variable "input_public_ip" {
   description = "The manually assigned public IP address"
   type        = string
 }
+
+
+variable "networkid_parameter" {
+  description = "Manually created Private Network id"
+  type        = string
+}
+/*
+Manually created Private Networks in each region:
+"nx86kbo3": entomind-private-network-2-AMS1 "Europe (AMS1)"
+"nr5brbxj": entomind-private-network-3-NY2 "East Coast (NY2)"
+n0lxm6k9: entomind-private-network-4-CA1 "West Coast (CA1)"
+*/
 
 
 

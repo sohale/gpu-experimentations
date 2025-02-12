@@ -5,11 +5,12 @@ data "paperspace_template" "nvidia-cuda-vm-machine-species-template" {
   // A psecifi species of machine !
   id = var.machine_image_template
 }
+
 # Should match: `paperspace_machine.template_id`
-# For possible values run:
-#     `pspace os-template list`
-# See https://docs.digitalocean.com/reference/paperspace/pspace/api-reference/#tag/OS-Templates/operation/osTemplates-list
 /*
+For possible values run:
+     `pspace os-template list`
+
 ID        NAME                      OPERATINGSYSTEMLABEL                 DEFAULTSIZEGB
 tk9izniv  w22-grid-220727           Windows 10 (Server 2022) - Licensed  null
 taoz1uxr  w22-gpu-220727            Windows 10 (Server 2022) - Licensed  null
@@ -26,8 +27,18 @@ tqqsxr6b  mliab-u22-241101-1x-a100  Ubuntu 22.04                         100
 tvimtol9  mliab-u22-241101          Ubuntu 22.04                         100
 twnlo3zj  mliab-u20-241101          Ubuntu 20.04                         null
 t9taj00e  centos-220817             CentOS 7 Server                      null
+
+# See https://docs.digitalocean.com/reference/paperspace/pspace/api-reference/#tag/OS-Templates/operation/osTemplates-list
+# https://registry.terraform.io/providers/Metaphysic-ai/paperspace/latest/docs/resources/machine
+
 */
 
+/*
+For "H100":  "ML-in-a-Box 22.04 Template"
+t7vp562h  mliab-u22-241108-h100
+
+https://docs.digitalocean.com/products/paperspace/machines/details/h100/?utm_source=chatgpt.com
+*/
 
 # Thos creates a user in the team (?)
 data "paperspace_user" "lead-engineer-user" {
@@ -92,12 +103,22 @@ resource "paperspace_script" "my-startup-script-1" {
 # https://docs.digitalocean.com/products/paperspace/machines/how-to/connect-using-ssh/
 # "paperspace_sosi_fromlinux_pub"
 
+
+
 resource "paperspace_machine" "my-gpu-machine-1" {
-  region           = var.region_parameter
   name             = var.instance_name
   machine_type     = var.machine_type
   size             = var.instance_disk_size_gb
+  region           = var.region_parameter
+
   billing_type     = "hourly"
+
+  # not existent: dynamic_public_ip = false # Disable dynamic public IP if you want to use only private network
+  # network_id     = paperspace_network.private_network.id
+  # network_id     = paperspace_network.my_private_network_2.id
+  # private_network_id = paperspace_network.my_private_network_2.id
+  network_id       = var.networkid_parameter
+
 
   assign_public_ip = true
   # optional, remove if you don't want a public ip assigned
@@ -106,13 +127,21 @@ resource "paperspace_machine" "my-gpu-machine-1" {
 
   template_id               = data.paperspace_template.nvidia-cuda-vm-machine-species-template.id
   user_id                   = data.paperspace_user.lead-engineer-user.id // optional, remove to default
+  # We have a single user, so, fetch team_id programmatrically from that:
   team_id                   = data.paperspace_user.lead-engineer-user.team_id
+
+
   script_id                 = paperspace_script.my-startup-script-1.id
   shutdown_timeout_in_hours = 1
   # live_forever = true # enable this to make the machine have no shutdown timeout
 
+  # cannot be set:
+  # state = "ready"  # "off" "ready"
+
+
   # More properties: https://github.com/Paperspace/terraform-provider-paperspace/blob/master/pkg/provider/resource_machine.go
   # Details of values, etc https://docs.digitalocean.com/reference/paperspace/pspace/api-reference/
+  # Important: https://registry.terraform.io/providers/Metaphysic-ai/paperspace/latest/docs/resources/machine
 
   #  --machine-type
   #  --template-id
@@ -147,6 +176,33 @@ resource "paperspace_machine" "my-gpu-machine-1" {
 
 }
 
+/*
+resource "paperspace_network" "my_private_network_2" {
+  # Define the private network to allow enabling H100
+
+  # no "region=", "name="
+  # Why is `team_id` needed for a "paperspace_network"?
+  # We have a single user, so, fetch it programmatrically:
+  # team_id = data.paperspace_user.lead-engineer-user.team_id
+  # team_id = data.paperspace_user.lead-engineer-user.team_id
+  team_id = 00000
+  # Paperspace says:  "change to your team's actual database id (unlike team_id everywhere else, which is your team handle)""
+
+  # https://github.com/Paperspace/terraform-provider-paperspace/blob/master/pkg/provider/resource_network.go
+  # https://github.com/Paperspace/terraform-provider-paperspace/blob/master/pkg/provider/main.tf
+  # https://registry.terraform.io/providers/Metaphysic-ai/paperspace/latest/docs/resources/machine
+}
+*/
+
+
+
+
+
+#############################################
+# Seed some secrets for GH cli's PAT from a .tfvars (secret)
+# As `~/secrets/github_pat.txt`
+# Immediately after starting it.
+#
 # This approach was not used (to copy a secret to a remote machine).
 # Instead, the secret was passed as a variable to the script that was run on the remote machine.
 

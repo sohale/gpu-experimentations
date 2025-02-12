@@ -104,7 +104,7 @@ echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
     cd ~/oggi
     R="$(realpath .)"
 
-
+    set +x # echo off
     echo "You need to do this manually: ✋ exports:
 
       source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
