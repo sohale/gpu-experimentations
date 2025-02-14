@@ -253,14 +253,16 @@ function ________subcommand___other {
 
 
 function append_remote_bashrc {
+    # dynamically genrated file
     PIPE_TEMP_FILEN="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
     cat > $PIPE_TEMP_FILEN <<'EOF_STARTUP'
-        # my-tf-sctipts-are-appended
+        # This is the content of ~/scripts-sosi/dynamically-generated-replaced.source.bash
+        # NOT  my -tf-s ct ip ts-ar e - ap pended
         cat ~/.bashrc
-        echo "This is inside .bashrc:  \$\$=$$"
+        echo "This is called by .bashrc:  \$\$=$$"
         pwd;
 
-        # even more complicated. todo: remove this from other scripts?:
+        # Even more complicated. todo: remove this from other scripts?:
 
         # alternatives:
         # compare: (probably local vs remote?)
@@ -287,12 +289,26 @@ function append_remote_bashrc {
         gh auth status
         } || :
 
-
-
         export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
         export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
         echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
 EOF_STARTUP
+
+    # appaneded fragment (keep minial)
+    # the part hat is directly put into the bashrc
+    HANDLER_SOURCE_SCRIPT_FRAGMENT="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
+    cat > $HANDLER_SOURCE_SCRIPT_FRAGMENT <<EOF_STARTUP_DIRECT
+        # my-tf-sctipts-are-appended  # marker to avoid appanding it again when debugging.
+        cat ~/.bashrc
+        echo "This is inline directly injected inside .bashrc:  \\\$\\\$=\$\$"
+        pwd
+        # the rest is refactored into above script, which is appended to, ... ok no: kept separte!
+                source ~/scripts-sosi//scripts_to_push/dot_bashrc.bash
+        #
+        source ~/scripts-sosi/scripts_to_push/dot_bashrc.bash
+        source ~/scripts-sosi/dynamically-generated-replaced.source.bash
+        #
+EOF_STARTUP_DIRECT
 
     # only if not already appended?
     verify_appended_remote_bashrc || {
@@ -300,13 +316,24 @@ EOF_STARTUP
         # A pipe, literally across the ocean!
         cat "$PIPE_TEMP_FILEN" | \
         ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-            "bash -c 'set -eux; cat >> ~/.bashrc'"
+            "bash -c 'set -eux; cat > ~/scripts-sosi/dynamically-generated-replaced.source.bash'"
 
+        # A pipe, literally across the ocean!
+        cat "$HANDLER_SOURCE_SCRIPT_FRAGMENT" | \
+        ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+            "bash -c 'set -eux; cat >> ~/.bashrc'"
     }
 
     rm "$PIPE_TEMP_FILEN"
+    rm "$HANDLER_SOURCE_SCRIPT_FRAGMENT"
 }
 function verify_appended_remote_bashrc {
+
+    # inconsistency: non-crystal usage / dataflow
+    local SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
+    local PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
+    loca PAPERSPACE_USERNAME="$(terraform output -raw username_outcome)"
+
     ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
         "bash -c 'cat ~/.bashrc | grep my-tf-sctipts-are-appended'"
 }
