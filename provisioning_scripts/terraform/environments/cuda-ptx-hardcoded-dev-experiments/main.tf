@@ -174,6 +174,12 @@ resource "paperspace_machine" "my-gpu-machine-1" {
     command = "echo ${var.input_public_ip} | sudo tee /etc/public_ip"
   }
 
+  timeouts {
+    create = "5m"
+    # Increase creation timeout, before the machine is booted. Unfortunately, paperspace taked more than 10 minutes! detfault for terraform is 10min.
+    # Time befor saying:  Error: [INFO] Expected machine to be ready but was in state provisioning"
+    # I decrease dit, since, if it is going to be more than 5 min, then it's probably better to create another one. Sicne that one will take a long time.
+  }
 }
 
 /*

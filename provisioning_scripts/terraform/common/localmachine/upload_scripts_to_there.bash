@@ -87,7 +87,8 @@ function scp_file {
 
 function upload_scripts2 {
     # move local_manual__setup_at_creation.bash to here:
-    echo "v0.0.4 : manually-triggred (button/script)"
+    echo "v0.0.5 : manually-triggred (button/script)"
+    # nash "manually triggred"
 
     # for ssh and scp commands, respectively
     set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
@@ -114,18 +115,30 @@ function upload_scripts2 {
         "mkdir -p $SCRIPTS_BASE_REMOTE/"
 
 
+    set -x
+    # echo "🐞"
+    # SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
     #########################
     # Bulk-copy the scripts:
     #########################
     # scp_file
-    scp \
-        -r \
-        $SSH_CLI_OPTIONS \
-        "$SCRIPTS2PUSH_DIR_LOCAL/" \
+    # AvoidNestedCopying="/."  # known scp bug!!
+    #scp \
+    #    -r \
+    #    $SSH_CLI_OPTIONS \
+    #    "$SCRIPTS2PUSH_DIR_LOCAL"$AvoidNestedCopying \
+    #    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
+
+    AvoidNestedCopying="/"  # for rsync
+    rsync -avz \
+         -e "ssh $SSH_CLI_OPTIONS" \
+        "$SCRIPTS2PUSH_DIR_LOCAL"$AvoidNestedCopying \
         "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
+
     # why "delete" ??
     # rsync -avz --delete "$SCRIPTS2PUSH_DIR_LOCAL/"  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
-    echo "recursive scp done."
+    echo "recursive scp/rsync done."
+
 }
 
 function send_github_secret {
@@ -250,8 +263,9 @@ send_github_secret
 
 # This si after upload, but are doign already things. (Note: tehis file name needs ot be changed)
 remote_command_via_ssh "sudo apt update -y"
-remote_command_via_ssh "sudo apt install tree"
+remote_command_via_ssh "sudo apt install -y tree"
 remote_command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
+remote_command_via_ssh "sudo apt install -y docker docker.io"
 
 ###########################
 # Sending a message to the user

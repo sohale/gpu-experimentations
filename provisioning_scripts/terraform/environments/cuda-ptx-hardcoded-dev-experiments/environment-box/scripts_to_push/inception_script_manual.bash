@@ -12,7 +12,7 @@ echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 
 
     set -eux
-    echo v0.0.3
+    echo v0.0.5
     #repeated
 
     # sudo usermod -aG docker $USER
@@ -21,17 +21,58 @@ echo -e "\n${BASH_SOURCE[0]}\n$(date)" >> ~/.sosi-footprints.log
 
 
     # Add the user to the docker group if not already a member
-    if ! groups $USER | grep -q "\bdocker\b"; then
+    # if ! groups $USER | grep -q "\bdocker\b"; then
+    if : ; then
         sudo usermod -aG docker $USER
         echo "User $USER added to the docker group."
 
-        # Run newgrp docker to change the current group ID
-        echo "Changing to docker group. Please re-login for the group change to take effect."
-        newgrp docker
+        groups $USER
+        groups
 
-        # Exit the script with a message
-        echo "Please re-run the script after logging out and back in."
-        exit 1
+        # SWITCHING
+
+        # Old Approach: (skipped)
+        : || { # skipped
+
+                # avoid 'newgrp', use 'sg' instead.
+                # For scripting, use 'sg' because it doesn't start an interactive shell.
+
+                # Run newgrp docker to change the current group ID
+                echo "Changing to docker group. Please re-login for the group change to take effect."
+                # newgrp docker  # this alone, spawns a new interactive shell
+                newgrp docker <<EOF
+                set -eu
+                echo "Current User: $(whoami)"
+                echo "User ID (UID): $(id -u)"
+                echo "Group ID (GID): $(id -g)"
+                echo "All Groups: $(id -Gn)"
+                echo "Group Details: $(id)"
+                # docker ps
+EOF
+                # Exit the script with a message
+                # echo "Please re-run the script after logging out and back in."
+                # exit 1  # no need to exist 1 with error anymore. Since we don't use the interactive
+
+                # but it will need restart
+                exec bash # but this will start a new shell, and the script will not continue
+
+        }
+
+        # New approach:
+
+        sg docker -c '
+        echo "Group switched!" ;
+        echo "Now inside the new group \"docker\"." ;
+
+        echo "Current User: $(whoami)" ;
+        echo "User ID (UID): $(id -u)" ;
+        echo "Group ID (GID): $(id -g)" ;
+        echo "All Groups: $(id -Gn)" ;
+        echo "Group Details: $(id)" ;
+
+        echo "Running docker ps" ;
+        docker ps
+        '
     fi
 
 

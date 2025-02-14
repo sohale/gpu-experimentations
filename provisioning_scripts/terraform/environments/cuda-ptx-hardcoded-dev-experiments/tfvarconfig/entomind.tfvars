@@ -38,8 +38,16 @@ instance_name = "Physical A5000 (by Terraform)"
 # machine_type= "C1"
 
 # pair: ("VM type", "template")
-machine_image_template = "twnlo3zj"
+machine_image_template = "t17d1a6i"
 machine_type="A5000"
+
+# Use "t17d1a6i". Avoid "twnlo3zj" since it is ubuntu 20.04:
+# tvimtol9  mliab-u22-241101          Ubuntu 22.04                         100
+# twnlo3zj  mliab-u20-241101          Ubuntu 20.04                         null
+# t17d1a6i  prod-u22-gpu-241021       Ubuntu 22.04 Desktop                 null
+# t0nspur5  prod-u22-cpu-241018       Ubuntu 22.04 Server                  null
+
+# tvimtol9 cannot work with "A5000"
 
 /*
 # Attempts to use H100 did not work
