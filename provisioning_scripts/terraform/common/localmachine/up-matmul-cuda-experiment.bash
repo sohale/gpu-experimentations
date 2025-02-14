@@ -328,8 +328,12 @@ EOF_STARTUP_DIRECT
     rm "$HANDLER_SOURCE_SCRIPT_FRAGMENT"
 }
 
-# for local scripts
-function remote_names { # envs for filenames, foldr names, etc
+
+function remote_names_env {
+    # for local scripts
+    # envs for filenames, foldr names, etc
+    # history: remote_names, remote_names_env
+
     # inconsistency: non-crystal usage / dataflow
     SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
     PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
@@ -338,7 +342,7 @@ function remote_names { # envs for filenames, foldr names, etc
 
 function verify_appended_remote_bashrc {
 
-    remote_names
+    remote_names_env
     ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
         "bash -c 'cat ~/.bashrc | grep my-tf-sctipts-are-appended'"
 }
@@ -346,7 +350,7 @@ function verify_appended_remote_bashrc {
 
 function ssh_go_into_shell {
 
-    remote_names
+    remote_names_env
 
     # implicitly, runs "bash"
     ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
