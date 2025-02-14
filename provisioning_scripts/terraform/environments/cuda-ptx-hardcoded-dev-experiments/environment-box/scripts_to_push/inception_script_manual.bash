@@ -77,6 +77,7 @@ EOF
 
 
     groups
+    # Still fails first time:
     groups | grep "docker"
     groups $USER | grep -q "\bdocker\b"
     # sudo systemctl status docker

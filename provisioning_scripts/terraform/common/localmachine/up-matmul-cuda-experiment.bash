@@ -249,6 +249,36 @@ function ________subcommand___other {
 # function scp_file { ...}
 # ssh_go_into_shell
 # command_via_ssh
+# moved back here? not sure:
+
+function append_remote_bashrc {
+    PIPE_TEMP_FILEN="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
+    cat > $PIPE_TEMP_FILEN <<'EOF_STARTUP'
+        # my-tf-sctipts-are-appended
+        cat ~/.bashrc
+        echo "This is inside .bashrc:  \$\$=$$"
+        pwd;
+        export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
+        export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
+        echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
+EOF_STARTUP
+
+    # A pipe, literally across the ocean:
+    cat "$PIPE_TEMP_FILEN" | \
+      ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        "bash -c 'set -eux; cat >> ~/.bashrc'"
+
+    rm "$PIPE_TEMP_FILEN"
+}
+function verify_appended_remote_bashrc {
+    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        "bash -c 'cat ~/.bashrc | grep my-tf-sctipts-are-appended'"
+}
+
+function ssh_go_into_shell {
+    # implicitly, runs "bash"
+    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
+}
 
 function ________subcommand___show_outputs {
 
@@ -327,13 +357,11 @@ function ________subcommand___show_outputs {
     # upload_scripts
     bash "$FROMLOCAL_SCRUPTS/upload_scripts_to_there.bash"
 
-
-    function ssh_go_into_shell {
-        ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
-    }
+    append_remote_bashrc
 
     ssh_go_into_shell
 
+    echo "_____________"
     echo 1>&2 "show_outputs: finished the happy path."
 
 }
@@ -347,6 +375,7 @@ function ________subcommand___bash {
     # PATH="$PATH"
 
 
+    : || { # SKIPPING OLD version 0.0.4
     #bash   -c '
     bash -c "$(cat <<'EOF_STARTUP'
         pwd;
@@ -355,7 +384,31 @@ function ________subcommand___bash {
         export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
 EOF_STARTUP
 )"
+    }
 
+
+    : || {  # SKIPPING another attempt
+    # It is already put there in the .bashrc (may be more than once)
+    cat >> ~/.bashrc <<'EOF_STARTUP'
+        # appended
+        pwd;
+        export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
+        # PS1="PROMPT: \" \w \"  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] >>>> \n> " exec bash --norc
+        export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
+EOF_STARTUP
+        # exec bash --norc # not norc
+        # exec bash
+        exec bash
+        ssh_go_into_shell
+    }
+
+    # Since I already updated the bashrc there: already ran the "append_remote_bashrc"
+    # no need for the `bash -c ".... ; exec bash"` shenanigans.
+    verify_appended_remote_bashrc
+    ssh_go_into_shell
+
+    echo "_____________"
+    echo "good."
 
 }
 

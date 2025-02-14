@@ -141,6 +141,7 @@ function upload_scripts2 {
 
 }
 
+# Shall I move it back to up-...bash?
 function send_github_secret {
 
     set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null
