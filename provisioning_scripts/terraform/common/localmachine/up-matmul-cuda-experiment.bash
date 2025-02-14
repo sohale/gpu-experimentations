@@ -251,6 +251,7 @@ function ________subcommand___other {
 # command_via_ssh
 # moved back here? not sure:
 
+
 function append_remote_bashrc {
     PIPE_TEMP_FILEN="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
     cat > $PIPE_TEMP_FILEN <<'EOF_STARTUP'
@@ -258,15 +259,50 @@ function append_remote_bashrc {
         cat ~/.bashrc
         echo "This is inside .bashrc:  \$\$=$$"
         pwd;
+
+        # even more complicated. todo: remove this from other scripts?:
+
+        # alternatives:
+        # compare: (probably local vs remote?)
+        #   on: local machine
+        # provisioning_scripts/terraform/common/per-provider/paperspace/setup_anew_ssh.bash
+        #    on: remote machine, ceation time. (ad script name! the reason, it creates an env file)
+        # provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/scripts_to_push/ghcli-login.bash
+        #   after that, there are two ways: "source the env file", or "directly eval and ssh-add", manually (manually only?)
+
+        # not scriptable?
+        # eval "$(ssh-agent -s)"
+        # ssh-add /home/paperspace/.ssh/github_sosi_from_paperspace
+
+        # Let me do it
+        # no, parametrising using env is hard:
+        #export REMOTE_HOME_ABS_DIR="/home/$PAPERSPACE_USERNAME"
+        #export SCRIPTS_BASE_REMOTE="$REMOTE_HOME_ABS_DIR/scripts-sosi"
+        #SCRIPTS_BASE_REMOTE=
+        #source $SCRIPTS_BASE_REMOTE/refresh_ssh_agent.env
+
+        source ~/scripts-sosi/refresh_ssh_agent.env
+        {
+        gh --version
+        gh auth status
+        } || :
+
+
+
         export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
-        export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
+        export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
         echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
 EOF_STARTUP
 
-    # A pipe, literally across the ocean:
-    cat "$PIPE_TEMP_FILEN" | \
-      ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-        "bash -c 'set -eux; cat >> ~/.bashrc'"
+    # only if not already appended?
+    verify_appended_remote_bashrc || {
+
+        # A pipe, literally across the ocean!
+        cat "$PIPE_TEMP_FILEN" | \
+        ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+            "bash -c 'set -eux; cat >> ~/.bashrc'"
+
+    }
 
     rm "$PIPE_TEMP_FILEN"
 }

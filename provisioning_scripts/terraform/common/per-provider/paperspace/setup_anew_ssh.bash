@@ -54,6 +54,7 @@ ssh-keygen -t rsa -b 4096 \
   -C "${MY_EMAIL}" \
   -f ~/.ssh/${SSHKEYPAIR_NAME}
 
+# on Local machine
 luxargs $_dr \
 echo '
 eval "$(ssh-agent -s)"

@@ -27,6 +27,7 @@ function create_a_whole_new_ssh {
     test -f $SSH_KEY_PATH  || exit 1  # without ""
     test -f $SSH_KEY_PATH.pub || exit 1 # without ""
 
+    # on remote machine, but, at creation time. Hence, change the name of the script.
     # needs source ing?
     eval "$(ssh-agent -s)"
     ssh-add "$SSH_KEY_PATH"
