@@ -130,8 +130,9 @@ function upload_scripts2 {
     #    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
 
     AvoidNestedCopying="/"  # for rsync
-    rsync -avz \
+    rsync \
          -e "ssh $SSH_CLI_OPTIONS" \
+        -avz \
         "$SCRIPTS2PUSH_DIR_LOCAL"$AvoidNestedCopying \
         "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
 

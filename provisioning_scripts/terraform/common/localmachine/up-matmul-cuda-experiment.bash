@@ -555,6 +555,62 @@ function ________subcommand___ssh_into {
 }
  }
 
+
+
+
+function ________subcommand___rsync2 {
+    echo "rsync both ways"
+
+    remote_names_env
+
+    #export REPO_ROOT="$HOME/gpu-experimentations"
+    #export EXPERIMENT_DIR="$REPO_ROOT/experiments/11_matrix_cuda"
+    #SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
+    #PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
+    #PAPERSPACE_USERNAME="$(terraform output -raw username_outcome)"
+    # REMOTE_USER="$PAPERSPACE_USERNAME"
+    # REMOTE_HOST="$PAPERSPACE_IP"
+
+    # EXPERIMENT_DIR, WDIR
+    export WDIR="$(pwd)"
+    # CLONEBASE, REMOTE_BASEDIR, REMOTE_REPOROOT
+    export REMOTE_REPOROOT="$REPO_ROOT"
+    export LOCAL_REPO_ROOT="$REPO_ROOT"
+    echo "assert $WDIR $REMOTE_REPOROOT"  > /dev/null
+    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        "mkdir -p $REMOTE_REPOROOT && cd $REMOTE_REPOROOT && git clone git@github.com:sohale/scientific-code-private.git $REMOTE_REPOROOT && mkdir -p $WDIR; cd $WDIR; pwd; ls -alth "
+
+    # Ensure the timezone is the same on both systems
+    echo "Checking timezones..."
+    LOCAL_TZ=$(timedatectl show --property=Timezone --value)
+    REMOTE_TZ=$(ssh $SSH_CLI_OPTIONS "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" "timedatectl show --property=Timezone --value")
+
+    if [[ "$LOCAL_TZ" != "$REMOTE_TZ" ]]; then
+        echo "WARNING: Timezones are different! Local: $LOCAL_TZ, Remote: $REMOTE_TZ"
+        echo "Syncing files might cause unexpected timestamp issues."
+        exit 1
+    fi
+
+    # The --delete flag removes files from the destination if they no longer exist in the source.
+
+    echo "Syncing from Local → Remote... (remove from remote if necessary)"
+    rsync \
+        -e "ssh $SSH_CLI_OPTIONS" \
+        --delete \
+        -avz --progress --times --perms --owner --group \
+        --exclude=".git" --exclude="*.swp" --exclude="*.bak" \
+        "$LOCAL_REPO_ROOT/" "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/"
+
+    echo "Syncing from Remote → Local... (remove from remote if necessary)"
+    rsync \
+        -e "ssh $SSH_CLI_OPTIONS" \
+        -avz --progress --times --perms --owner --group \
+        --exclude=".git" --exclude="*.swp" --exclude="*.bak" \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/" "$LOCAL_REPO_ROOT/"
+
+    echo "Sync complete!"
+
+}
 # Helpers for usage message & reflections (list of subcommands)
 function subcommands_list {
     # list of subcommands:

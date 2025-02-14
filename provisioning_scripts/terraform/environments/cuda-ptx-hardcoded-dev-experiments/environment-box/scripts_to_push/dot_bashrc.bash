@@ -6,6 +6,8 @@ echo "placeholder for dot bashrc"
 # static: git-time static (git-level static: it is pushed)
 echo "This is the static script called by .bashrc:  \$\$=$$"
 
+sudo timedatectl set-timezone UTC
+
 # this part content is dynamic (deploy-time dynamic)
 source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
 
