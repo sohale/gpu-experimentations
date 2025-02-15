@@ -300,24 +300,26 @@ function append_remote_bashrc {
         export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
         echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
 EOF_STARTUP
+
     : "
-    # Since this has prompt, and the π2 is covered by `dot_bashrc.bash`, this is perhaps shell/interactive--level (π3)
-    # So, perhaps, this is actually not necessary.
-    # The (execution-threadchain)-map is:
-    #      dynamically-generated-replaced.source.bash
-    #      generated at time of "show_outputs" (deployment, BTW, what is the difference beween "show_outputs" and main.tf (tfapply)'s own script(s)? )
-    # Need a way to characerise: chain: script that triggers/starts [interactive,etc] (not itself), --> the bash (shell interactive sessions): itself, --> calls .bashrc, which calls this, and, the static one
+    Note on above ^ script:
+        Since this has prompt, and the π2 is covered by `dot_bashrc.bash`, this is perhaps shell/interactive--level (π3)
+        So, perhaps, this is actually not necessary.
+        The (execution-threadchain)-map is:
+            dynamically-generated-replaced.source.bash
+            generated at time of "show_outputs" (deployment, BTW, what is the difference beween "show_outputs" and main.tf (tfapply)'s own script(s)? )
+        Need a way to characerise: chain: script that triggers/starts [interactive,etc] (not itself), --> the bash (shell interactive sessions): itself, --> calls .bashrc, which calls this, and, the static one
 
-    # Three features characetrise / specify (each) script/invokation:
-    # * static-ness (veriosn control) vs dynamic-ness (generated: at runtime (but deploy) )
-    # * The πi-ness
-    # * The execution "chain" (thread/chain)
-    #
-    # not imporant: in the (inline "bash -c"), or not, or via its --bashrc, etc
-    # All this analysis (and below πi), leads me to this: in the rsync2, use (`source`) dot_bashrc.bash
+        Three features characetrise / specify (each) script/invokation:
+        * static-ness (veriosn control) vs dynamic-ness (generated: at runtime (but deploy) )
+        * The πi-ness
+        * The execution "chain" (thread/chain)
+
+        not imporant: in the (inline "bash -c"), or not, or via its --bashrc, etc
+        All this analysis (and below πi), leads me to this: in the rsync2, use (`source`) dot_bashrc.bash
 
 
-    # The `dynamically-generated-replaced.source.bash` happens to be the one for prompt (gas): ( interactive : π4 =  π2)
+    The `dynamically-generated-replaced.source.bash` happens to be the one for prompt (gas): ( interactive : π4 =  π2)
 
     Note:
         π1. permamnet (changes, like the change of .bashrc itself: once, and remains)
@@ -328,24 +330,31 @@ EOF_STARTUP
 
         ok, this helps me find out  hout where I should call ... (not in the script I am doing now in a subcommand_bash or subcommand_rync2 one, or even more surfaced: asking the user to type in)
 
-        # interesrintgly, "π2" are covered in dot_bashrc.bash
+        Interesrintgly, "π2" are covered in `dot_bashrc.bash`
 
-        # Per-(turn-on) (restart, or, on), happsn to be the same as "per login-session"
-        # The per login-session happens to be the same as per-login. (coz that's Unix/Linux)
+
+        * Per-(turn-on) (restart, or, on), happsn to be the same as "per login-session"
+        * The per login-session happens to be the same as per-login. (coz that's Unix/Linux)
 
         Theoretical "at" s:
-        # Per-turn-on
-        # Per-restart
-        # Per-un-standby (wake)
-        # Per-login (The env '$HOME' starts to be meaningful)
-        # Per-session (same as use login, in Unix/Linux, but couls be a remote-desctop sesssion + a cmd.exe in windows)
-        # Per shell script: prefix (not leading to interactive) (in theory, we can put a "bash" in the endm but it's not recommended to do it in this intention-path)
-        # Per shell script, prefix, leading to interactive.
-        # Per shell script, after the prefix: the interactive (e.g. setting the PS1)
-        # Per shell script, after the prefix: entered by user, interactively: e.g. '~', 'eval ...'
+        * Per-turn-on
+        * Per-restart
+        * Per-un-standby (wake)
+        * Per-login (The env '$HOME' starts to be meaningful)
+        * Per-session (same as use login, in Unix/Linux, but couls be a remote-desctop sesssion + a cmd.exe in windows)
+        * Per shell script: prefix (not leading to interactive) (in theory, we can put a \"bash\" in the end, but it's not recommended to do it in this intention-path)
+        * Per shell script, prefix, leading to interactive.
+        * Per shell script, after the prefix: the interactive (e.g. setting the PS1)
+        * Per shell script, after the prefix: entered by user, interactively: e.g. '~', 'eval ...'
+
+
+        Which one does this set: `sudo timedatectl set-timezone UTC`
+           i.e., Permanence: How deep the reset(!), this can .
+           Markov-reset!
+           "The permanenece orbit". Reset-depth! (Layers?! like Docker)
     "
 
-    # appaneded fragment (keep minial)
+    # appended fragment (keep minial)
     # the part hat is directly put into the bashrc
     HANDLER_SOURCE_SCRIPT_FRAGMENT="$(mktemp $TEMP_FOLDER/mmmXXXXXX -u)"
     cat > $HANDLER_SOURCE_SCRIPT_FRAGMENT <<EOF_STARTUP_DIRECT
@@ -683,7 +692,7 @@ function ________subcommand___rsync2 {
             sudo mkdir -p \"$REMOTE_REPOBASE\" &&\
             sudo chown -R \"\$USER:\$USER\" \"$REMOTE_REPOBASE\" &&\
             cd \"$REMOTE_REPOBASE\" &&\
-            { mv \"$REMOTE_REPOROOT/\" \"$REMOTE_REPOBASE/hij\" || : ; } &&\
+            { : || DONT || mv \"$REMOTE_REPOROOT/\" \"$REMOTE_REPOBASE/hij\" || : ; } &&\
             { ls \"$REMOTE_REPOROOT/\" || git clone $GITCLONE_SSHURL \"$REMOTE_REPOROOT\"; } &&\
             mkdir -p \"$WDIR\" &&\
             cd \"$WDIR\" &&\
@@ -692,14 +701,18 @@ function ________subcommand___rsync2 {
             :
         "
 
-    exit 1
+    LOCAL_INDICATOR="🅛Local"
+    #  🅛 🅡  Ⓛ Ⓡ
+    echo "$LOCAL_INDICATOR: Now ready for rsync from Ⓛ to Ⓡ"
 
     # Ensure the timezone is the same on both systems
     echo "Checking timezones..."
     LOCAL_TZ=$(timedatectl show --property=Timezone --value)
     REMOTE_TZ=$(ssh $SSH_CLI_OPTIONS "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" "timedatectl show --property=Timezone --value")
 
-    if [[ "$LOCAL_TZ" != "$REMOTE_TZ" ]]; then
+    echo " Ⓛ $LOCAL_TZ  Ⓡ $REMOTE_TZ"
+
+    if [[ "$LOCAL_TZ" != "$REMOTE_TZ" && "$LOCAL_TZ" != "Etc/$REMOTE_TZ" ]]; then
         echo "WARNING: Timezones are different! Local: $LOCAL_TZ, Remote: $REMOTE_TZ"
         echo "Syncing files might cause unexpected timestamp issues."
         exit 1
@@ -714,6 +727,7 @@ function ________subcommand___rsync2 {
         -avz --progress --times --perms --owner --group \
         --exclude=".git" --exclude="*.swp" --exclude="*.bak" \
         "$LOCAL_REPO_ROOT/" "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/"
+    exit 1
 
     echo "Syncing from Remote → Local... (remove from remote if necessary)"
     rsync \
