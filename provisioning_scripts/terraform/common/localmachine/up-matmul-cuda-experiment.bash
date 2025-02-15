@@ -295,10 +295,12 @@ function append_remote_bashrc {
         sudo timedatectl set-timezone UTC
 
         # (π5)
+        # export PS1="PROMPT: \" \w \"  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] >>>> \n> " exec bash --norc
         export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
         export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
         echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
 EOF_STARTUP
+    : "
     # Since this has prompt, and the π2 is covered by `dot_bashrc.bash`, this is perhaps shell/interactive--level (π3)
     # So, perhaps, this is actually not necessary.
     # The (execution-threadchain)-map is:
@@ -315,18 +317,33 @@ EOF_STARTUP
     # All this analysis (and below πi), leads me to this: in the rsync2, use (`source`) dot_bashrc.bash
 
 
-    : '
+    # The `dynamically-generated-replaced.source.bash` happens to be the one for prompt (gas): ( interactive : π4 =  π2)
+
     Note:
         π1. permamnet (changes, like the change of .bashrc itself: once, and remains)
-        π2. per session: for future (or following) scripts: like github, timezone, sshagent
-        π3. per session, but shell/interactinve. like prompt
+        π2. per login-session: for future (or following) scripts: like github, timezone, sshagent (for all to-remote [sub]commands, not just interactive ones)
+        π3. per login-session, but shell/interactinve. like prompt
         π4. (in script, or before interactive: liquid) # why not π2?
         π5. gas: in interactive one, by user  # why not π3?
 
         ok, this helps me find out  hout where I should call ... (not in the script I am doing now in a subcommand_bash or subcommand_rync2 one, or even more surfaced: asking the user to type in)
 
         # interesrintgly, "π2" are covered in dot_bashrc.bash
-    '
+
+        # Per-(turn-on) (restart, or, on), happsn to be the same as "per login-session"
+        # The per login-session happens to be the same as per-login. (coz that's Unix/Linux)
+
+        Theoretical "at" s:
+        # Per-turn-on
+        # Per-restart
+        # Per-un-standby (wake)
+        # Per-login (The env '$HOME' starts to be meaningful)
+        # Per-session (same as use login, in Unix/Linux, but couls be a remote-desctop sesssion + a cmd.exe in windows)
+        # Per shell script: prefix (not leading to interactive) (in theory, we can put a "bash" in the endm but it's not recommended to do it in this intention-path)
+        # Per shell script, prefix, leading to interactive.
+        # Per shell script, after the prefix: the interactive (e.g. setting the PS1)
+        # Per shell script, after the prefix: entered by user, interactively: e.g. '~', 'eval ...'
+    "
 
     # appaneded fragment (keep minial)
     # the part hat is directly put into the bashrc
@@ -402,6 +419,7 @@ function ssh_go_into_shell {
     remote_names_env
 
     # implicitly, runs "bash"
+    # implicitly runs .bashrc, hence, the chain of others: dot_bashrc.bash, dynamically-generated-replaced.source.bash
     ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP"
 }
 
@@ -466,15 +484,18 @@ function ________subcommand___show_outputs {
    echo "may turn off, prevent subsequeent confirmations, etc"
     # aab  bandi
     # or as "after ssh-keygen"
-    # echo -ne "yes\n\n\n" | \  # did onot work
+    # echo -ne "yes\n\n\n" | \  # did not work
     ssh $SSH_CLI_OPTIONS  \
         -o StrictHostKeyChecking=no  \
         "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" "sudo touch /i-was-here"
 
 
-# This option controls the behavior of SSH when connecting to a new host for the first time or if the host key has changed.
-# Disabling StrictHostKeyChecking and using /dev/null for UserKnownHostsFile means that you are not verifying the host's identity,
-# (otherwise) prevents "man-in-the-middle" attacks.
+    # From: ... (?)
+    : "Note:
+            This option controls the behavior of SSH when connecting to a new host for the first time or if the host key has changed.
+            Disabling StrictHostKeyChecking and using /dev/null for UserKnownHostsFile means that you are not verifying the host's identity,
+            (otherwise) prevents "man-in-the-middle" attacks.
+            "
 
 
     export SSH_CLI_OPTIONS
@@ -500,36 +521,30 @@ function ________subcommand___bash {
     # PATH="$PATH"
 
 
-    : || { # SKIPPING OLD version 0.0.4
-    #bash   -c '
-    bash -c "$(cat <<'EOF_STARTUP'
-        pwd;
-        export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="🔴${__exit_code}"; else _ps1_my_error=""; fi; }';
-        # PS1="PROMPT: \" \w \"  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] >>>> \n> " exec bash --norc
-        export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
-EOF_STARTUP
-)"
-    }
+    : || {
+    # SKIPPING OLD version 0.0.4
+    # Cancelled attempt 1
+    bash -c "$(cat < < 'EOF_STARTUP'... EOF_STARTUP)"
 
-
-    : || {  # SKIPPING another attempt
+    # Cancelled attempt 2: (SKIPPING)
+    # Putting the prompt π4
+    # replaced by "dynamically-generated-replaced.source.bash"
     # It is already put there in the .bashrc (may be more than once)
     cat >> ~/.bashrc <<'EOF_STARTUP'
-        # appended
-        pwd;
-        export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
-        # PS1="PROMPT: \" \w \"  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] >>>> \n> " exec bash --norc
-        export PS1='\[\033[01;33m\]𝓜𝓛𝓘𝓡 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n\[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
+                # appended
+                PS1=...
+                # ... same as dynamically-generated-replaced.source.bash
 EOF_STARTUP
-        # exec bash --norc # not norc
-        # exec bash
-        exec bash
-        ssh_go_into_shell
+                # exec bash --norc # not norc
+                # exec bash
+                exec bash
+                ssh_go_into_shell
     }
 
     # Since I already updated the bashrc there: already ran the "append_remote_bashrc"
     # no need for the `bash -c ".... ; exec bash"` shenanigans.
     verify_appended_remote_bashrc
+    # Implicitly, also runs the chain from .bashrc:
     ssh_go_into_shell
 
     echo "_____________"
