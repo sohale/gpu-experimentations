@@ -336,8 +336,11 @@ function remote_names_env {
 
     # inconsistency: non-crystal usage / dataflow
     SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
-    PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
-    PAPERSPACE_USERNAME="$(terraform output -raw username_outcome)"
+    PAPERSPACE_IP="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw public_ip_outcome)"
+    PAPERSPACE_USERNAME="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw username_outcome)"
+    export SSH_CLI_OPTIONS PAPERSPACE_IP PAPERSPACE_USERNAME
+    echo "::: $SSH_CLI_OPTIONS $PAPERSPACE_IP $PAPERSPACE_USERNAME" > /dev/null
+
 }
 
 function verify_appended_remote_bashrc {
@@ -572,14 +575,18 @@ function ________subcommand___rsync2 {
     # REMOTE_HOST="$PAPERSPACE_IP"
 
     # EXPERIMENT_DIR, WDIR
-    export WDIR="$(pwd)"
+    WDIR="$(pwd)"
     # CLONEBASE, REMOTE_BASEDIR, REMOTE_REPOROOT
-    export REMOTE_REPOROOT="$REPO_ROOT"
-    export LOCAL_REPO_ROOT="$REPO_ROOT"
-    echo "assert $WDIR $REMOTE_REPOROOT"  > /dev/null
-    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-        "mkdir -p $REMOTE_REPOROOT && cd $REMOTE_REPOROOT && git clone git@github.com:sohale/scientific-code-private.git $REMOTE_REPOROOT && mkdir -p $WDIR; cd $WDIR; pwd; ls -alth "
+    LOCAL_REPO_ROOT="$REPO_ROOT"
+    # REMOTE_REPOROOT="$REPO_ROOT"
+    REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
+    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT"  > /dev/null
 
+    ssh $SSH_CLI_OPTIONS \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        bash -c "mkdir -p \"$REMOTE_REPOROOT\" && cd \"$REMOTE_REPOROOT\" && git clone git@github.com:sohale/scientific-code-private.git \"$REMOTE_REPOROOT/..\" && mkdir -p \"$WDIR\"; cd \"$WDIR\"; pwd; ls -alth "
+
+    exit 1
     # Ensure the timezone is the same on both systems
     echo "Checking timezones..."
     LOCAL_TZ=$(timedatectl show --property=Timezone --value)
