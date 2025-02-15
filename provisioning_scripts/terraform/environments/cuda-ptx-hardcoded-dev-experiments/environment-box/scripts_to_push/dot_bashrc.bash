@@ -1,7 +1,8 @@
 # I think this is no longer used
 
 # placeholder for dot bashrc
-echo "placeholder for dot bashrc"
+# "The dot_bashrc.bash, an extracted, controlled, owned, part of .bashrc (a branch thread leads here)"
+echo "The dot_bashrc.bash, an extracted, controlled, owned, part of .bashrc (a branch thread leads here)"
 
 # static: git-time static (git-level static: it is pushed)
 echo "This is the static script called by .bashrc:  \$\$=$$"

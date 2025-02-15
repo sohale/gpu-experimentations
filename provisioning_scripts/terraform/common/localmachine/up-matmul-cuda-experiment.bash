@@ -283,16 +283,50 @@ function append_remote_bashrc {
         #SCRIPTS_BASE_REMOTE=
         #source $SCRIPTS_BASE_REMOTE/refresh_ssh_agent.env
 
+        # Although covered in that static file: dot_bashrc.bash (Is π4)
         source ~/scripts-sosi/refresh_ssh_agent.env
         {
         gh --version
         gh auth status
         } || :
 
+
+        # Although covered in that static file: dot_bashrc.bash  (Is π4)
+        sudo timedatectl set-timezone UTC
+
+        # (π5)
         export PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }';
         export PS1='\[\033[01;33m\]➫ 𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]'
         echo -en '𝗚𝗣𝗨\n𝙶𝙿𝚄\n𝔊𝔓𝔘\n𝑮𝑷𝑼\n𝓖𝓟𝓤\n𝐆𝐏𝐔\n𝕲𝕻𝖀\nＧＰＵ\n🄶🄿🅄\n𝒢𝒫𝒰\n\n'
 EOF_STARTUP
+    # Since this has prompt, and the π2 is covered by `dot_bashrc.bash`, this is perhaps shell/interactive--level (π3)
+    # So, perhaps, this is actually not necessary.
+    # The (execution-threadchain)-map is:
+    #      dynamically-generated-replaced.source.bash
+    #      generated at time of "show_outputs" (deployment, BTW, what is the difference beween "show_outputs" and main.tf (tfapply)'s own script(s)? )
+    # Need a way to characerise: chain: script that triggers/starts [interactive,etc] (not itself), --> the bash (shell interactive sessions): itself, --> calls .bashrc, which calls this, and, the static one
+
+    # Three features characetrise / specify (each) script/invokation:
+    # * static-ness (veriosn control) vs dynamic-ness (generated: at runtime (but deploy) )
+    # * The πi-ness
+    # * The execution "chain" (thread/chain)
+    #
+    # not imporant: in the (inline "bash -c"), or not, or via its --bashrc, etc
+    # All this analysis (and below πi), leads me to this: in the rsync2, use (`source`) dot_bashrc.bash
+
+
+    : '
+    Note:
+        π1. permamnet (changes, like the change of .bashrc itself: once, and remains)
+        π2. per session: for future (or following) scripts: like github, timezone, sshagent
+        π3. per session, but shell/interactinve. like prompt
+        π4. (in script, or before interactive: liquid) # why not π2?
+        π5. gas: in interactive one, by user  # why not π3?
+
+        ok, this helps me find out  hout where I should call ... (not in the script I am doing now in a subcommand_bash or subcommand_rync2 one, or even more surfaced: asking the user to type in)
+
+        # interesrintgly, "π2" are covered in dot_bashrc.bash
+    '
 
     # appaneded fragment (keep minial)
     # the part hat is directly put into the bashrc
@@ -328,6 +362,18 @@ EOF_STARTUP_DIRECT
     rm "$HANDLER_SOURCE_SCRIPT_FRAGMENT"
 }
 
+
+# Not used:
+function local_names_shell_env {
+    # for local shell (interactive)
+    # todo: source this, somehow
+    # history: shell_env, local_names_shell_env
+    export UP="$(pwd)/common/localmachine/up-matmul-cuda-experiment.bash"
+    echo '$UP bash'
+    # etc
+    echo "WARNING. NOT IMPLEMTNTED"
+    return 1
+}
 
 function remote_names_env {
     # for local scripts
@@ -575,18 +621,64 @@ function ________subcommand___rsync2 {
     # REMOTE_HOST="$PAPERSPACE_IP"
 
     # EXPERIMENT_DIR, WDIR
-    WDIR="$(pwd)"
+    # WDIR="$(pwd)"
+    _CWD="$(pwd)"
+    WDIR="${_CWD/#$HOME/~}"
     # CLONEBASE, REMOTE_BASEDIR, REMOTE_REPOROOT
     LOCAL_REPO_ROOT="$REPO_ROOT"
     # REMOTE_REPOROOT="$REPO_ROOT"
-    REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
-    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT"  > /dev/null
+    # REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
+    # export REMOTE_REPOBASE="/home/$PAPERSPACE_USERNAME/work"
+    export REMOTE_HOME="/home/$PAPERSPACE_USERNAME"
+    export REMOTE_REPOBASE="$REMOTE_HOME/work"  # delay/defer/lazy evaluation
+    echo "$REMOTE_REPOBASE"
+    export REMOTE_REPOROOT="$REMOTE_REPOBASE/$(basename $LOCAL_REPO_ROOT)"
+    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT $REMOTE_REPOBASE"  > /dev/null
+
+    : || {
+    # set -xue
+    set +x
+    echo
+
+    scrupt="set -eux; echo 'hi' ; sudo mkdir -p \"$REMOTE_REPOROOT\" && cd \"$REMOTE_REPOROOT\" && git clone git@github.com:sohale/gpu-experimentations.git \"$REMOTE_REPOROOT/..\" && mkdir -p \"$WDIR\"; cd \"$WDIR\"; pwd; ls -alth "
+    echo $scrupt
+    exit 1
 
     ssh $SSH_CLI_OPTIONS \
         "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-        bash -c "mkdir -p \"$REMOTE_REPOROOT\" && cd \"$REMOTE_REPOROOT\" && git clone git@github.com:sohale/scientific-code-private.git \"$REMOTE_REPOROOT/..\" && mkdir -p \"$WDIR\"; cd \"$WDIR\"; pwd; ls -alth "
+        'echo $HOME'
+    exit 22
+    }
+
+    # Analysis report: In below, use which:
+    #    *    source dot_bashrc.bash
+    #    *    source ~/.bashrc
+    # anser: source dot_bashrc.bash
+
+
+    export GITCLONE_SSHURL="git@github.com:sohale/gpu-experimentations.git"
+
+    ssh $SSH_CLI_OPTIONS \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        bash -c ":&&\
+            set -x &&\
+            source $REMOTE_HOME/scripts-sosi/scripts_to_push/dot_bashrc.bash  &&\
+            set -eux &&\
+            echo 'hi' &&\
+            sudo mkdir -p \"$REMOTE_REPOBASE\" &&\
+            sudo chown -R \"\$USER:\$USER\" \"$REMOTE_REPOBASE\" &&\
+            cd \"$REMOTE_REPOBASE\" &&\
+            { mv \"$REMOTE_REPOROOT/\" \"$REMOTE_REPOBASE/hij\" || : ; } &&\
+            { ls \"$REMOTE_REPOROOT/\" || git clone $GITCLONE_SSHURL \"$REMOTE_REPOROOT\"; } &&\
+            mkdir -p \"$WDIR\" &&\
+            cd \"$WDIR\" &&\
+            pwd &&\
+            ls -alth &&\
+            :
+        "
 
     exit 1
+
     # Ensure the timezone is the same on both systems
     echo "Checking timezones..."
     LOCAL_TZ=$(timedatectl show --property=Timezone --value)
