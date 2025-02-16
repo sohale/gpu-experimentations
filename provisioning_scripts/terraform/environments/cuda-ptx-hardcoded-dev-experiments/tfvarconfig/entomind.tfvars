@@ -57,6 +57,13 @@ machine_type="H100"
 # not: "twnlo3zj", "t0nspur5", "t17d1a6i"
 */
 
+
+# instance_disk_size_gb = 50
+# in GB.
+# NGC docker did not fit in 50 GB. Default is 100. I use 200, it's cheap.
+instance_disk_size_gb = 200
+
+
 # removed:
 # region_pdefault="Europe (AMS1)"
 

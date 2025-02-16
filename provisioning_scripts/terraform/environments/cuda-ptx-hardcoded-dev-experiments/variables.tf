@@ -188,7 +188,9 @@ variable "instance_image" {
 variable "instance_disk_size_gb" {
   description = "Disk size for the instance in GB"
   type        = number
-  default     = 50
+  default     = 100
+
+  # NGC docker did not fit in 50 GB
 }
 
 
