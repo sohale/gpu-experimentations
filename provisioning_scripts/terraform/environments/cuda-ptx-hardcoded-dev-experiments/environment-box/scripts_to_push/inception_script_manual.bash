@@ -121,6 +121,8 @@ EOF
 
 
     # environment_boxes/neurotalk/scripts_to_push/ghcli-install.bash
+
+    # the following, perhaps, whould not be int he same file. But, in some symbolic (static-analysis-time: SA-Time) represeantation, they should follow eachother.
     bash "$TARGET_SCRIPTS2PUSH_DIR__/ghcli-install.bash"
     bash "$TARGET_SCRIPTS2PUSH_DIR__/ghcli-login.bash"
 
@@ -147,6 +149,7 @@ EOF
     cd ~/oggi
     R="$(realpath .)"
 
+    # this script itself, needs run something manually, now, it asks the user to do another manual step! (by meanual, I mean "in interactive mode")
     set +x # echo off
     echo "You need to do this manually: ✋ exports:
       ✋
@@ -157,3 +160,12 @@ or:
       R=$R
       "'docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3'"
       "
+
+
+: '
+   (more) handy scripts:
+
+
+    pspace machine start $(cd environments/cuda-ptx-hardcoded-dev-experiments ; terraform output -raw instance_id)
+
+'

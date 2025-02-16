@@ -41,10 +41,16 @@ output "keypair_outcome" {
 }
 
 
-# todo: rename: machine? instance? real_machine? v_machine? machine_?
-# Either:
-# * instance_id
-# * applied_info.gpu_machine_id
+# Naming:
+#     todo: rename:
+#     machine? instance? real_machine? v_machine? machine_?
+#     Either:
+#       * instance_id
+#       * applied_info.gpu_machine_id
+#     todo rename:
+#       * gpu_machine_id
+#       * bad name: instance_id is a bad name: diluting the fact that this is the central, acme, peak fo the pyramid of this whole terraform provision-chain scripting.
+
 output "instance_id" {
   description = "The ID of the created GPU instance"
   value       = paperspace_machine.my-gpu-machine-1.id

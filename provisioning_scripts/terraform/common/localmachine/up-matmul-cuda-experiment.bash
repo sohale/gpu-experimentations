@@ -352,6 +352,21 @@ EOF_STARTUP
            i.e., Permanence: How deep the reset(!), this can .
            Markov-reset!
            "The permanenece orbit". Reset-depth! (Layers?! like Docker)
+
+    Other details:
+        How to formalise this?:
+        refresh_ssh_agent.env is creted by ghcli-login.bash
+            Also:
+            Who runs ghcli-login.bash? It was missing. Formalise that too. It is hard to infer it (even runtime, but we want compile-time, static-analaysis-time)
+            The question of missing `refresh_ssh_agent.env` is deferred to the questinn of involing `ghcli-login.bash`.
+            ( and it is not the rong path. It is just not created: ots creation "code" is not invoked. Although its creaetion code is in place (loaded, installed, copied, scp/rsyn--copied, etc))
+            Who is supposed to run, vs , who runs; ghcli-login.bash?
+
+        Oh, it is used in a script, but, it cannot be used, until, another one! The latter is called , but is required by the former. "Circular dependency".
+        On the other hand, we want to avoid repeat (DRY) and also for other reasons: we want to consume our own produce.
+
+        ^ Identified a manual step, and a bigger picture about manual/interactive/cmdl/cli/shell gaps/defer s: defer to user (affordances-repertoire)
+
     "
 
     # appended fragment (keep minial)
@@ -506,6 +521,17 @@ function ________subcommand___show_outputs {
             (otherwise) prevents "man-in-the-middle" attacks.
             "
 
+
+    echo 1>&2 'You need to do this manually in interactive (shell/bash terminal mode) on remote machine: (which in tuen may have more manual steps)
+✋     bash ~/scripts-sosi/scripts_to_push/inception_script_manual.bash
+    '
+    # but, there is a lot run after this ^. Sine there is a whole dot_bashrc chain (with its own layers/orbits).
+    # Note: I have already said this here:
+    #    provisioning_scripts/terraform/common/localmachine/upload_scripts_to_there.bash
+    # todo: push in something, for "affordances repertiore"!, and appear just in the end before the prompt.
+    # But then, It will need a whole scripting-system for that! (modular, resuable outside this context!)
+    # oh, there is this "new group" thing too! (in between).
+    #   and it is sombeh-idem-potent. (single-potent! one-track-mind?)
 
     export SSH_CLI_OPTIONS
     # export -f scp_file
