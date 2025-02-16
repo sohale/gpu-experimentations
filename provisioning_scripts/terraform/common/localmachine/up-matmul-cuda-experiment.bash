@@ -720,25 +720,28 @@ function ________subcommand___rsync2 {
 
     # The --delete flag removes files from the destination if they no longer exist in the source.
 
-    echo "Syncing from Local → Remote... (remove from remote if necessary)"
+    echo "1: Syncing from Local → Remote... (remove from remote if necessary)"
     rsync \
         -e "ssh $SSH_CLI_OPTIONS" \
         --delete \
         -avz --progress --times --perms --owner --group \
         --exclude=".git" --exclude="*.swp" --exclude="*.bak" \
         "$LOCAL_REPO_ROOT/" "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/"
+    echo "Sync (part 1) complete!"
     exit 1
 
-    echo "Syncing from Remote → Local... (remove from remote if necessary)"
+    echo "2: Syncing from Remote → Local... (don't remove (local?) if something in remote is removed)"
+    SUBFOLDER="experiments/11_matrix_cuda"
     rsync \
         -e "ssh $SSH_CLI_OPTIONS" \
         -avz --progress --times --perms --owner --group \
         --exclude=".git" --exclude="*.swp" --exclude="*.bak" \
-        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/" "$LOCAL_REPO_ROOT/"
-
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP:$REMOTE_REPOROOT/$SUBFOLDER/" "$LOCAL_REPO_ROOT/$SUBFOLDER/"
     echo "Sync complete!"
 
+    # todo: now, you can remote-bash nvcc ... too (NVidia compilation script, etc)
 }
+
 # Helpers for usage message & reflections (list of subcommands)
 function subcommands_list {
     # list of subcommands:
