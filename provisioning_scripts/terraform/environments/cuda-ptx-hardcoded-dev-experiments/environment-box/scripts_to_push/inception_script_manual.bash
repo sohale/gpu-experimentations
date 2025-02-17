@@ -151,10 +151,10 @@ EOF
 
     # this script itself, needs run something manually, now, it asks the user to do another manual step! (by meanual, I mean "in interactive mode")
     set +x # echo off
-    echo "You need to do this manually: ✋ exports:
-      ✋
-      source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
-      docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
+    echo "You need to do this manually: ✋nual exports: You need to do this manually in interactive (shell/bash terminal mode) on remote machine: (which in tuen may have more manual steps)
+
+✋      source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
+✋      docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
 
 or:
       R=$R
