@@ -58,18 +58,50 @@ function install_inplace {
 # check foundations:
 # Ensure: NVIDIA GPU is Detected
 nvidia-smi
-# Ensure: `nvidia-docker2` is installed i.e. "NVIDIA Container Toolkit"
-dpkg -l | grep -i nvidia-docker
-{
-    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
-    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - && \
-    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list && \
-    sudo apt update && sudo apt install -y nvidia-docker2
-
-    sudo systemctl restart docker
-}
 # Ensure: NVIDIA Runtime is Enabled
 docker info | grep -i runtime
+
+# Critical step:
+# Ensure: `nvidia-docker2` is installed i.e. "NVIDIA Container Toolkit"
+dpkg -l | grep -i nvidia-docker
+
+function install_nvidia_docker
+{
+   # deprecated solution
+   #  distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
+   # curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - && \
+   # curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list && \
+   # sudo apt update && sudo apt install -y nvidia-docker2
+   # sudo systemctl restart docker
+
+
+    mkdir -p ~/work
+    cd ~/work
+    # Enables "nvidia-driver-570"
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+    sudo dpkg -i cuda-keyring_1.1-1_all.deb
+    sudo apt-get update
+    sudo apt install ubuntu-drivers-common
+    sudo ubuntu-drivers devices
+    sudo ubuntu-drivers devices | sort
+    # For A5000?
+    sudo apt install nvidia-driver-570
+    # may need: sudo reboot now
+    # nvidia-smi
+    # KEY:
+    sudo apt install nvidia-container-toolkit
+    # Will need: (?)
+    #       sudo reboot now
+
+    # Test / verify:
+
+    # test the "--gpus all"
+    docker run --rm --gpus all nvcr.io/nvidia/cuda nvidia-smi
+
+    # Should be non-empty:
+    dpkg -l | grep -i nvidia-docker
+
+}
 
 
 # CUDA, Ubuntu 22.04, x86_64
@@ -111,6 +143,7 @@ docker info | grep -i runtime
     # docker: Error response from daemon: could not select device driver "" with capabilities: [[gpu]].
     # GPT: The following drivers are available: nvidia, nvidia-container-runtime.
 }
+
 
 DCITAG="25.01-py3"
 DCINAME="nvcr.io/nvidia/pytorch"
