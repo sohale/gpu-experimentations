@@ -9,7 +9,7 @@
 
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
-#define M 256 // Number of input vectors in a batch
+#define M 25600 // Number of input vectors in a batch
 // #define N 1024 // Matrix dimension (adjust as needed)
 
 // stores
@@ -88,6 +88,7 @@ int main() {
   int Nrep = 10;   // Number of kernel executions per measurement
   int Ntrials = 5; // Number of repeated measurements per N
 
+  std::cout << "This may take a while, please wait..." << std::endl;
   runProfiling(N_k, Nrep, Ntrials);
 
   std::cout << "Profiling completed." << std::endl;
