@@ -1,5 +1,11 @@
-
-
+# Overview:
+#
+# * A Machine
+# * Three scripts:
+#     * A `provisioner "local-exec"` script (small)
+#     * A `my-startup-script-1`
+#     * A script: `copy_github_cli_pat`
+# * A network (externally defined, refernced here. Manually created on P.S. gui. Only referred here.)
 
 data "paperspace_template" "nvidia-cuda-vm-machine-species-template" {
   // A psecifi species of machine !

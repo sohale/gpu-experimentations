@@ -89,6 +89,10 @@ function upload_scripts2 {
     # move local_manual__setup_at_creation.bash to here:
     echo "v0.0.5 : manually-triggred (button/script)"
     # nash "manually triggred"
+    # todo: declare reqruirements (dependencies)
+    # todo: ndcrystal-ize the names:
+    #    send_github_secret --> upload2remote_github_secret
+    #    upload_scripts2 --> upload2remote_scripts or upload2remote_remotescripts
 
     # for ssh and scp commands, respectively
     set -u ; echo "$REMOTE_HOME_ABS_DIR, $REMOTE_SSH_ADDR, $REMOTE_SCP_REF" > /dev/null  # assert env $REMOTE_HOME_ABS_DIR is set.
@@ -265,18 +269,37 @@ send_github_secret
 
 
 # This si after upload, but are doign already things. (Note: tehis file name needs ot be changed)
+# aha, I think the reason I put it here, is to establish the fact that there is DAG-dependency to the upload?
+#   no, not even dependency! but flows well when you read it as a human!
+#   or, makes you not forget it.
+#   or, in this case, I originally wanted to "tree" so make sure the uploaded scripts are organised in a nice way and show that to the user/debugger/developer.
+#       then, I realised that I shall install a few things. (but I could have done that in the inception_script_manual.bash? this is a different line of executions)
+#
+#  lines of executiaon:
+#     * up-* [subcommand] s  (manual, but triggered from the local machine;
+#               unlike the inception_script_manual that is run on the remote side, initiated there.
+#                  why? oh,
+#                     I can initiate them from the local too, but, the reason I moved is,
+#                         those "schism" culplrits:  points; defer gaps: "manual/interactive/cmdl/cli/shell gaps/defer s: defer to user (affordances-repertoire)"
+#     * manual from remote
+#     * in the chain of execution-threads of ...
+#            (BTW, here, I don't meant htreads in multithread: their parallelism, but like exec: their serial ! like textile threads! )
+#       in the chain of execution-threads of : main.tf
 remote_command_via_ssh "sudo apt update -y"
 remote_command_via_ssh "sudo apt install -y tree"
 remote_command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
 remote_command_via_ssh "sudo apt install -y docker docker.io"
 
+# uninstalling and re=intalling afrehs, nvidia drivers
  ssh $SSH_CLI_OPTIONS \
     "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
     " : && \
-    rm cuda-keyring_1.1-1_all.deb  && \
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb  && \
+    ls -alth && \
     sudo dpkg -i cuda-keyring_1.1-1_all.deb  && \
-    sudo apt-get update -y
+    rm cuda-keyring_1.1-1_all.deb  && \
+    sudo apt-get update -y && \
+    { sudo apt remove -y nvidia-driver-535 && sudo apt autoremove -y || echo "failed: $?" ; } && \
     sudo apt install -y ubuntu-drivers-common nvidia-driver-570 nvidia-container-toolkit && \
     :
     "
