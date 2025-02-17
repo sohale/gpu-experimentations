@@ -4,18 +4,26 @@
 #include <chrono>
 
 class Profiler {
+private:
+  class StartedTimer {
+  public:
+    // a wrapper around:
+    std::chrono::high_resolution_clock::time_point started_timepoint;
+    StartedTimer(
+        std::chrono::high_resolution_clock::time_point started_timepoint)
+        : started_timepoint{started_timepoint} {}
+
+    // Using my "state chain" pattern:
+    // gives a state-machine feel to it, when we add the stop her,
+    // as opposed to stop() being directly in the Profiler class.
+    double stop();
+  };
+
 public:
-  auto start() {
+  StartedTimer start() {
     // Also, by its type, implies a "started" state.
     auto started_timepoint = std::chrono::high_resolution_clock::now();
-    return started_timepoint;
-  }
-
-  auto stop(std::chrono::high_resolution_clock::time_point started_timepoint) {
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - started_timepoint;
-    return elapsed.count();
-    ;
+    return Profiler::StartedTimer{started_timepoint};
   }
 
   static void _example_usage() {
@@ -39,5 +47,11 @@ public:
     double elapsed = s.stop();
   }
 };
+
+double Profiler::StartedTimer::stop() {
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end - started_timepoint;
+  return elapsed.count();
+}
 
 #endif // PROFILER_H
