@@ -9,7 +9,7 @@
 
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
-#define M 256  // Number of input vectors in a batch
+#define M 256 // Number of input vectors in a batch
 // #define N 1024 // Matrix dimension (adjust as needed)
 
 // stores
@@ -17,7 +17,6 @@ InMemoryStructuredReporter reporter;
 
 // measures time
 Profiler profiler;
-
 
 void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
                   float *h_Y, int N, int Nrep, int t) {

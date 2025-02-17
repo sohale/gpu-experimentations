@@ -6,7 +6,6 @@ Notes:
     batch (ML lingo) = block of stream (CE lingo)
 */
 
-
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n,
                                     int m) {
   int row = blockIdx.y * blockDim.y + threadIdx.y;
