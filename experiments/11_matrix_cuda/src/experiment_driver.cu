@@ -1,22 +1,27 @@
-#include <chrono>
+#include "profilers.h"
+
+#include "runtime_profiling_reporter.h"
+
 #include <cstdlib>
 #include <cuda_runtime.h>
 #include <iostream>
 #include <vector>
-#include "runtime_profiling_reporter.h"
 
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
 #define M 256  // Number of input vectors in a batch
 // #define N 1024 // Matrix dimension (adjust as needed)
 
-
-
+// stores
 InMemoryStructuredReporter reporter;
+
+// measures time
+Profiler profiler;
+
 
 void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
                   float *h_Y, int N, int Nrep, int t) {
-  auto start = std::chrono::high_resolution_clock::now();
+  auto s = profiler.start();
 
   // Copy data from host to device
   cudaMemcpy(d_W, h_W, N * N * sizeof(float), cudaMemcpyHostToDevice);
@@ -35,12 +40,11 @@ void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
   // Copy result back to host
   cudaMemcpy(h_Y, d_Y, N * M * sizeof(float), cudaMemcpyDeviceToHost);
 
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed = end - start;
+  double elapsed = s.stop();
 
   // reporter.report_measurement(N, Nrep, t, elapsed.count() );
   reporter.report_measurement(
-      InMemoryStructuredReporter::ProfilingEntry{N, Nrep, t, elapsed.count()});
+      InMemoryStructuredReporter::ProfilingEntry{N, Nrep, t, elapsed});
 }
 
 void runExperiment(int N, int Nrep, int Ntrials) {
