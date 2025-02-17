@@ -12,7 +12,7 @@ __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
 
 
-InMemoryStringBufferReporter reporter;
+InMemoryStructuredReporter reporter;
 
 void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
                   float *h_Y, int N, int Nrep, int t) {
@@ -37,11 +37,11 @@ void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
 
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end - start;
-  std::cout << "N: " << N << " Trial: " << t << " Time: " << elapsed.count()
-            << "s" << std::endl;
-  reporter.report_measurement(N, Nrep, t, elapsed.count() );
-}
 
+  // reporter.report_measurement(N, Nrep, t, elapsed.count() );
+  reporter.report_measurement(
+      InMemoryStructuredReporter::ProfilingEntry{N, Nrep, t, elapsed.count()});
+}
 
 void runExperiment(int N, int Nrep, int Ntrials) {
   // Allocate memory on host
