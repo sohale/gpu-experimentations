@@ -13,10 +13,17 @@ set -eux
 
 # nvcc -o matrix_mult main.cpp matrix_kernel.cu
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+EXPERDIR=$(realpath "$SCRIPT_DIR/..")
+
+SRC=$(realpath "$EXPERDIR/./src")
+BUILD=$(realpath "$EXPERDIR/./build")
+cd "$SRC"
+
 nvcc  \
     -arch=sm_86 \
     -x cu \
-    -o matrix_mult \
+    -o $BUILD/matrix_mult \
     driver.cpp naive_mat.cu
 
 # use `-x cu` \ to tell nvcc that the file is a cuda file
