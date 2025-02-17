@@ -138,7 +138,8 @@ resource "paperspace_machine" "my-gpu-machine-1" {
 
 
   script_id                 = paperspace_script.my-startup-script-1.id
-  shutdown_timeout_in_hours = 1
+  # no use in this: It will be still charging.
+  shutdown_timeout_in_hours = 5
   # live_forever = true # enable this to make the machine have no shutdown timeout
 
   # cannot be set:

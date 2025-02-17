@@ -291,13 +291,19 @@ remote_command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
 remote_command_via_ssh "sudo apt install -y docker docker.io"
 
 # uninstalling and re=intalling afrehs, nvidia drivers
+# why sometimes, after the wget:
+#   bash: line 1: 47913 Segmentation fault      (core dumped)
  ssh $SSH_CLI_OPTIONS \
     "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-    " : && \
-    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb  && \
-    ls -alth && \
-    sudo dpkg -i cuda-keyring_1.1-1_all.deb  && \
-    rm cuda-keyring_1.1-1_all.deb  && \
+    "
+    set -eux;
+    ls -alth ;
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb  ;
+    ls -alth ;
+    ls -alth cuda-keyring_1.1-1_all.deb ;
+    echo 'about to dpkg' ;
+    sudo dpkg -i cuda-keyring_1.1-1_all.deb  ;
+    rm cuda-keyring_1.1-1_al*.deb  && \
     sudo apt-get update -y && \
     { sudo apt remove -y nvidia-driver-535 && sudo apt autoremove -y || echo "failed: $?" ; } && \
     sudo apt install -y ubuntu-drivers-common nvidia-driver-570 nvidia-container-toolkit && \

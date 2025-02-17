@@ -196,6 +196,7 @@ function solution5_ssh {
 
     # returns the status of the remote command, otherwise, 255.
     # So, as long as the exit code is not 255, it is OK (accept "1" only)
+    echo "yes" | \
     ssh -T git@github.com  || [ $? -eq 1 ]
 
 

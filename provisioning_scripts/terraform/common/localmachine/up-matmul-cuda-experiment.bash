@@ -24,6 +24,99 @@ echo "$REPO_ROOT $EXPERIMENT_DIR $TF_BASEDIR $RUNTIME $EXPERIMENT_TFVARS $TF_MAI
 _THIS_SCRIP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 FROMLOCAL_SCRUPTS="$_THIS_SCRIP_DIR"
 
+
+
+################################################################################
+
+
+
+# Not used:
+function local_names_shell_env {
+    # for local shell (interactive)
+    # todo: source this, somehow
+    # history: shell_env, local_names_shell_env
+    export UP="$(pwd)/common/localmachine/up-matmul-cuda-experiment.bash"
+    echo '$UP bash'
+    # etc
+    echo "WARNING. NOT IMPLEMTNTED"
+    return 1
+}
+
+function remote_names_env {
+    # for local scripts
+    # envs for filenames, foldr names, etc
+    # history: remote_names, remote_names_env
+
+    # inconsistency: non-crystal usage / dataflow
+    SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
+    PAPERSPACE_IP="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw public_ip_outcome)"
+    PAPERSPACE_USERNAME="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw username_outcome)"
+    export SSH_CLI_OPTIONS PAPERSPACE_IP PAPERSPACE_USERNAME
+    echo "::: $SSH_CLI_OPTIONS $PAPERSPACE_IP $PAPERSPACE_USERNAME" > /dev/null
+
+}
+function remote_folders_env {
+
+    remote_names_env
+
+    #export REPO_ROOT="$HOME/gpu-experimentations"
+    #export EXPERIMENT_DIR="$REPO_ROOT/experiments/11_matrix_cuda"
+    #SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
+    #PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
+    #PAPERSPACE_USERNAME="$(terraform output -raw username_outcome)"
+    # REMOTE_USER="$PAPERSPACE_USERNAME"
+    # REMOTE_HOST="$PAPERSPACE_IP"
+
+    # EXPERIMENT_DIR, WDIR
+    # WDIR="$(pwd)"
+    # _CWD="$(pwd)"
+    # WDIR="${_CWD/#$HOME/~}"
+    # CLONEBASE, REMOTE_BASEDIR, REMOTE_REPOROOT
+    LOCAL_REPO_ROOT="$REPO_ROOT"
+    # REMOTE_REPOROOT="$REPO_ROOT"
+    # REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
+    # export REMOTE_REPOBASE="/home/$PAPERSPACE_USERNAME/workspace"
+    export REMOTE_HOME="/home/$PAPERSPACE_USERNAME"
+    export WDIR="$REMOTE_HOME/workspace"
+    export REMOTE_REPOBASE="$REMOTE_HOME/workspace"  # delay/defer/lazy evaluation
+    echo "$REMOTE_REPOBASE"
+    export REMOTE_REPOROOT="$REMOTE_REPOBASE/$(basename $LOCAL_REPO_ROOT)"
+
+}
+
+function verify_appended_remote_bashrc {
+
+    remote_names_env
+    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        "bash -c 'cat ~/.bashrc | grep my-tf-sctipts-are-appended'"
+}
+
+function setup_remote_basic_structures {
+    remote_folders_env
+    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT $REMOTE_REPOBASE"  > /dev/null
+
+
+
+    ssh $SSH_CLI_OPTIONS \
+        "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+        bash -c "
+            set -x ;
+            source $REMOTE_HOME/scripts-sosi/scripts_to_push/dot_bashrc.bash ;
+            set -eux ;
+            echo 'hi(A)::setup_remote_basic_structures' &&\
+            sudo mkdir -p \"$REMOTE_REPOBASE\" &&\
+            sudo chown -R \"\$USER:\$USER\" \"$REMOTE_REPOBASE\" &&\
+            cd \"$REMOTE_REPOBASE\" &&\
+            mkdir -p \"$WDIR\" &&\
+            cd \"$WDIR\" &&\
+            pwd &&\
+            ls -alth &&\
+            :
+        "
+}
+
+################################################################
+
 # terraform plan ... -target=resource
 
 mkdir -p "$EXPERIMENT_TFVARS"
@@ -61,7 +154,7 @@ test -f "$TF_SECRETS_VARFILE"
 test -f "$TF_PROJ_VARFILE"
 test -d "$EXPERIMENT_TFVARS"
 
-
+############################################################
 
 # how to read: "subcommand prefix"
 _scprefix="________subcommand___"
@@ -404,38 +497,6 @@ EOF_STARTUP_DIRECT
 }
 
 
-# Not used:
-function local_names_shell_env {
-    # for local shell (interactive)
-    # todo: source this, somehow
-    # history: shell_env, local_names_shell_env
-    export UP="$(pwd)/common/localmachine/up-matmul-cuda-experiment.bash"
-    echo '$UP bash'
-    # etc
-    echo "WARNING. NOT IMPLEMTNTED"
-    return 1
-}
-
-function remote_names_env {
-    # for local scripts
-    # envs for filenames, foldr names, etc
-    # history: remote_names, remote_names_env
-
-    # inconsistency: non-crystal usage / dataflow
-    SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
-    PAPERSPACE_IP="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw public_ip_outcome)"
-    PAPERSPACE_USERNAME="$(cd "$TF_MAIN_TF_DIR" ; terraform output -raw username_outcome)"
-    export SSH_CLI_OPTIONS PAPERSPACE_IP PAPERSPACE_USERNAME
-    echo "::: $SSH_CLI_OPTIONS $PAPERSPACE_IP $PAPERSPACE_USERNAME" > /dev/null
-
-}
-
-function verify_appended_remote_bashrc {
-
-    remote_names_env
-    ssh $SSH_CLI_OPTIONS  "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
-        "bash -c 'cat ~/.bashrc | grep my-tf-sctipts-are-appended'"
-}
 
 
 function ssh_go_into_shell {
@@ -541,6 +602,10 @@ function ________subcommand___show_outputs {
 
     append_remote_bashrc
 
+
+    setup_remote_basic_structures
+
+    # requirement: append_remote_bashrc
     ssh_go_into_shell
 
     echo "_____________"
@@ -602,6 +667,7 @@ function ________subcommand___tfapply {
         -var-file="$TF_SECRETS_VARFILE" \
         # -out "$TF_DIFF_OUT_FILE" \
 
+    echo "Now, you need to manually run some scripts: '$UP show_outputs'. then inside there, 'bash ... manual.bash' exit. run again. inside: run (nvidia). restart. and then, '$UP bash'"
     return 0
     # Done. Now capture the output
     # _capture_outputs
@@ -656,42 +722,18 @@ function ________subcommand___ssh_into {
  }
 
 
-
-
 function ________subcommand___rsync2 {
     echo "rsync both ways"
 
     remote_names_env
 
-    #export REPO_ROOT="$HOME/gpu-experimentations"
-    #export EXPERIMENT_DIR="$REPO_ROOT/experiments/11_matrix_cuda"
-    #SSH_CLI_OPTIONS='-i ~/.ssh/paperspace_sosi_fromlinux'
-    #PAPERSPACE_IP="$(terraform output -raw public_ip_outcome)"
-    #PAPERSPACE_USERNAME="$(terraform output -raw username_outcome)"
-    # REMOTE_USER="$PAPERSPACE_USERNAME"
-    # REMOTE_HOST="$PAPERSPACE_IP"
-
-    # EXPERIMENT_DIR, WDIR
-    # WDIR="$(pwd)"
-    _CWD="$(pwd)"
-    WDIR="${_CWD/#$HOME/~}"
-    # CLONEBASE, REMOTE_BASEDIR, REMOTE_REPOROOT
-    LOCAL_REPO_ROOT="$REPO_ROOT"
-    # REMOTE_REPOROOT="$REPO_ROOT"
-    # REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
-    # export REMOTE_REPOBASE="/home/$PAPERSPACE_USERNAME/workspace"
-    export REMOTE_HOME="/home/$PAPERSPACE_USERNAME"
-    export REMOTE_REPOBASE="$REMOTE_HOME/workspace"  # delay/defer/lazy evaluation
-    echo "$REMOTE_REPOBASE"
-    export REMOTE_REPOROOT="$REMOTE_REPOBASE/$(basename $LOCAL_REPO_ROOT)"
-    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT $REMOTE_REPOBASE"  > /dev/null
 
     : || {
     # set -xue
     set +x
     echo
 
-    scrupt="set -eux; echo 'hi' ; sudo mkdir -p \"$REMOTE_REPOROOT\" && cd \"$REMOTE_REPOROOT\" && git clone git@github.com:sohale/gpu-experimentations.git \"$REMOTE_REPOROOT/..\" && mkdir -p \"$WDIR\"; cd \"$WDIR\"; pwd; ls -alth "
+    scrupt="... "
     echo $scrupt
     exit 1
 
@@ -706,6 +748,10 @@ function ________subcommand___rsync2 {
     #    *    source ~/.bashrc
     # anser: source dot_bashrc.bash
 
+    setup_remote_basic_structures
+
+    remote_folders_env
+    echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT $REMOTE_REPOBASE"  > /dev/null
 
     export GITCLONE_SSHURL="git@github.com:sohale/gpu-experimentations.git"
 
@@ -715,7 +761,7 @@ function ________subcommand___rsync2 {
             set -x &&\
             source $REMOTE_HOME/scripts-sosi/scripts_to_push/dot_bashrc.bash  &&\
             set -eux &&\
-            echo 'hi' &&\
+            echo 'hi::rsync2' &&\
             sudo mkdir -p \"$REMOTE_REPOBASE\" &&\
             sudo chown -R \"\$USER:\$USER\" \"$REMOTE_REPOBASE\" &&\
             cd \"$REMOTE_REPOBASE\" &&\

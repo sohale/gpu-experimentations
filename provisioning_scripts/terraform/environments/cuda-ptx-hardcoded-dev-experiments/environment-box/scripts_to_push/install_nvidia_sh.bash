@@ -190,3 +190,27 @@ docker run \
         --env PS1='\[\033[01;33m\]🐳➫  𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]' \
         \
         "$DCINAME:$DCITAG"
+
+        # Mixes session with the whole computer! The session overrides the PS1
+        # Can you runit, and then, "code" into it?
+
+# # instrucitons: Three computers:
+# 1. within docker:
+# curl -fsSL https://code-server.dev/install.sh | sh
+#  # code-server
+# # sudo systemctl enable --now code-server@$USER
+
+#   above inside th docker
+#   ssh paperspace@74.82.28.88 in the macos client
+#   local: Remote-Containers: Attach to Running Container
+
+
+# local is not a good name for TF. TRue local may be another computer.
+
+# on host:
+# Name: Dev Containers
+# Id: ms-vscode-remote.remote-containers
+# Description: Open any folder or repository inside a Docker container and take advantage of Visual Studio Code's full feature set.
+# Version: 0.397.0
+# Publisher: Microsoft
+# VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
