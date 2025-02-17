@@ -12,7 +12,7 @@ __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
 
 
-Reporter reporter;
+InMemoryStringBufferReporter reporter;
 
 void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
                   float *h_Y, int N, int Nrep, int t) {

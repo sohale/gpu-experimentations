@@ -7,8 +7,13 @@
 // cuda_results.csv runtime_results.csv
 
 #include <fstream>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
+// Directly into the file. Not in-memory.
+// Direct file-based logging
+// class FileReporter
 class Reporter {
 public:
   Reporter() { report_begin(); }
@@ -35,6 +40,36 @@ private:
   void end_report() {
     outfile->close();
     outfile = nullptr;
+  }
+};
+
+// In-memory logging, MemoryReporter, InMemoryStringStreamReporter,
+// InMemoryStringBufferReporter
+class InMemoryStringBufferReporter {
+
+public:
+  InMemoryStringBufferReporter() { report_begin(); }
+  ~InMemoryStringBufferReporter() { save_to_file(); }
+
+  void report_measurement(int N, int Nrep, int trial, double dtime) {
+    mbuffer << N << "," << Nrep << "," << trial << "," << dtime << "\n";
+  }
+
+private:
+  std::ostringstream mbuffer{};
+  std::string get_report() const { return mbuffer.str(); }
+
+  void save_to_file(const std::string &filename = "runtime_results.csv") {
+    std::ofstream file(filename);
+    if (file.is_open()) {
+      file << mbuffer.str();
+      file.close();
+    }
+  }
+
+  void report_begin() {
+    mbuffer << "# CUDA Profiling Results\n";
+    mbuffer << "N,Nrep,Trial,Time\n";
   }
 };
 
