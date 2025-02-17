@@ -145,9 +145,19 @@ function install_nvidia_docker
 }
 
 
+# Some cli arg are because of the following warning:
+#   " NOTE: The SHMEM allocation limit is set to the default of 64MB.  This may be
+#   "    insufficient for PyTorch.  NVIDIA recommends the use of the following flags:
+#   "    docker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 ...
+
+
+# note: v3
+
+
 DCITAG="25.01-py3"
 DCINAME="nvcr.io/nvidia/pytorch"
-DCHOME="/home/mine"
+# DCHOME="/home/ubuntu"   # The username for NGC (nvidia/pytorch).
+DCHOME="/root"
 
 docker --version
 docker pull "$DCNAME:$TAG"
@@ -155,8 +165,12 @@ docker pull "$DCNAME:$TAG"
 docker run \
         --gpus all \
         -it --rm \
+        \
+        --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
+        \
         --volume "$HOME/oggi":"$DCHOME/oggi"\
         --volume "$HOME/scripts-sosi:$DCHOME/scripts-sosi"\
         --volume "$HOME/secrets":"$DCHOME/secrets"\
         --volume "$HOME/work":"$DCHOME/work"\
+        \
         "$DCINAME:$DCITAG"

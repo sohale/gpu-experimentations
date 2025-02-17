@@ -130,6 +130,7 @@ function upload_scripts2 {
     #    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP":"$SCRIPTS2PUSH_DIR_REMOTE/"
 
     AvoidNestedCopying="/"  # for rsync
+    # fixme: push updated even if exists:        --ignore-existing \
     rsync \
          -e "ssh $SSH_CLI_OPTIONS" \
         -avz \

@@ -153,7 +153,9 @@ EOF
     set +x # echo off
     echo "You need to do this manually: ✋nual exports: You need to do this manually in interactive (shell/bash terminal mode) on remote machine: (which in tuen may have more manual steps)
 
+
 ✋      source /home/paperspace/scripts-sosi/refresh_ssh_agent.env
+✋      bash ~/scripts-sosi/scripts_to_push/install_nvidia_sh.bash
 ✋      docker run -it --rm -v $R:$R -w $R/ nvcr.io/nvidia/pytorch:22.02-py3
 
 or:
