@@ -3,6 +3,35 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
+"""
+interactive:
+
+
+matplotlib.use('TkAgg')
+sudo apt-get install python3-tk   # Ubuntu
+# brew install python-tk            # macOS
+python3 -c "import tkinter; print('Tkinter is installed')"
+
+
+or interactive using QT:
+
+pip install PyQt5
+matplotlib.use('Qt5Agg')
+
+
+Handy:
+# for `display`:
+sudo apt install imagemagick-6.q16hdri
+display --version
+
+"""
+
+import matplotlib
+# deafult: non interactive
+matplotlib.use('Qt5Agg')
+# matplotlib.use('TkAgg')  # even slower
+
 # Load results, skipping comment lines
 df = pd.read_csv("runtime_results.csv", comment='#')
 
