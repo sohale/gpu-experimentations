@@ -9,6 +9,12 @@ bash provisioning_scripts/terraform/common/localmachine/up-matmul-cuda-experimen
 # echo "which in turn"
 # find provisioning_scripts/terraform/environments/cuda-ptx-hardcoded-dev-experiments/environment-box/local_manual__setup_at_creation.bash
 
+# prepare the python virtual environment:
+#    sudo apt install python3.10-venv
+#    python3 -m venv venv_dir
+#    source ./venv_dir/bin/activate
+#    pip install pandas matplotlib
+
 set -eux
 
 # nvcc -o matrix_mult main.cpp matrix_kernel.cu

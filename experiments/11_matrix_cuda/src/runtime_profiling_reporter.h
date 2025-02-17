@@ -21,8 +21,8 @@ private:
   void report_begin() {
     outfile = std::make_unique<std::ofstream>("runtime_results.csv");
     *outfile << "# CUDA Profiling Results\n";
-    // CSV header:
-    *outfile << "N, Nrep, Trial, Time(s)\n";
+    // CSV header: avoid blank spaces
+    *outfile << "N,Nrep,Trial,Time\n";
   }
 
 public:
