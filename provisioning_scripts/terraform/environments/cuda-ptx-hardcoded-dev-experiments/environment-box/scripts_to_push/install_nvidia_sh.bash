@@ -74,9 +74,10 @@ function install_nvidia_docker
    # sudo apt update && sudo apt install -y nvidia-docker2
    # sudo systemctl restart docker
 
+   # todo: add (move) to the current apt-based installations script
 
-    mkdir -p ~/work
-    cd ~/work
+    mkdir -p ~/workspace
+    cd ~/workspace
     # Enables "nvidia-driver-570"
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
     sudo dpkg -i cuda-keyring_1.1-1_all.deb
@@ -158,9 +159,16 @@ DCITAG="25.01-py3"
 DCINAME="nvcr.io/nvidia/pytorch"
 # DCHOME="/home/ubuntu"   # The username for NGC (nvidia/pytorch).
 DCHOME="/root"
+DCWORKSPACE="/workspace"
 
 docker --version
 docker pull "$DCNAME:$TAG"
+
+#         --volume "$HOME/oggi":"$DCWORKSPACE/oggi"\
+# -e PS1="\u@\h:\w\$ "
+
+
+
 
 docker run \
         --gpus all \
@@ -168,9 +176,11 @@ docker run \
         \
         --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
         \
-        --volume "$HOME/oggi":"$DCHOME/oggi"\
         --volume "$HOME/scripts-sosi:$DCHOME/scripts-sosi"\
         --volume "$HOME/secrets":"$DCHOME/secrets"\
-        --volume "$HOME/work":"$DCHOME/work"\
+        --volume "$HOME/workspace":"$DCWORKSPACE"\
+        \
+        --env PROMPT_COMMAND='{ __exit_code=$?; if [[ $__exit_code -ne 0 ]]; then _ps1_my_error="${__exit_code} 🔴"; else _ps1_my_error=""; fi; }' \
+        --env PS1='\[\033[01;33m\]🐳➫  𝗚𝗣𝗨 \[\033[00;34m\]container:@\h \[\033[01;34m\]\w\[\033[00m\]\n➫ \[\033[01;32m\]$(whoami)\[\033[00m\]  \[\033[00;31m\]${_ps1_my_error}\[\033[01;32m\] \$ \[\033[00m\]' \
         \
         "$DCINAME:$DCITAG"

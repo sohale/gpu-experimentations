@@ -537,6 +537,7 @@ function ________subcommand___show_outputs {
     # export -f scp_file
     # upload_scripts
     bash "$FROMLOCAL_SCRUPTS/upload_scripts_to_there.bash"
+    # ^ also installs? (they should be seaprated. small code-block scripts?)
 
     append_remote_bashrc
 
@@ -678,9 +679,9 @@ function ________subcommand___rsync2 {
     LOCAL_REPO_ROOT="$REPO_ROOT"
     # REMOTE_REPOROOT="$REPO_ROOT"
     # REMOTE_REPOROOT="${REPO_ROOT/#$HOME/~}"
-    # export REMOTE_REPOBASE="/home/$PAPERSPACE_USERNAME/work"
+    # export REMOTE_REPOBASE="/home/$PAPERSPACE_USERNAME/workspace"
     export REMOTE_HOME="/home/$PAPERSPACE_USERNAME"
-    export REMOTE_REPOBASE="$REMOTE_HOME/work"  # delay/defer/lazy evaluation
+    export REMOTE_REPOBASE="$REMOTE_HOME/workspace"  # delay/defer/lazy evaluation
     echo "$REMOTE_REPOBASE"
     export REMOTE_REPOROOT="$REMOTE_REPOBASE/$(basename $LOCAL_REPO_ROOT)"
     echo "assert $WDIR $LOCAL_REPO_ROOT $REMOTE_REPOROOT $REMOTE_REPOBASE"  > /dev/null

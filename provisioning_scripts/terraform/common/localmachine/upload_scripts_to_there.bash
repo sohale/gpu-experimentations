@@ -270,6 +270,24 @@ remote_command_via_ssh "sudo apt install -y tree"
 remote_command_via_ssh "tree $SCRIPTS_BASE_REMOTE"
 remote_command_via_ssh "sudo apt install -y docker docker.io"
 
+ ssh $SSH_CLI_OPTIONS \
+    "$PAPERSPACE_USERNAME@$PAPERSPACE_IP" \
+    "
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb  && \
+    sudo dpkg -i cuda-keyring_1.1-1_all.deb  && \
+    sudo apt-get update -y
+    sudo apt install ubuntu-drivers-common  && \
+    sudo apt install nvidia-driver-570 && \
+    sudo apt install nvidia-container-toolkit && \
+    :
+    "
+
+
+# other apt
+# * here (upload_scripts_to_there.bash)
+# * scripts_to_push/ghcli-install.bash
+# * scripts_to_push/install_nvidia_sh.bash
+
 ###########################
 # Sending a message to the user
 #
