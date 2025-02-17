@@ -25,3 +25,4 @@ nvcc  \
 
 echo "to run:"
 echo "./matrix_mult"
+ls -alth "./matrix_mult"

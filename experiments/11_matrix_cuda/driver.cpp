@@ -3,11 +3,16 @@
 #include <cuda_runtime.h>
 #include <iostream>
 #include <vector>
+#include "runtime_profiling_reporter.h"
 
 __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 
 #define M 256  // Number of input vectors in a batch
 // #define N 1024 // Matrix dimension (adjust as needed)
+
+
+
+Reporter reporter;
 
 void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
                   float *h_Y, int N, int Nrep, int t) {
@@ -34,7 +39,9 @@ void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
   std::chrono::duration<double> elapsed = end - start;
   std::cout << "N: " << N << " Trial: " << t << " Time: " << elapsed.count()
             << "s" << std::endl;
+  reporter.report_measurement(N, Nrep, t, elapsed.count() );
 }
+
 
 void runExperiment(int N, int Nrep, int Ntrials) {
   // Allocate memory on host
