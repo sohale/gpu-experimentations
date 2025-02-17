@@ -76,16 +76,18 @@ private:
 };
 
 class InMemoryStructuredReporter {
+// or: Recorder: InMemory Structured Recorder & reporter
 
 public:
   struct ProfilingEntry {
     int N;
+    int M;
     int Nrep;
     int trial;
     double dtime;
 
-    ProfilingEntry(int n, int nrep, int t, double time)
-        : N(n), Nrep(nrep), trial(t), dtime(time) {}
+    ProfilingEntry(int n, int m, int nrep, int t, double time)
+        : N(n), M(m), Nrep(nrep), trial(t), dtime(time) {}
   };
 
   InMemoryStructuredReporter(int hint_max_count = 8000) {
@@ -114,13 +116,14 @@ private:
     std::ofstream file(filename);
     if (file.is_open()) {
       file << "# CUDA Profiling Results\n";
-      file << "N,Nrep,Trial,Time\n";
+      file << "N,M,Nrep,Trial,Time\n";
       for (const auto &entry : report_entries) {
         const std::string SEP = ", ";
-        file << entry.N << SEP << entry.Nrep << SEP << entry.trial << SEP
-             << entry.dtime << "\n";
-        std::cout << "N: " << entry.N << " Trial: " << entry.trial
-                  << " Time: " << entry.dtime << "s" << std::endl;
+        file << entry.N << SEP << entry.M << SEP << entry.Nrep << SEP
+             << entry.trial << SEP << entry.dtime << "\n";
+        std::cout << "N: " << entry.N << " M: " << entry.M
+                  << " Trial: " << entry.trial << " Time: " << entry.dtime
+                  << "s" << std::endl;
       }
       file.close();
       std::cout << "Profiling results saved." << std::endl;

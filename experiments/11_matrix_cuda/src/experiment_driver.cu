@@ -43,7 +43,7 @@ void executeTrial(float *d_W, float *d_X, float *d_Y, float *h_W, float *h_X,
 
   // reporter.report_measurement(N, Nrep, t, elapsed.count() );
   reporter.report_measurement(
-      InMemoryStructuredReporter::ProfilingEntry{N, Nrep, t, elapsed});
+      InMemoryStructuredReporter::ProfilingEntry{N, M, Nrep, t, elapsed});
 }
 
 void runExperiment(int N, int Nrep, int Ntrials) {
@@ -85,8 +85,13 @@ void runProfiling(std::vector<int> N_k, int Nrep, int Ntrials) {
 
 int main() {
   std::vector<int> N_k = {256, 512, 1024, 2048}; // Example sequence of N values
-  int Nrep = 10;   // Number of kernel executions per measurement
-  int Ntrials = 5; // Number of repeated measurements per N
+  int Nrep = 10;   // Number of kernel executions per measurement (once data is transferred into (device) GPU global memory)
+  // this is separated, to separate the time taken to transfer data between CPU memory & GPU global memory,
+  // with the time taken to execute the kernel.
+  int Ntrials = 5; // Number of repeated measurements per N (includes transfer time)
+  // M: batch size (one trnsaciton, whole calculation.).
+  // Matrix A is of size N x N,
+  // matrix B is of size N x M.
 
   std::cout << "This may take a while, please wait..." << std::endl;
   runProfiling(N_k, Nrep, Ntrials);
