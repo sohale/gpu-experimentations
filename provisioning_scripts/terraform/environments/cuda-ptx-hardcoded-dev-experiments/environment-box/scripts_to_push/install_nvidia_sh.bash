@@ -94,6 +94,9 @@ function install_nvidia_docker
     # Will need: (?)
     #       sudo reboot now
 
+    # sudo apt-get -y install cuda-toolkit-12-8
+    # sudo systemctl restart docker
+
     # Test / verify:
 
     # test the "--gpus all"
@@ -108,10 +111,12 @@ function install_nvidia_docker
 # CUDA, Ubuntu 22.04, x86_64
 # see: https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
 
+
 : ||{
     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
     sudo dpkg -i cuda-keyring_1.1-1_all.deb
     sudo apt-get update
+    # no, see above instead:
     sudo apt-get -y install cuda-toolkit-12-8
             # ^ Many interesting things ...
             # cuda-opencl
@@ -124,7 +129,7 @@ function install_nvidia_docker
             # cuda-cupti
             # cuda-nsight-compute
             # ...
-
+    # maybe: sudo apt install nvidia-cuda-toolkit
 
     # sudo apt-get install -y nvidia-open
 }
@@ -167,6 +172,7 @@ docker pull "$DCNAME:$TAG"
 #         --volume "$HOME/oggi":"$DCWORKSPACE/oggi"\
 # -e PS1="\u@\h:\w\$ "
 
+# maybe: sudo apt install nvidia-cuda-toolkit
 
 
 
