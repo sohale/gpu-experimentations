@@ -15,6 +15,7 @@ __global__ void matrixMultiplyNaive(float *W, float *X, float *Y, int n, int m);
 #define M 2560 // Number of input vectors in a batch
 // #define N 1024 // Matrix dimension (adjust as needed)
 
+/*
 struct ProfilingEntryFormatter {
   // std::string
   // operator()(const InMemoryStructuredReporter::ProfilingEntry &e) const {
@@ -26,6 +27,7 @@ struct ProfilingEntryFormatter {
     return os.str();
   }
 };
+*/
 
 /*
 // InMemoryStructuredReporter::ProfilingEntry
@@ -42,16 +44,18 @@ struct ProfilingEntryFormatter {
 };
 */
 
-/*
-template<class Entry>
-string describer_lambda(Entry e) {
-     // InMemoryStructuredReporter::ProfilingEntry
-    std::ostringstream os{};
-    os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e.M << ", x"
-       << e.Nrep << ", trial: " << e.t;
-    return os.str();
-  }
-*/
+template <class Entry> string describer_lambda(Entry e) {
+  // InMemoryStructuredReporter::ProfilingEntry
+
+  std::ostringstream os{};
+  os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e._M << ", x"
+     << e.Nrep; // << ", trial: " << e.trial;
+  return os.str();
+}
+// problem:
+// experiment_driver.cu(66): error: function template "describer_lambda" is not
+// a type name InMemoryStructuredReporter<describer_lambda<ProfilingEntry>>
+// reporter;
 
 // stores
 // InMemoryStructuredReporter<describer_lambda> reporter;
@@ -61,7 +65,8 @@ string describer_lambda(Entry e) {
 // InMemoryStructuredReporter<ProfilingEntryFormatter<InMemoryStructuredReporter::ProfilingEntry>>
 // reporter;
 
-InMemoryStructuredReporter<ProfilingEntryFormatter> reporter;
+// InMemoryStructuredReporter<ProfilingEntryFormatter> reporter;
+InMemoryStructuredReporter<describer_lambda<ProfilingEntry>> reporter;
 
 // measures time
 Profiler profiler;

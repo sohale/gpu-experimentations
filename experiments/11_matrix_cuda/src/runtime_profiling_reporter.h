@@ -133,11 +133,15 @@ private:
 
         // ProfilingEntryFormatter formatter;
         // formatter(entry)DescriberFunc(entry)
-        DescriberFunc formatter;
+        // DescriberFunc formatter;
+        // auto vv = formatter(entry);
+
+        // describer_lambda
+        auto vv = DescriberFunc(entry);
 
         std::cout << "N: " << entry.N << " M: " << entry._M
                   << " Trial: " << entry.trial << " Time: " << entry.dtime
-                  << "s  " << formatter(entry) << std::endl;
+                  << "s  " << vv << std::endl;
       }
       file.close();
       std::cout << "Profiling results saved." << std::endl;
