@@ -33,7 +33,7 @@ private:
   }
 
 public:
-  void report_measurement(int N, int Nrep, int trial, double dtime) {
+  void record_measurement(int N, int Nrep, int trial, double dtime) {
     std::string SEP = ", ";
     *outfile << N << SEP << Nrep << SEP << trial << SEP << dtime << "\n";
   }
@@ -53,7 +53,7 @@ public:
   InMemoryStringBufferReporter() { report_begin(); }
   ~InMemoryStringBufferReporter() { save_to_file(); }
 
-  void report_measurement(int N, int Nrep, int trial, double dtime) {
+  void record_measurement(int N, int Nrep, int trial, double dtime) {
     mbuffer << N << "," << Nrep << "," << trial << "," << dtime << "\n";
   }
 
@@ -75,34 +75,40 @@ private:
   }
 };
 
-class InMemoryStructuredReporter {
-// or: Recorder: InMemory Structured Recorder & reporter
+struct ProfilingEntry {
+  int N;
+  int _M;
+  int Nrep;
+  int trial;
+  double dtime;
+
+  ProfilingEntry(int n, int m, int nrep, int trial_, double time)
+      : N(n), _M(m), Nrep(nrep), trial(trial_), dtime(time) {}
+};
+
+// DescriberFunc === Formatter
+// template <typename DescriberFunc>
+template <typename DescriberFunc> class InMemoryStructuredReporter {
+  // or: Recorder: InMemory Structured Recorder & reporter
 
 public:
-  struct ProfilingEntry {
-    int N;
-    int M;
-    int Nrep;
-    int trial;
-    double dtime;
-
-    ProfilingEntry(int n, int m, int nrep, int t, double time)
-        : N(n), M(m), Nrep(nrep), trial(t), dtime(time) {}
-  };
-
   InMemoryStructuredReporter(int hint_max_count = 8000) {
-
+    ready_to_die = false;
     report_begin(hint_max_count);
   }
-  ~InMemoryStructuredReporter() { save_to_file(); }
+  ~InMemoryStructuredReporter() {
+    report_and_save_to_file();
+    // assert(this->ready_to_die, "You forgot to call
+    // report_and_save_to_file()");
+  }
 
-  void report_measurement(const ProfilingEntry &profiling_entry_struct) {
+  void record_measurement(const ProfilingEntry &profiling_entry_struct) {
     report_entries.emplace_back(profiling_entry_struct);
     // Uses ProfilingEntry struct
   }
 
   /*
-  void report_measurement(int N, int Nrep, int trial, double dtime) {
+  void record_measurement(int N, int Nrep, int trial, double dtime) {
     report_entries.emplace_back(N, Nrep, trial, dtime);
     // Uses ProfilingEntry struct
   }
@@ -110,24 +116,33 @@ public:
 
 private:
   std::vector<ProfilingEntry> report_entries;
+  bool ready_to_die = false;
 
 private:
-  void save_to_file(const std::string &filename = "runtime_results.csv") {
+  // template <typename DescriberFunc>
+  void
+  report_and_save_to_file(const std::string &filename = "runtime_results.csv") {
     std::ofstream file(filename);
     if (file.is_open()) {
       file << "# CUDA Profiling Results\n";
       file << "N,M,Nrep,Trial,Time\n";
       for (const auto &entry : report_entries) {
         const std::string SEP = ", ";
-        file << entry.N << SEP << entry.M << SEP << entry.Nrep << SEP
+        file << entry.N << SEP << entry._M << SEP << entry.Nrep << SEP
              << entry.trial << SEP << entry.dtime << "\n";
-        std::cout << "N: " << entry.N << " M: " << entry.M
+
+        // ProfilingEntryFormatter formatter;
+        // formatter(entry)DescriberFunc(entry)
+        DescriberFunc formatter;
+
+        std::cout << "N: " << entry.N << " M: " << entry._M
                   << " Trial: " << entry.trial << " Time: " << entry.dtime
-                  << "s" << std::endl;
+                  << "s  " << formatter(entry) << std::endl;
       }
       file.close();
       std::cout << "Profiling results saved." << std::endl;
     }
+    this->ready_to_die = true;
   }
 
   void report_begin(int hint_max_count) {
@@ -140,3 +155,5 @@ private:
 };
 
 #endif // REPORTER_H
+
+// template <typename DescriberFunc>
