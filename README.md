@@ -33,7 +33,13 @@ Experiments:
     * PTX Op Codes: [opcodes.def](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/opcodes.def)
     * Cool from GPGPUSIM: [gpgpu_context.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/gpgpu_context.h). They even have OpenCL runtime API: [opencl_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libopencl/opencl_runtime_api.cc)
     * CUDA-level:  [cuda_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/cuda_runtime_api.cc) for CUDA-level and [instructions.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/instructions.cc)
-         * CUDA Memory model [memory.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/memory.h)
+         * CUDA Memory model:
+             * [memory.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/memory.h)
+             * [dram.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/gpgpu-sim/dram.h)
+             * [stack.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/gpgpu-sim/stack.h)
+         * CUDA devide runtime: [cuda_device_runtime.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/cuda_device_runtime.cc)
+    * [power_stat.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/gpgpu-sim/power_stat.h), taking into account POD, DRAM, interconnect.
+         * [traffic_breakdown.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/gpgpu-sim/traffic_breakdown.h)
 
 
 12. 🧊 CUDA: `11_matrix_cuda`: Advanced CUDA optimisation techniques + profiling: for Matrix Multiplicaiton
