@@ -4,11 +4,11 @@ gpu/cuda/nvidia experimentations for cloud of GPU
 Experiments:
 
 
-1. `raw1`
+1. `raw1`: Simple Terraform exprimentation
 
-2. `raw-llvm`
+2. `raw-llvm` : Coding LLVM hard-coded hands-on home-made LLVM code
 
-3. `3tvm`
+3. `3tvm` : TVM (Framework/DSL for Neural Networks Inference)
 
 4. `4leannet1` (moved to 5)
 
