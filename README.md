@@ -4,7 +4,7 @@ gpu/cuda/nvidia experimentations for cloud of GPU
 Experiments:
 
 
-1. Terraform: `raw1`: Simple Terraform exprimentation
+1. Terraform: `raw1`: Simple Terraform exprimentation. Later devloped into [https://github.com/sohale/gpu-experimentations/tree/main/provisioning_scripts/terraform]
 
 2. LLVM: `raw-llvm` : Coding LLVM hard-coded hands-on home-made LLVM code
 
@@ -12,7 +12,7 @@ Experiments:
 
 4. Lean4: `4leannet1` (moved to 5) Early Lean4 experiments
 
-4. Triton`4triton` (For OpenAI Triton open-source tickets)
+4. Triton: `4triton` (For OpenAI Triton open-source tickets)
 
 5. Lean4: `leannn5` Lean4 experiments
 
@@ -22,7 +22,7 @@ Experiments:
 
 8. MLIR:`8_mlir_nn`: MLIR experiment 2: Neural network (cancelled)
 
-9. MLIR:`9_mlir_neo_refactor`: MLIR experiment 3  Neural network (with better build and container) 
+9. MLIR:`9_mlir_neo_refactor`: MLIR experiment 3  Neural network (with better build and container), as support for a compiler project. See [https://github.com/sohale/gpu-experimentations/tree/main/provisioning_scripts/mlir_env]. Also LLVM debugging using `lldb` (Clang toolchain).
 
 10. PTX: `10_mcmc_ptx`: MCMC using PTX (direct hard-coded NVidia assembly language)
 
