@@ -30,7 +30,8 @@ Experiments:
     * `PTX` is itself on top of `SASS` (propriatory): [SASS' .yacc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/cuobjdump_to_ptxplus/sass.y) and [SASS' .lex](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/cuobjdump_to_ptxplus/sass.l)
     * `ptxas`, ``
     * Also see [cuda_api.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/cuda_api.h) and [cuda_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/cuda_runtime_api.cc) , [.lex file ptx.l](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/cuobjdump_to_ptxplus/ptx.l) on `gpgpusim`
-    * Cool from GPGPUSIM: [gpgpu_context.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/gpgpu_context.h) and [cuda_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/cuda_runtime_api.cc) for CUDA-level.
+    * PTX Op Codes: [opcodes.def](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/src/cuda-sim/opcodes.def)
+    * Cool from GPGPUSIM: [gpgpu_context.h](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/gpgpu_context.h) and [cuda_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libcuda/cuda_runtime_api.cc) for CUDA-level. They even have OpenCL runtime API: [opencl_runtime_api.cc](https://github.com/gpgpu-sim/gpgpu-sim_distribution/blob/master/libopencl/opencl_runtime_api.cc)
 
 
 12. 🧊 CUDA: `11_matrix_cuda`: Advanced CUDA optimisation techniques + profiling: for Matrix Multiplicaiton
