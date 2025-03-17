@@ -249,6 +249,7 @@ resource "null_resource" "copy_github_cli_pat" {
       "chmod 600 /home/${var.remote_linux_username}/secrets/github_pat.txt",
       "cd /home/${var.remote_linux_username}/secrets/",
       "cp github_pat.txt github_pat.initially-by-tf.txt",
+      # Why the keypair (roginally located in local machine) is never copied to the remote machine?
     ]
     # Notes on 600:
     #     600 =  (owner:,group:,others:) = ("rw") ("") ("")

@@ -15,7 +15,12 @@ docker images
 # for sake of git commands in docker
 export GIT_REPO_ROOT="$HOME/gpu-experimentations"
 # The work done inside MLIR. Rename: MLIR_WORK
-export WORK="$GIT_REPO_ROOT/experiments/8_mlir_nn"
+export WORK_DEFAULT="$GIT_REPO_ROOT/experiments/8_mlir_nn"
+#   ^ the path if $1 is not provided.
+# default: $1, if not, use WORK_DEFAULT
+export WORK="${1:-$WORK_DEFAULT}"
+# export WORK="$HOME/neopiler"
+
 # Why?
 # export BASE_PATH="$GIT_REPO_ROOT/experiments/8_mlir_nn"
 

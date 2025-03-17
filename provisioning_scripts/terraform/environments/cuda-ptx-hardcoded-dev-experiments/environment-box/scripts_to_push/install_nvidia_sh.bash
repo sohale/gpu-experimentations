@@ -175,10 +175,12 @@ docker pull "$DCNAME:$TAG"
 # maybe: sudo apt install nvidia-cuda-toolkit
 
 
+#         -it --rm \
+# bad:     -t \
 
 docker run \
         --gpus all \
-        -it --rm \
+        -it  \
         \
         --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \
         \

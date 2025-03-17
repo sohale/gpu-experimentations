@@ -79,6 +79,7 @@ local SSH_KEY_PATH="$HOME/.ssh/$KEYPAIR_NAME"
 # uploads to your (personal) profile on github
 gh ssh-key add "$SSH_KEY_PATH.pub" \
     --title "GitHub-CLI-yet-another-retitle"
+# ^ must have set the 'GH_TOKEN' first
 
 export GH_TOKEN=$(cat "$GITHUB_PAT_TOKENFILE")
 
