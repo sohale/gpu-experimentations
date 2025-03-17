@@ -1,0 +1,21 @@
+
+-- ?? prove that the network is a functor
+-- no.
+
+
+-- Derive the gradient symbolically:
+-- 1. Define the loss function
+-- 2. Define the forward pass
+-- 3. Define the backward pass
+-- 4. Define the update step
+
+-- Define the loss function
+def meanSquaredError (predictions targets : List Real) : Real :=
+  let numExamples := List.length predictions
+  let squaredErrors := List.map (λ (pred target : Real) => (pred - target)^2) predictions targets
+  List.foldl (λ acc error => acc + error) 0 squaredErrors / numExamples
+
+
+-- 3. Define the backward pass
+-- Function to compute the gradient of the loss with respect to the weights and bias of a neuron
+
