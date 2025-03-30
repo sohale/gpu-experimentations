@@ -26,12 +26,41 @@ td files:
 * `minisa01.td`: top level td file
 * `minisa01_instr_info.td`:  instruction definitions ( classes, individual, encodings)
 
-Register Definitions (`def` means instantiations)
+in other words,
+* Target file	 	minisa01.td
+* Instr info	 	minisa01_instr_info.td
+* Register file	minisa01_register_info.td
+* Schedule	 	minisa01_sched_model.td
+* Classes/defs 	Minisa01Instr, Minisa01Reg
+
+
+Register Definitions
 Register Classes
-Register Classes are "based on" Register Definitions!
+Register Classes are "based on" Register Definitions!  (because, in TableGenLang, `def` means instantiations)
 
 The
 ```md
 def VDOT_SETUP : Instruction {
 }
 ```
+
+
+instruction encoding: is to drive the assembler, disassembler, and emulator table for minisa01.
+
+Yet:
+No MLIR dialects, types, or attributes—pure low-level IR/ISA.
+
+
+Pool of tasks / (next) steps:
+
+- [x] create minisa01_register_info.td
+- [ ] Completing the VDOT config instructions in TableGen format next?
+- [ ] Generating binary layout for these patterns (hex encoding and bit masks)?
+- [ ] focus on the C++ backend stubs to hook this into an emulator?
+- [ ] formalize the instruction table or control flow rules further
+- [ ] move toward the TableGen schema design?
+- [ ] continue with minisa01_register_info.td (R0–R7)
+- [ ] continue with minisa01.td (target top-level)
+- [ ] Define Assembly Writers
+- [ ] Implement the Code Emitter
+- [ ] Integrate with Other Components
