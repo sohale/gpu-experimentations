@@ -7,6 +7,14 @@
 
 include "llvm/Target/Target.td"
 
+
+/*
+class Minisa01Reg<string n, int e> : Register<n> {
+  let Encoding = e;
+}
+*/
+
+
 /// Register Definitions
 /// --------------------
 

@@ -1,5 +1,8 @@
 //===-- minisa01_instr_info.td - Minisa01 Instruction Definitions -*- tablegen -*-===//
 //
+//
+// This file defines the instruction set for the Minisa01 architecture.
+//
 // This file defines the instruction encodings and formats for the Minisa01 target.
 // Minisa01 is a minimal, Turing-complete ISA designed for MLIR lowering,
 // emulation, and performance profiling.
@@ -150,3 +153,17 @@ def VDOT_SETUP : Instruction {
   let Constraints = "";
 }
 */
+
+
+class Minisa01Instr<string mnemonic, bits<16> encoding,
+                    list<dag> operands, dag pattern>
+    : Instruction {
+  let Mnemonic = mnemonic;
+  let Encoding = encoding;
+  let OperandList = operands;
+  let Pattern = pattern;
+}
+
+def ADD : Minisa01Instr<"add", 0b0001,
+                        [(outs GPR:$Rd), (ins GPR:$Rs, GPR:$Rt)],
+                        (add GPR:$Rs, GPR:$Rt)>;

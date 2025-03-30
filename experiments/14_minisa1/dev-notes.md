@@ -51,16 +51,36 @@ Yet:
 No MLIR dialects, types, or attributes—pure low-level IR/ISA.
 
 
+
+
+
+Minisa01Reg and Minisa01Instr should be deinfed in which of my .md files?
+
+Building .td files means: generate a .inc file based on your .td files.
+
+
+
 Pool of tasks / (next) steps:
 
 - [x] create minisa01_register_info.td
-- [ ] Completing the VDOT config instructions in TableGen format next?
-- [ ] Generating binary layout for these patterns (hex encoding and bit masks)?
-- [ ] focus on the C++ backend stubs to hook this into an emulator?
+- [ ] Completing the VDOT config instructions in TableGen format
+- [ ] Generating binary layout for these patterns (hex encoding and bit masks)
+- [ ] focus on the C++ backend stubs to hook this into an emulator
 - [ ] formalize the instruction table or control flow rules further
-- [ ] move toward the TableGen schema design?
+- [ ] move toward the TableGen schema design
 - [ ] continue with minisa01_register_info.td (R0–R7)
 - [ ] continue with minisa01.td (target top-level)
 - [ ] Define Assembly Writers
 - [ ] Implement the Code Emitter
 - [ ] Integrate with Other Components
+
+random
+
+```
+/mlir/llvm-project/
+├── llvm/
+│   └── include/
+│       └── llvm/Target/Target.td
+├── mlir/
+│   └── include/
+```
