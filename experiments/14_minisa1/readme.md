@@ -1,6 +1,8 @@
 # An TableGen experiment
+
 An experiment for an MLIR dialect, end-to-end focusing on compiler back-end development on MLIR.
 
+The "what".
 For teach- and dev-notes: [dev-notes.md](./dev-notes.md)
 
 Virtual machine specifications:

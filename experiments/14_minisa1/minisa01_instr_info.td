@@ -140,3 +140,13 @@ def VDOT_START    : VDotStartTrigger {
   let Mnemonic = "VDOT.START";
   let hasSideEffects = 1;
 }
+
+/*
+def VDOT_SETUP : Instruction {
+  let OutOperandList = (outs);
+  let InOperandList = (ins VDOTConfigRegs:$len, VDOTConfigRegs:$stride1, VDOTConfigRegs:$stride2, VDOTConfigRegs:$start1, VDOTConfigRegs:$start2, VDOTConfigRegs:$dst);
+  let Opcode = 0xXX; // Replace with the actual opcode
+  let AsmString = "vdot.setup $len, $stride1, $stride2, $start1, $start2, $dst";
+  let Constraints = "";
+}
+*/

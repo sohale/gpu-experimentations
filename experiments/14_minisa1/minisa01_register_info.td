@@ -19,6 +19,17 @@ def R5 : Register<"R5">;
 def R6 : Register<"R6">;
 def R7 : Register<"R7">;
 
+/// Special-Purpose Registers:
+/// VDOT Configuration Registers
+/// ----------------------------
+
+def VDOT_LEN     : Register<"VDOT.LEN">;
+def VDOT_STRIDE1 : Register<"VDOT.STRIDE1">;
+def VDOT_STRIDE2 : Register<"VDOT.STRIDE2">;
+def VDOT_START1  : Register<"VDOT.START1">;
+def VDOT_START2  : Register<"VDOT.START2">;
+def VDOT_DST     : Register<"VDOT.DST">;
+
 /// Register Classes
 /// ----------------
 

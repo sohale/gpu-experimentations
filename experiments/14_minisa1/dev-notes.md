@@ -1,3 +1,4 @@
+# The How
 
 Typical td files for an ISA:
 
@@ -24,3 +25,13 @@ bitfield layouts
 td files:
 * `minisa01.td`: top level td file
 * `minisa01_instr_info.td`:  instruction definitions ( classes, individual, encodings)
+
+Register Definitions (`def` means instantiations)
+Register Classes
+Register Classes are "based on" Register Definitions!
+
+The
+```md
+def VDOT_SETUP : Instruction {
+}
+```
