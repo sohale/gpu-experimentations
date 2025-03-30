@@ -4,9 +4,9 @@ An experiment for an MLIR dialect, end-to-end focusing on compiler back-end deve
 
 Virtual machine specifications:
 
-## 🧠 MiniISA: Minimal Instruction Set Architecture for MLIR PoC
+## 🧠 MiniISA1: Minimal Instruction Set Architecture for MLIR PoC
 
-MiniISA is a minimal, Turing-complete CPU model designed for MLIR dialect development, emulation, and compiler optimization passes. It includes a basic instruction set and a vector/tensor extension for operations like dot products. The goal is to serve as a backend target for MLIR lowering, fusion, and profiling.
+MiniISA1 is a minimal, Turing-complete CPU model designed for MLIR dialect development, emulation, and compiler optimization passes. It includes a basic instruction set and a vector/tensor extension for operations like dot products. The goal is to serve as a backend target for MLIR lowering, fusion, and profiling.
 
 ---
 
