@@ -21,3 +21,6 @@ Breakdown of a td-signature-hinted comment
 
 bitfield layouts
 
+td files:
+* `minisa01.td`: top level td file
+* `minisa01_instr_info.td`:  instruction definitions ( classes, individual, encodings)
