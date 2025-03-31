@@ -21,9 +21,26 @@
 // Minisa01InstrInfo
 def Minisa01InstrInfo : InstrInfo {
   bits<16> Inst;
+  // Implies that, not all instruciotns are 16-bit, but the "ordinary ones"
 }
 
-class LoadStore<bits<4> opcode> : InstrInfo  {
+// Minisa01 has some ordinary vs extended (custom) instrucitons
+// The ordinary ones are regular
+// good names: orgniary, regular
+// bad names: core, common
+
+// class Minisa01OrdinaryInstr
+class OrdinaryInstr : InstrInfo {
+  bits<16> Inst;
+}
+// math, arithmatic, calculations, fp, alu, fpu
+// MathInstr
+class MathBinaryInstr<bits<4> opcode> : InstrInfo {
+  bits<16> Inst;
+}
+
+
+class LoadStore<bits<4> opcode> : OrdinaryInstr  {
 
   bits<16> Inst;
 
@@ -41,7 +58,7 @@ class LoadStore<bits<4> opcode> : InstrInfo  {
   let Inst{7-0}   = Imm;
 }
 
-class ALU3Reg<bits<4> opcode> {
+class ALU3Reg<bits<4> opcode> : OrdinaryInstr {
   bits<3> Rd;
   bits<3> Rs;
   bits<3> Rt;
