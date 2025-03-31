@@ -9,8 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-include "llvm/Target/TargetInstrInfo.td"
-include "llvm/Target/TargetSchedule.td"
+// non-exizst:
+// include "llvm/Target/TargetInstrInfo.td"
+// already included in top-level .td file?
+// include "llvm/Target/TargetSchedule.td"
 
 /// Instruction Format Classes
 // Defining "bitfield layouts" for different instruction encoding types.

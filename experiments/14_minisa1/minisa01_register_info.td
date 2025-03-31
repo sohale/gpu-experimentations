@@ -5,7 +5,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-include "llvm/Target/Target.td"
+// already included in top-level .td file.
+// include "llvm/Target/Target.td"
 
 
 /*
