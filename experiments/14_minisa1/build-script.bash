@@ -1,3 +1,5 @@
+# run this after (inside) bash ... provision_scripts/mlir_env/mlir_env.bash
+
 set -ex
 echo "VERIFYING envs:"
 echo "\$MLIR_BASE: $MLIR_BASE"
@@ -29,6 +31,7 @@ export LLVM_SRC_DIR=$MLIR_BASE/llvm-project/llvm
 export MLIR_SRC_DIR=$MLIR_BASE/llvm-project/mlir
 
 
+mkdir -p build
 
 llvm-tblgen -gen-instr-info \
   -I . \
