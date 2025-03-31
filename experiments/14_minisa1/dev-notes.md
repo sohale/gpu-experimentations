@@ -84,3 +84,35 @@ random
 ├── mlir/
 │   └── include/
 ```
+
+
+TableGen doesn’t do implicit declarations. Every field you refer to must be declared explicitly or inherited from a superclass that defines it.
+
+  bits<16> Inst;
+  let Inst{15-12} = Opcode;
+
+akin to
+
+class X;
+def A : X;
+
+
+`InstrInfo`
+You don’t subclass InstrInfo
+It's a record used by LLVM to collect metadata about a target's instruction set.
+
+So, InstrInfo is a value! (a "def", v "record"). Like a singleton instance.
+
+`InstrInfo` is, a record in TableGen
+metadata about the (whole?) instruction set.
+
+```
+def MyInstrInfo : InstrInfo {
+  let InstructionSet = MyInstructions;
+}
+```
+
+Yet, stragely, syntactically, allows:
+```
+class LoadStore<bits<4> opcode> : InstrInfo  { ...
+```

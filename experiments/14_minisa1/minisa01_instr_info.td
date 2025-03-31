@@ -17,12 +17,28 @@
 /// Instruction Format Classes
 // Defining "bitfield layouts" for different instruction encoding types.
 
-class LoadStore<bits<4> opcode> {
+// Minisa01InstrInfo, the dad class for all instruction formats.
+// Minisa01InstrInfo
+def Minisa01InstrInfo : InstrInfo {
+  bits<16> Inst;
+}
+
+class LoadStore<bits<4> opcode> : InstrInfo  {
+
+  bits<16> Inst;
+
+  bits<4> Opcode = opcode;
   bits<3> Rd;
   bits<3> Rs;
   bits<8> Imm;
+  //`Inst`:  If you're building your own instruction class, you must explicitly declare it:
+  // otherwise, inherit from `: Instruction`, ( how about `InstrInfo`? )
 
-  let Inst = { opcode, Rd, Rs, Imm };
+  // let Inst = { opcode, Rd, Rs, Imm };
+  let Inst{15-12} = Opcode;
+  let Inst{11-9}  = Rd;
+  let Inst{8-6}   = Rs;
+  let Inst{7-0}   = Imm;
 }
 
 class ALU3Reg<bits<4> opcode> {
