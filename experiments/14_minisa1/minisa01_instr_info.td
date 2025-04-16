@@ -36,9 +36,12 @@ class OrdinaryInstr : InstrInfo {
 // math, arithmatic, calculations, fp, alu, fpu
 // MathInstr
 class MathBinaryInstr<bits<4> opcode> : InstrInfo {
-  bits<16> Inst;
+  bits<16> InstM;
 }
 
+class VectorisedInstr<bits<4> opcode> : InstrInfo {
+  bits<32> InstV;
+}
 
 class LoadStore<bits<4> opcode> : OrdinaryInstr  {
 
@@ -66,12 +69,12 @@ class ALU3Reg<bits<4> opcode> : OrdinaryInstr {
   let Inst = { opcode, Rd, Rs, Rt, 0b000 };
 }
 
-class Jump<bits<4> opcode> {
+class Jump<bits<4> opcode> : OrdinaryInstr {
   bits<11> Imm;
   let Inst = { opcode, 0b0, Imm };
 }
 
-class BranchEQ<bits<4> opcode> {
+class BranchEQ<bits<4> opcode> : OrdinaryInstr {
   bits<3> Rs;
   bits<3> Rt;
   bits<5> Imm;
