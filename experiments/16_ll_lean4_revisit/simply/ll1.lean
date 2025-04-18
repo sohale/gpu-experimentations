@@ -9,9 +9,15 @@ inductive Formula
 | par    : Formula → Formula → Formula  -- A ⅋ B
 
 
-
+/-
+"Context":
+In sequent calculi (like for Linear Logic),
+a context (eg. Γ) typically refers to the multiset or list of assumptions
+on the left-hand side of the turnstile (⊢), i.e.: Γ ⊢ A
+-/
 -- sequents:
 -- sequent: sequent as a list of formulas on the left-hand side proving a single formula on the right
+
 def Context := List Formula
 
 inductive Provable : Context → Formula → Prop
@@ -28,3 +34,5 @@ inductive Provable : Context → Formula → Prop
 
 -- try proving:
 --    ⊢ (1 ⅋ ⊥) ⊗ 1
+
+-- #eval IO.println hello
