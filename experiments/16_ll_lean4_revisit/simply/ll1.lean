@@ -53,11 +53,26 @@ inductive Provable : List Formula → Formula → Prop
 
 -- A `--run` cli will need a Main: "unknown declaration 'main'"
 
-def main : IO Unit :=
+def main1 : IO Nat := do
   IO.println "Fine. Everything compiles and runs fine."
+  return 42
+
+-- cannot be main: List String -> IO UInt32
+def main2 : IO Nat := do
+  return 42
+
+def main : IO Unit := do
+  do
+    IO.println "Fine. "
+    IO.println "Everything compiles and runs fine."
+
 
 -- runs twice!
 #eval main
 
+#eval main1
+#eval main2
+
 -- yay
 #check 1
+#check 1+2
