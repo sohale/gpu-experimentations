@@ -50,3 +50,14 @@ inductive Provable : List Formula → Formula → Prop
 -- #eval IO.println hello
 
 #eval [1, 2] ++ [3, 4]
+
+-- A `--run` cli will need a Main: "unknown declaration 'main'"
+
+def main : IO Unit :=
+  IO.println "Fine. Everything compiles and runs fine."
+
+-- runs twice!
+#eval main
+
+-- yay
+#check 1
