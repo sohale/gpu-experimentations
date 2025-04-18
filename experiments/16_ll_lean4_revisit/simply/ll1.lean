@@ -1,3 +1,12 @@
+-- Lean 4
+-- Lean 4 version of the simply typed lambda calculus
+-- with linear logic
+-- https://leanprover.github.io/lean4/doc/lean4.html
+-- https://leanprover.github.io/lean4/doc/tutorials/lean4_tutorial.html
+
+set_option diagnostics true
+
+
 -- multiplicative fragment (⊗, ⅋, 1, ⊥).
 
 -- syntax of formulas
@@ -18,9 +27,11 @@ on the left-hand side of the turnstile (⊢), i.e.: Γ ⊢ A
 -- sequents:
 -- sequent: sequent as a list of formulas on the left-hand side proving a single formula on the right
 
-def Context := List Formula
+-- def Context := List Formula
+-- inductive Provable : List Formula → Formula → Prop
 
-inductive Provable : Context → Formula → Prop
+-- inductive Provable : Context → Formula → Prop
+inductive Provable : List Formula → Formula → Prop
 | ax      : ∀ A, Provable [A] A
 | oneR    : Provable [] Formula.one
 | botL    : ∀ Γ A, Provable Γ A → Provable (Formula.bot :: Γ) A
@@ -35,4 +46,7 @@ inductive Provable : Context → Formula → Prop
 -- try proving:
 --    ⊢ (1 ⅋ ⊥) ⊗ 1
 
+-- unknown identifier 'hello'
 -- #eval IO.println hello
+
+#eval [1, 2] ++ [3, 4]
