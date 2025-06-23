@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include <cstdint>
 #include <utility>
 #include <iostream>
@@ -125,6 +126,31 @@ struct MyParams {
   }
 };
 
+int heuristic_nrep(int n) {
+  // generous
+  double min_measurable_time_ub = 0.0001; // 0.00001; // 10 us
+  double expected_runtime_per_n = 0.00000000001; // 0.01 ns
+  // At least 5 of these `min_measurable_time_ub` should (expected to) fit:
+  const double threshold_ratio = 5.0;
+  /*
+  N: 10 Time: 1.01702e-08 raw_dtime: 0.00462283 nsamples:454546
+  N: 90 Time: 1.47589e-07 raw_dtime: 0.0081094 nsamples:54946
+  */
+
+  double expected_runtime_lb = expected_runtime_per_n * (std::fabs(n)+1);
+  // double ratio = min_measurable_time_ub / expected_runtime_lb;
+  // how many rulers, dents, etc
+  double ratio = expected_runtime_lb / min_measurable_time_ub;
+
+  if (ratio > threshold_ratio) {
+    // already ok
+    return 1;
+  } else {
+    // expected_runtime_lb is too small
+    return (int)(std::ceil(threshold_ratio / ratio ));
+  }
+}
+
 int main() {
 
   Profiler profiler;
@@ -133,23 +159,32 @@ int main() {
 
   MyParams params{15}; // Example parameter, can be adjusted
   int trial=1;
+  int NRep = 100;
   const int N = 100;
   rng_value_t array[N];
 
   // runProfiling
 
   for(int n = 0; n <= N-1; n+=10) {
+    for (int trial = 0; trial < 10; ++trial) {
 
   auto s = profiler.start();
   double time_start = omp_get_wtime();
 
+
+  // for times that are too short. But divide later on. For longer running times, you can just repeat trials (not adding them up).
+  int Nrep = heuristic_nrep(n);
+  std::cout << "Nrep for n = " << Nrep << std::endl;
+  for (int rep = 0; rep < Nrep; ++rep) {
   openmp_rng_serial(42, n, array);
+  }
 
   double time_end = omp_get_wtime();
   double elapsed = s.stop();
-  auto e = ProfilingEntry<MyParams>{params, n, trial, elapsed};
+  auto e = ProfilingEntry<MyParams>{params, n, Nrep, trial, elapsed};
 
   csv_reporter.record_measurement(e);
+  }
   }
   print_values(array, N);
 

@@ -66,12 +66,13 @@ struct ProfilingEntryFormatter1 {
 template<typename Params>
 struct ProfilingEntry {
   int N;
+  int nrep; // number of repetitions, only to make small times measurable
   int trial;
-  double dtime;
+  double dtime; // Raw time-diff. Not divided by nrep, instead, divided at time of saving.
   Params _params;
 
-  ProfilingEntry(Params params, int n, int trial_, double time)
-      : _params(params), N(n), trial(trial_), dtime(time) {}
+  ProfilingEntry(Params params, int n, int Nrep, int trial_, double time)
+      : _params(params), N(n), nrep(Nrep), trial(trial_), dtime(time) {}
 };
 
 // DescriberFunc === Formatter
@@ -109,7 +110,7 @@ private:
     std::ofstream file(csv_filename);
     if (file.is_open()) {
       file << "# Profiling Results\n";
-      file << "N,Trial,Time,Label\n";
+      file << "N,Trial,Time,rep,Label\n";
       for (const auto &entry : report_entries) {
 
         // entry._params.get(0); // Assuming _params is a tuple or similar structure
@@ -119,12 +120,18 @@ private:
         const std::string SEP = ", ";
         auto escape = [](const std::string &s){return "\"" + s + "\""; };
 
-        file << entry.N << SEP << entry.trial << SEP << entry.dtime << SEP
+        // averaged over nrep, but not ntrials
+        // nrep = number of samples used to measure the time
+        double atime = entry.dtime / double(entry.nrep);
+        file << entry.N << SEP << entry.trial << SEP << atime << SEP
+             << entry.nrep << SEP
              << escape(label)  <<  "\n";
 
         // on screen : stdout
         std::cout << "N: " << entry.N
-                  << " Trial: " << entry.trial << " Time: " << entry.dtime
+                  << " Trial: " << entry.trial << " Time: " << atime
+                  << " raw_dtime: " << entry.dtime
+                  << " nsamples:" << entry.nrep << SEP
                   << " Label: " << label << "\n";
       }
       file << std::flush;
