@@ -127,9 +127,24 @@ struct MyParams {
 };
 
 int heuristic_nrep(int n) {
+  const double NANOSEC = 1e-9; // 1 ns
+  const double MICROSEC = 1e-6; // 1 us
   // generous
+
+  /*
   double min_measurable_time_ub = 0.0001; // 0.00001; // 10 us
   double expected_runtime_per_n = 0.00000000001; // 0.01 ns
+  */
+  /*
+  double min_measurable_time_ub = 100 * MICROSEC; // -  0.0001; // 0.0001; // 0.00001; // 10 us
+  double expected_runtime_per_n = 0.01 * NANOSEC; //  - 0.00000000001;
+  */
+  double min_measurable_time_ub = 100 * MICROSEC;
+  double expected_runtime_per_n = 0.1 * NANOSEC;
+
+  //std::cout << min_measurable_time_ub << std::endl;
+  //std::cout << expected_runtime_per_n << std::endl;
+
   // At least 5 of these `min_measurable_time_ub` should (expected to) fit:
   const double threshold_ratio = 5.0;
   /*
