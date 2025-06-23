@@ -181,23 +181,23 @@ void experiment(int N, std::function<void(int)> execute_callback) {
   for(int n = 0; n <= N-1; n+=10) {
     for (int trial = 0; trial < 10; ++trial) {
 
-  auto s = profiler.start();
-  double time_start = omp_get_wtime();
+      auto s = profiler.start();
+      double time_start = omp_get_wtime();
 
 
-  // for times that are too short. But divide later on. For longer running times, you can just repeat trials (not adding them up).
-  int Nrep = heuristic_nrep(n);
-  // std::cout << "Nrep for n = " << Nrep << std::endl;
-  for (int rep = 0; rep < Nrep; ++rep) {
-      execute_callback(n);
-  }
+      // for times that are too short. But divide later on. For longer running times, you can just repeat trials (not adding them up).
+      int Nrep = heuristic_nrep(n);
+      // std::cout << "Nrep for n = " << Nrep << std::endl;
+      for (int rep = 0; rep < Nrep; ++rep) {
+          execute_callback(n);
+      }
 
-  double time_end = omp_get_wtime();
-  double elapsed = s.stop();
-  auto e = ProfilingEntry<MyParams>{params, n, Nrep, trial, elapsed};
+      double time_end = omp_get_wtime();
+      double elapsed = s.stop();
+      auto e = ProfilingEntry<MyParams>{params, n, Nrep, trial, elapsed};
 
-  csv_reporter.record_measurement(e);
-  }
+      csv_reporter.record_measurement(e);
+    }
   }
 
 }
