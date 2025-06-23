@@ -1,113 +1,69 @@
-#include "profilers.h"
-
-#include "runtime_profiling_reporter.h"
 
 #include <cstdlib>
-#include <iostream>
-#include <sstream>
+// #include <iostream>
+// #include <sstream>
+#include <string>
 #include <vector>
 using std::string;
 
-struct ProfilingEntryFormatter {
-  // std::string
-  // operator()(const InMemoryStructuredReporter::ProfilingEntry &e) const {
-  std::string operator()(const ProfilingEntry &e) const {
+#include "profilers.hpp"
+#include "runtime_profiling_reporter.hpp"
 
-    std::ostringstream os{};
-    os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e._M << ", x"
-       << e.Nrep; // << ", trial: " << e.trial;
-    return os.str();
-  }
+// std::tuple<M>(params)
+
+
+struct MyParams {
+  int M;
 };
 
-/*
-// InMemoryStructuredReporter::ProfilingEntry
-template<typename REntry>
-struct ProfilingEntryFormatter {
-  std::string
-  operator()(const REntry &e) const {
-
-    std::ostringstream os{};
-    os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e._M << ", x"
-       << e.Nrep << ", trial: " << e.t;
-    return os.str();
-  }
-};
-*/
-
-/*
-template<class Entry>
-string describer_lambda(Entry e) {
-     // InMemoryStructuredReporter::ProfilingEntry
-    std::ostringstream os{};
-    os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e.M << ", x"
-       << e.Nrep << ", trial: " << e.t;
-    return os.str();
-  }
-*/
-
-// stores
-// InMemoryStructuredReporter<describer_lambda> reporter;
-
-// InMemoryStructuredReporter<ProfilingEntryFormatter> reporter;
-
-// InMemoryStructuredReporter<ProfilingEntryFormatter<InMemoryStructuredReporter::ProfilingEntry>>
-// reporter;
-
-
-InMemoryStructuredReporter<ProfilingEntryFormatter> reporter;
+InMemoryStructuredReporter<ProfilingEntryFormatter1, MyParams> reporter;
 
 // measures time
 Profiler profiler;
 
 
-/* Typical usage:
-void executeTrial(...) {
-  auto s = profiler.start();
-  ...
-  double elapsed = s.stop();
 
-  // reporter.record_measurement(N, Nrep, t, elapsed.count() );
-  reporter.record_measurement(
-      // InMemoryStructuredReporter<ProfilingEntryFormatter>::ProfilingEntry{
-      ProfilingEntry{N, M, Nrep, t, elapsed});
-}
 
-template <typename VT> void runExperiment(int N, int Nrep, int Ntrials) {
-  // Allocate memory on host, device, etc
-  // Transfer data
 
-  for (int t = 0; t < Ntrials; ++t) {
-    executeTrial(...);
-  }
-
-  
-  // Cleanup / free Allocated memory
-  // Transfer back results data
-  ...
-}
-*/
-
-void runProfiling(std::vector<int> N_k, int Nrep, int Ntrials) {
-  for (int N : N_k) {
-    runExperiment(N, Nrep, Ntrials);
-  }
-}
-*/
-
-int main() {
+template<typename ParamsType,  typename PreparationFunc, typename ExperimentExecutionFunc, typename CleanupFunc>
+int runProfiling(ExperimentExecutionFunc experiment_lambda) {
   std::vector<int> N_k = {256, 512, 1024, 2048}; // Example sequence of N values
-  int Nrep = 10; // Number of kernel executions per measurement (once data is
-                 // transferred into (device) GPU global memory)
-  // this is separated, to separate the time taken to transfer data between CPU
-  // memory & GPU global memory, with the time taken to execute the kernel.
-  int Ntrials =
-      5; // Number of repeated measurements per N (includes transfer time)
-
-
+  int Ntrials =   5; // Number of repeated measurements per N (includes transfer time)
+  // no `Nrep`
 
   std::cout << "This may take a while, please wait..." << std::endl;
-  runProfiling(N_k, Nrep, Ntrials);
+  // runProfiling(N_k, Nrep, Ntrials);
+  // void runProfiling(std::vector<int> N_k, int Nrep, int Ntrials) {
+  for (int N : N_k) {
+
+    // runExperiment
+    // template <typename VT> void runExperiment(int N, int Nrep, int Ntrials) {
+
+    // Allocate memory on host, device, etc
+    // Transfer data
+    PreparationFunc prep;
+    prep();
+
+    for (int trial = 0; trial < Ntrials; ++trial) {
+
+      // void executeTrial(...) :
+
+      auto s = profiler.start();
+
+      // other parameters: M
+      experiment_lambda(trial, N );
+
+      double elapsed = s.stop();
+      auto e = ProfilingEntry<ParamsType>{params, N, trial, elapsed};
+      reporter.record_measurement(e);
+    }
+  }
+
+  // Cleanup / free Allocated memory
+  // Transfer back results data
+  CleanupFunc f;
+  f();
+  // end of runProfiling()
 
   std::cout << "Profiling completed." << std::endl;
 
