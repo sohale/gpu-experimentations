@@ -4,6 +4,7 @@
 #include <utility>
 #include <iostream>
 #include <functional>
+#include <algorithm>
 
 #include <cassert>
 #define assertm(exp, msg) assert((void(msg), exp))
@@ -167,6 +168,30 @@ int heuristic_nrep(int n) {
   }
 }
 
+  std::vector<int> experiment_n_array(int N) {
+    // int n = 0; n <= N-1; n+=10
+  int n = N;
+  std::vector<int> ns;
+  while(n > 0) {
+    ns.push_back(n-1);
+    n = n / 2;
+  }
+  ns.push_back(1);
+  ns.push_back(2);
+  ns.push_back(3);
+  ns.push_back(0);
+  ns.push_back(10);
+  ns.push_back(16);
+
+  ns.erase(std::remove_if(ns.begin(), ns.end(), [N](int e) {
+    return e >= N;
+  }), ns.end());
+  std::sort(ns.begin(), ns.end());
+  auto e = std::unique(ns.begin(), ns.end());
+  ns.erase(e, ns.end());
+  return ns;
+}
+
 void experiment(int N, std::function<void(int)> execute_callback) {
 
   Profiler profiler;
@@ -178,13 +203,15 @@ void experiment(int N, std::function<void(int)> execute_callback) {
 
   // runProfiling
 
-  for(int n = 0; n <= N-1; n+=10) {
+
+
+  for(int n : experiment_n_array(N)) {
     for (int trial = 0; trial < 10; ++trial) {
 
       auto s = profiler.start();
       double time_start = omp_get_wtime();
 
-
+      std::cout << "Running trial " << trial << " for n = " << n << std::endl;
       // for times that are too short. But divide later on. For longer running times, you can just repeat trials (not adding them up).
       int Nrep = heuristic_nrep(n);
       // std::cout << "Nrep for n = " << Nrep << std::endl;
@@ -203,7 +230,7 @@ void experiment(int N, std::function<void(int)> execute_callback) {
 }
 int main() {
 
-  const int N = 100;
+  const int N = 10000;
   rng_value_t array[N];
 
   experiment(N, [&array](int n){
