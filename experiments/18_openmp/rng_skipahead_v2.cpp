@@ -189,7 +189,7 @@ int main() {
 
   // for times that are too short. But divide later on. For longer running times, you can just repeat trials (not adding them up).
   int Nrep = heuristic_nrep(n);
-  std::cout << "Nrep for n = " << Nrep << std::endl;
+  // std::cout << "Nrep for n = " << Nrep << std::endl;
   for (int rep = 0; rep < Nrep; ++rep) {
   openmp_rng_serial(42, n, array);
   }

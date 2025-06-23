@@ -136,7 +136,7 @@ private:
       }
       file << std::flush;
       file.close();
-      std::cout << "Profiling results saved." << std::endl;
+      std::cout << "Profiling results saved: " << csv_filename << std::endl;
     }
     this->ready_to_die = true;
   }
