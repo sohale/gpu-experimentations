@@ -120,11 +120,15 @@ void print_values(rng_value_t* array, int N) {
 
 struct MyParams {
   int M;
+  std::string formatter() const {
+    return "M = " + std::to_string(M);
+  }
 };
 
 int main() {
 
   Profiler profiler;
+  InMemoryStructuredReporter<ProfilingEntry<MyParams>> csv_reporter("runtime_results.csv");
 
 
   MyParams params{15}; // Example parameter, can be adjusted
@@ -143,6 +147,8 @@ int main() {
   double time_end = omp_get_wtime();
   double elapsed = s.stop();
   auto e = ProfilingEntry<MyParams>{params, N, trial, elapsed};
+
+  csv_reporter.record_measurement(e);
 
   print_values(array, N);
 

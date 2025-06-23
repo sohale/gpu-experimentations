@@ -8,61 +8,32 @@
 
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <tuple>
 #include <vector>
 
-// Directly into the file. Not in-memory.
-// Direct file-based logging
-// class FileReporter
-class Reporter {
-public:
-  Reporter() { report_begin(); }
-  ~Reporter() { end_report(); }
 
-protected:
-  std::unique_ptr<std::ofstream> outfile;
-
-private:
-  void report_begin() {
-    outfile = std::make_unique<std::ofstream>("runtime_results.csv");
-    *outfile << "# CUDA Profiling Results\n";
-    // CSV header: avoid blank spaces
-    *outfile << "N,Nrep,Trial,Time\n";
-  }
-
-public:
-  void record_measurement(int N, int Nrep, int trial, double dtime) {
-    std::string SEP = ", ";
-    *outfile << N << SEP << Nrep << SEP << trial << SEP << dtime << "\n";
-  }
-
-private:
-  void end_report() {
-    outfile->close();
-    outfile = nullptr;
-  }
-};
-
-// In-memory logging, MemoryReporter, InMemoryStringStreamReporter,
-// InMemoryStringBufferReporter
+/*
+// Prepares a CSV in memory
+template<typename Params>
 class InMemoryStringBufferReporter {
 
 public:
   InMemoryStringBufferReporter() { report_begin(); }
   ~InMemoryStringBufferReporter() { save_to_file(); }
 
-  void record_measurement(int N, int Nrep, int trial, double dtime) {
-    mbuffer << N << "," << Nrep << "," << trial << "," << dtime << "\n";
+  void record_measurement( int N, int trial, double dtime, std::string label) {
+    std::string SEP = ", ";
+    auto escape = [](const std::string &s){return "\"" + s + "\""; };
+    mbuffer << N << SEP << trial << SEP << dtime << SEP << escape(label) << "\n";
   }
 
 private:
   std::ostringstream mbuffer{};
   std::string get_report() const { return mbuffer.str(); }
 
-  void save_to_file(const std::string &filename = "runtime_results.csv") {
-    std::ofstream file(filename);
+  void save_to_file(const std::string &csv_filename = "runtime_results.csv") {
+    std::ofstream file(csv_filename);
     if (file.is_open()) {
       file << mbuffer.str();
       file.close();
@@ -70,26 +41,44 @@ private:
   }
 
   void report_begin() {
-    mbuffer << "# CUDA Profiling Results\n";
-    mbuffer << "N,Nrep,Trial,Time\n";
+    mbuffer << "# Profiling Results\n";
+    mbuffer << "N,Trial,Time,Label\n";
   }
 };
+*/
 
+/*
+// template<typename Params>
+struct ProfilingEntryFormatter1 {
+
+  std::string operator()(const ProfilingEntry<std::tuple<int>> &e) const {
+    std::ostringstream os{};
+    // no "trial", unique label shared by all trials
+    //os << "A:" << e.N << "×" << e.N << ", B: " << e.N << "×" << e.get(0)
+    //   << e.Nrep; // << ", trial: " << e.trial;
+    os << "N:" << e.N  << "×" << std::get<0>(e._params);
+   return os.str();
+  }
+
+};
+*/
+
+template<typename Params>
 struct ProfilingEntry {
   int N;
-  int _M;
-  int Nrep;
   int trial;
   double dtime;
+  Params _params;
 
-  ProfilingEntry(int n, int m, int nrep, int trial_, double time)
-      : N(n), _M(m), Nrep(nrep), trial(trial_), dtime(time) {}
+  ProfilingEntry(Params params, int n, int trial_, double time)
+      : _params(params), N(n), trial(trial_), dtime(time) {}
 };
 
 // DescriberFunc === Formatter
 // template <typename DescriberFunc>
-template <typename DescriberFunc> class InMemoryStructuredReporter {
-  // or: Recorder: InMemory Structured Recorder & reporter
+
+template <typename ProfilingEntry>
+class InMemoryStructuredReporter {
 
 public:
   InMemoryStructuredReporter(int hint_max_count = 8000) {
@@ -107,13 +96,6 @@ public:
     // Uses ProfilingEntry struct
   }
 
-  /*
-  void record_measurement(int N, int Nrep, int trial, double dtime) {
-    report_entries.emplace_back(N, Nrep, trial, dtime);
-    // Uses ProfilingEntry struct
-  }
-  */
-
 private:
   std::vector<ProfilingEntry> report_entries;
   bool ready_to_die = false;
@@ -121,24 +103,27 @@ private:
 private:
   // template <typename DescriberFunc>
   void
-  report_and_save_to_file(const std::string &filename = "runtime_results.csv") {
-    std::ofstream file(filename);
+  report_and_save_to_file(const std::string &csv_filename = "runtime_results.csv") {
+    std::ofstream file(csv_filename);
     if (file.is_open()) {
-      file << "# CUDA Profiling Results\n";
-      file << "N,M,Nrep,Trial,Time\n";
+      file << "# Profiling Results\n";
+      file << "N,Trial,Time,Label\n";
       for (const auto &entry : report_entries) {
+
+        // entry._params.get(0); // Assuming _params is a tuple or similar structure
+        //   std::string label = formatter(entry);
+        std::string label = entry._params.formatter();
+
         const std::string SEP = ", ";
-        file << entry.N << SEP << entry._M << SEP << entry.Nrep << SEP
-             << entry.trial << SEP << entry.dtime << "\n";
+        auto escape = [](const std::string &s){return "\"" + s + "\""; };
 
-        // ProfilingEntryFormatter formatter;
-        // formatter(entry)DescriberFunc(entry)
-        DescriberFunc formatter;
-
-        std::cout << "N: " << entry.N << " M: " << entry._M
+        file << entry.N << SEP << SEP  << entry.trial << SEP << entry.dtime << escape(label)  <<  "\n";
+        // on screen : stdout
+        std::cout << "N: " << entry.N
                   << " Trial: " << entry.trial << " Time: " << entry.dtime
-                  << "s  " << formatter(entry) << std::endl;
+                  << " Label: " << label << "\n";
       }
+      file << std::flush;
       file.close();
       std::cout << "Profiling results saved." << std::endl;
     }
@@ -149,14 +134,12 @@ private:
     report_entries.reserve(hint_max_count);
     report_entries.clear();
 
-    // We don't want to hiccups in the middle of the experiment.
+    // hint_max_count: We don't want to hiccups in the middle of the experiment.
     // std::cout << "Profiling results." << std::endl;
   }
 };
 
 #endif // REPORTER_H
-
-// template <typename DescriberFunc>
 
 
 // forked from: https://github.com/sohale/gpu-experimentations/blob/main/experiments/11_matrix_cuda/src/runtime_profiling_reporter.h
