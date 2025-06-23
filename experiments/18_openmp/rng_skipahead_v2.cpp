@@ -8,6 +8,9 @@
 
 #include <omp.h>
 
+#include "profilers.hpp"
+#include "runtime_profiling_reporter.hpp"
+
 typedef uint32_t rng_state_t;
 typedef uint32_t rng_value_t;
 
@@ -114,13 +117,33 @@ void print_values(rng_value_t* array, int N) {
   std::cout << "\n" << std::flush;
 }
 
+
+struct MyParams {
+  int M;
+};
+
 int main() {
+
+  Profiler profiler;
+
+
+  MyParams params{15}; // Example parameter, can be adjusted
+  int trial=1;
   const int N = 100;
   rng_value_t array[N];
 
+  // runProfiling
+
+
+  auto s = profiler.start();
   double time_start = omp_get_wtime();
+
   openmp_rng_serial(42, N, array);
+
   double time_end = omp_get_wtime();
+  double elapsed = s.stop();
+  auto e = ProfilingEntry<MyParams>{params, N, trial, elapsed};
+
   print_values(array, N);
 
   rng_value_t array2[N];
