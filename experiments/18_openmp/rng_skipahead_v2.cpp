@@ -138,18 +138,19 @@ int main() {
 
   // runProfiling
 
+  for(int n = 0; n <= N-1; n+=10) {
 
   auto s = profiler.start();
   double time_start = omp_get_wtime();
 
-  openmp_rng_serial(42, N, array);
+  openmp_rng_serial(42, n, array);
 
   double time_end = omp_get_wtime();
   double elapsed = s.stop();
-  auto e = ProfilingEntry<MyParams>{params, N, trial, elapsed};
+  auto e = ProfilingEntry<MyParams>{params, n, trial, elapsed};
 
   csv_reporter.record_measurement(e);
-
+  }
   print_values(array, N);
 
   rng_value_t array2[N];

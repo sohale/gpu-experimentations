@@ -81,12 +81,13 @@ template <typename ProfilingEntry>
 class InMemoryStructuredReporter {
 
 public:
-  InMemoryStructuredReporter(int hint_max_count = 8000) {
+  InMemoryStructuredReporter(const std::string &csv_filename, int hint_max_count = 8000)
+      : csv_filename(csv_filename) {
     ready_to_die = false;
     report_begin(hint_max_count);
   }
   ~InMemoryStructuredReporter() {
-    report_and_save_to_file();
+    report_and_save_to_file(this->csv_filename);
     // assert(this->ready_to_die, "You forgot to call
     // report_and_save_to_file()");
   }
@@ -99,11 +100,12 @@ public:
 private:
   std::vector<ProfilingEntry> report_entries;
   bool ready_to_die = false;
+  std::string csv_filename;
 
 private:
   // template <typename DescriberFunc>
   void
-  report_and_save_to_file(const std::string &csv_filename = "runtime_results.csv") {
+  report_and_save_to_file(const std::string &csv_filename) {
     std::ofstream file(csv_filename);
     if (file.is_open()) {
       file << "# Profiling Results\n";
@@ -117,7 +119,9 @@ private:
         const std::string SEP = ", ";
         auto escape = [](const std::string &s){return "\"" + s + "\""; };
 
-        file << entry.N << SEP << SEP  << entry.trial << SEP << entry.dtime << escape(label)  <<  "\n";
+        file << entry.N << SEP << entry.trial << SEP << entry.dtime << SEP
+             << escape(label)  <<  "\n";
+
         // on screen : stdout
         std::cout << "N: " << entry.N
                   << " Trial: " << entry.trial << " Time: " << entry.dtime

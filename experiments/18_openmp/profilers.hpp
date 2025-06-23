@@ -1,6 +1,7 @@
 #ifndef PROFILER_H
 #define PROFILER_H
 
+#include <cassert>
 #include <chrono>
 
 class Profiler {
@@ -11,7 +12,11 @@ private:
     std::chrono::high_resolution_clock::time_point started_timepoint;
     StartedTimer(
         std::chrono::high_resolution_clock::time_point started_timepoint)
-        : started_timepoint{started_timepoint} {}
+        : started_timepoint{started_timepoint} {
+
+          // verified it aliases steady_clock (Measuring durations reliably, even if system clock changes)
+          assert(std::chrono::high_resolution_clock::is_steady == true);
+        }
 
     // Using my "state chain" pattern:
     // gives a state-machine feel to it, when we add the stop her,
