@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <utility>
 #include <iostream>
+#include <functional>
 
 #include <cassert>
 #define assertm(exp, msg) assert((void(msg), exp))
@@ -166,17 +167,14 @@ int heuristic_nrep(int n) {
   }
 }
 
-int main() {
+void experiment(int N, std::function<void(int)> execute_callback) {
 
   Profiler profiler;
   InMemoryStructuredReporter<ProfilingEntry<MyParams>> csv_reporter("runtime_results.csv");
 
 
   MyParams params{15}; // Example parameter, can be adjusted
-  int trial=1;
-  int NRep = 100;
-  const int N = 100;
-  rng_value_t array[N];
+
 
   // runProfiling
 
@@ -191,7 +189,7 @@ int main() {
   int Nrep = heuristic_nrep(n);
   // std::cout << "Nrep for n = " << Nrep << std::endl;
   for (int rep = 0; rep < Nrep; ++rep) {
-  openmp_rng_serial(42, n, array);
+      execute_callback(n);
   }
 
   double time_end = omp_get_wtime();
@@ -201,6 +199,16 @@ int main() {
   csv_reporter.record_measurement(e);
   }
   }
+
+}
+int main() {
+
+  const int N = 100;
+  rng_value_t array[N];
+
+  experiment(N, [&array](int n){
+      openmp_rng_serial(42, n, array);
+  });
   print_values(array, N);
 
   rng_value_t array2[N];
