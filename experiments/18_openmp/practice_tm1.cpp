@@ -74,7 +74,8 @@ ResultReportType experiment2(int param_nthreads)
     double start_time =  omp_get_wtime();
     const double dx_step = 1.0/(double) num_steps;
     int actual_numthreads = -1;
-    double naive_sum[MAX_SLOTS];
+    constexpr int STACK_STRIDE = 64; // make sure satcks done overlap
+    double naive_sum[MAX_SLOTS][STACK_STRIDE];
     double total_sum = 0.0;
 
     #pragma omp parallel
@@ -87,18 +88,18 @@ ResultReportType experiment2(int param_nthreads)
 
         int M = nthreads;
         int offset = id;
-        naive_sum[offset] = 0.0;
+        naive_sum[offset][0] = 0.0;
         for ( int xi = offset; xi < num_steps; xi+=M)
         {
           double x = ( xi + 0.5 ) * dx_step;
-          naive_sum[offset] += 4.0 / ( 1.0 + x * x );
+          naive_sum[offset][0] += 4.0 / ( 1.0 + x * x );
         }
 
         #pragma omp barrier
 
 
         #pragma omp critical
-        total_sum += naive_sum[offset];
+        total_sum += naive_sum[offset][0];
 
         // if (id == 0)
         #pragma omp single
