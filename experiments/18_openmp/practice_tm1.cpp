@@ -58,6 +58,39 @@ ResultReportType experiment1(int param_nthreads)
 }
 
 
+ResultReportType experiment2(int param_nthreads)
+{
+    omp_set_num_threads(param_nthreads);
+    double start_time =  omp_get_wtime();
+    const double dx_step = 1.0/(double) num_steps;
+    int actual_numthreads = -1;
+    double sum = 0.0;
+    #pragma omp parallel
+    {
+
+        // private?
+        int id = omp_get_thread_num();
+
+        int nthreads = omp_get_num_threads();
+
+        int M = nthreads;
+        int offset = id;
+        for ( int xi = offset; xi < num_steps; xi+=M)
+        {
+          double x = ( xi + 0.5 ) * dx_step;
+          sum = sum + 4.0 / ( 1.0 + x * x );
+        }
+        // if (id == 0)
+        #pragma omp single
+        actual_numthreads = nthreads;
+
+    } // omp-parallel
+	  double result_value = dx_step * sum;
+    double run_time = omp_get_wtime() - start_time;
+    ResultReportType result = { .param_nthreads = param_nthreads, .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads};
+    return result;
+}
+
 
 int main() {
 
@@ -67,7 +100,7 @@ int main() {
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
       cout << trial << endl;
-      auto r = experiment1(param_nthreads);
+      auto r = experiment2(param_nthreads);
 
       results.push_back(r);
 
