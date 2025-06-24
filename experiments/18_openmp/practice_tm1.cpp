@@ -130,6 +130,14 @@ int main() {
   auto h1 =     print_histogram(times, HistogramSpecs{.num_bins=8*2});
   cout << endl;
 
+
+  // h1 = HistogramCooked::from_minmaxwidth(0,2, 0.1);
+  // h1 = HistogramCooked::from_minmaxwidth(0.0129, 0.0148, 0.001);
+  // stress test:
+  // h1 = HistogramCooked::from_minmaxwidth(0.0120+0.00299, 0.0150, 0.0005/2);
+  h1 = HistogramCooked::from_minmaxwidth(0.0120, 0.0150, 0.0005/2);
+  print_histogram(times, h1);
+
   for(int nth = 1; nth <= 4; nth++ )
   {
     cout << "nthreads=" << nth << endl;

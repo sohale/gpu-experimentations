@@ -8,6 +8,7 @@
 #include <string>
 #include <iomanip>
 #include <optional>
+#include <cassert>
 
 
 namespace ansi {
@@ -61,13 +62,38 @@ struct HistogramCooked  {
     HistogramSpecs hscopy;
 
     HistogramCooked(const HistogramSpecs &params, const std::vector<double>& data);
+
+
     /*
     HistogramCooked( const HistogramSpecs &with_precooked);
     */
+    static HistogramCooked from_minmaxwidth(double min, double max, double bin_width);
+private:
+    HistogramCooked(std::nullptr_t){};
 };
 
 
 
+HistogramCooked HistogramCooked::from_minmaxwidth(double min, double max, double bin_width) {
+// HistogramCooked histogram_base_range(double min, double max, double bin_width) {
+
+    HistogramSpecs temp_specs_params;
+    //temp_specs.num_bins = ; // default value
+    //temp_specs.graph_width = ; // keep default value
+    int numbins = std::ceil((max - min)/ bin_width);
+    assert(numbins > 0 && "Number of bins must be positive");
+    cout << "Number of bins: " << numbins << "\n";
+    temp_specs_params.num_bins = numbins;
+
+    HistogramCooked cooked(nullptr);
+    cooked.hscopy = temp_specs_params;
+    cooked.min = min;
+    cooked.max = std::max( max, min + bin_width * numbins);
+    cooked.bin_width = bin_width;
+    assert(cooked.min < cooked.max && "Min must be less than max");
+
+    return cooked;
+}
 
 
 
@@ -218,12 +244,12 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs 
     // from now on, barr the old params
     HistogramSpecs params = cooked.hscopy; // copy the specs from cooked, in case it is
 
-    HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked cooked);
-    return print_histogram(data, cooked);
-
+    void print_histogram(const std::vector<double>& data, const HistogramCooked &cooked);
+    print_histogram(data, cooked);
+    return cooked;
 }
 
-HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked cooked) {
+void print_histogram(const std::vector<double>& data, const HistogramCooked &cooked) {
     /* ideal syntax:
     if ...
     HistogramCooked cooked (params, data);
@@ -237,13 +263,19 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked
     auto orig_graph_width = cooked.hscopy.graph_width;
 
     std::vector<std::size_t> bins(orig_num_bins, 0);
+    std::size_t outof_bounds_count_max = 0;
+    std::size_t outof_bounds_count_min = 0;
+
+    // std::cout << "min: " << cooked.min << ", max: " << cooked.max << ", bin_width: " << cooked.bin_width << "\n";
 
     // Fill bins
     for (double val : data) {
 
         // cout << val << " ";
         // cout << "min: " << cooked.min << ", max: " << cooked.max << ", bin_width: " << cooked.bin_width << "\n";
-
+        int OUTOFBOUND_MAX = -1;
+        int OUTOFBOUND_MIN = -2;
+        /*
         auto discretise =[cooked, orig_num_bins](double val) ->  std::size_t  {
           return std::min(
             static_cast<std::size_t>((val - cooked.min) / cooked.bin_width),
@@ -251,14 +283,38 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked
         );
         };
         std::size_t idx = discretise(val);
+        */
+        int bin_idx = static_cast<int>((val - cooked.min) / cooked.bin_width);
+        if (bin_idx < 0 ) {
+            bin_idx = OUTOFBOUND_MIN; // mark as out of bounds
+        }
+        if (bin_idx >= bins.size()) {
+            bin_idx = OUTOFBOUND_MAX; // mark as out of bounds
+        }
 
         // std::size_t idx = std::min(static_cast<std::size_t>((val - min) / cooked.bin_width), orig_num_bins - 1);
-        ++bins[idx];
+        if (bin_idx == OUTOFBOUND_MAX) {
+            ++outof_bounds_count_max;
+        } else if (bin_idx == OUTOFBOUND_MIN) {
+            ++outof_bounds_count_min;
+        } else {
+            assert( bin_idx >= 0);
+            assert( bin_idx < bins.size());
+
+            std::size_t idx = static_cast<std::size_t>(bin_idx);
+            ++bins[idx];
+        }
 
     }
 
     // Determine scaling
     std::size_t max_count = *std::ranges::max_element(bins);
+    if (max_count == 0) {
+        // std::cerr << "All bins are empty.\n";
+        max_count = 1; // avoid division by zero
+    }
+    assert(orig_graph_width > 0);
+    assert(bins.size() > 0);
 
     std::cout << "Histogram (" << orig_num_bins << " bins):\n";
     std::cout << std::setprecision(6);
@@ -268,7 +324,9 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked
         double bin_start = cooked.min + i * cooked.bin_width;
         double bin_end = bin_start + cooked.bin_width;
         std::size_t count = bins[i];
+        // cout << i << " jss" << max_count << " count " << count << " orig_graph_width: " << orig_graph_width << "\n";
         std::size_t bar_len = static_cast<std::size_t>((static_cast<double>(count) / max_count) * orig_graph_width);
+        // cout << i << " jasd " << bar_len << " \n";
 
         std::cout << std::fixed << std::setprecision(4)
                 << "[" << bin_start << ", " << bin_end << "): ";
@@ -286,11 +344,21 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked
         }
 
         std::cout
-                << " (" << count << ")\n";
+                << ansi::dim << " (" << count << ")" <<  ansi::reset << "\n";
 
     }
-    return cooked;
+    if (outof_bounds_count_max > 0 || outof_bounds_count_min > 0) {
+        std::cout << ansi::yellow  << "Out of bounds: ";
+        if (outof_bounds_count_max > 0) {
+            std::cout <<  " >max: " << outof_bounds_count_max;
+        }
+        if (outof_bounds_count_min > 0) {
+            std::cout <<  " <min: " << outof_bounds_count_min;
+        }
+        std::cout << ansi::reset << "\n";
+    }
 }
+
 
 
 // for future
