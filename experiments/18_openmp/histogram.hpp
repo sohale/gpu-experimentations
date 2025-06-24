@@ -12,7 +12,6 @@ struct HistogramSpecs {
 };
 
 
-
 void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     if (data.empty()) {
         std::cerr << "Empty data.\n";
@@ -76,6 +75,7 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     }
 }
 
+/*
 int main() {
     std::vector<double> data = {
         1.2, 2.4, 2.8, 3.0, 3.1, 4.2, 4.4, 5.0, 5.1, 5.3, 5.5, 6.1, 6.5, 6.8, 7.0, 7.2, 8.0, 8.4, 9.5
@@ -84,3 +84,4 @@ int main() {
     print_histogram(data, HistogramSpecs{.num_bins=8});
     return 0;
 }
+*/
