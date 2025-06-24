@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <optional>
 #include <cassert>
+#include <numeric>
 
 
 namespace ansi {
@@ -322,7 +323,7 @@ void print_histogram(const std::vector<double>& data, const HistogramCooked &coo
 
     std::cout << "Histogram (" << orig_num_bins << " bins):\n";
     std::cout << std::setprecision(6);
-    std::cout << "Min: " << cooked.min << ", Max*: " << calculated_max << ", Bin Width: " << cooked.bin_width << "\n";
+    // std::cout << "Min: " << cooked.min << ", Max*: " << calculated_max << ", Bin Width: " << cooked.bin_width << "\n";
 
     for (std::size_t i = 0; i < orig_num_bins; ++i) {
         double bin_start = cooked.min + i * cooked.bin_width;
@@ -363,7 +364,26 @@ void print_histogram(const std::vector<double>& data, const HistogramCooked &coo
     }
 }
 
+template<typename T>
+void report_basic_stats(const std::vector<T>&data) {
+    std::cout << "Basic Statistics: ";
+    if (data.empty()) {
+        std::cerr << "Is empty.\n";
+        return;
+    }
+    auto [min_it, max_it] = std::ranges::minmax_element(data);
+    double min = *min_it;
+    double max = *max_it;
+    double sum = std::accumulate(data.begin(), data.end(), 0.0);
+    double mean = sum / data.size();
+    double sq_sum = std::inner_product(data.begin(), data.end(), data.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / data.size() - mean * mean);
 
+    std::cout << "min: " << min << ", ";
+    std::cout << "max: " << max << ", ";
+    std::cout << "avg: " << mean << ", ";
+    std::cout << "std: " << stdev << "\n";
+}
 
 // for future
 /*

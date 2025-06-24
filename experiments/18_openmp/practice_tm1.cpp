@@ -159,6 +159,7 @@ int main() {
   // C++ design is very specific.
   // print_histogram(times1, HistogramSpecs::fromCooked(h1));
   print_histogram(times1, h1);
+  report_basic_stats(times1);
   cout << endl;
 }
 
