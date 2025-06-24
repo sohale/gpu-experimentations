@@ -142,7 +142,8 @@ int main() {
   // print_histogram(times1, (HistogramSpecs)h1); // fails: HistogramSpecs(h1));
   // after a lot of search in various patterns, it went back to the same old typical C++ pattern.
   // C++ design is very specific.
-  print_histogram(times1, HistogramSpecs::fromCooked(h1));
+  // print_histogram(times1, HistogramSpecs::fromCooked(h1));
+  print_histogram(times1, h1);
   cout << endl;
 }
 

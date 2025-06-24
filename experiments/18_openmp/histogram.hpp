@@ -9,26 +9,35 @@
 #include <iomanip>
 #include <optional>
 
-
+/*
 struct HistogramSpecs;  // forward declare
 // forward-declared
 // struct HistogramCooked;
 // HistogramCooked::null();
+*/
+
+struct HistogramSpecs {
+  std::size_t num_bins = 10;
+  // length of the maximum histogram bar (histogram bars are horizontal)
+  std::size_t graph_width = 50;
+  /*
+  std::optional<HistogramCooked> precooked = std::nullopt;
+  static HistogramSpecs fromCooked(const HistogramCooked& c);
+  */
+};
+
 
 struct HistogramCooked  {
     double min;
     double max;
     double bin_width;
+    HistogramSpecs hscopy;
+
     HistogramCooked(const HistogramSpecs &params, const std::vector<double>& data);
+    /*
     HistogramCooked( const HistogramSpecs &with_precooked);
+    */
 };
-
-struct HistogramSpecs {
-  std::size_t num_bins = 10;
-  std::optional<HistogramCooked> precooked = std::nullopt;
-  static HistogramSpecs fromCooked(const HistogramCooked& c);
-};
-
 
 
 
@@ -44,8 +53,9 @@ struct HistogramSpecs {
   // std::shared_ptr<HistogramCooked> precooked = nullptr;
   // HistogramCooked precooked = HistogramCooked::null();
   // HistogramCooked precooked;
+  /*
   std::optional<HistogramCooked> precooked = std::nullopt;
-
+  */
 
   /*
   HistogramSpecs() = default;
@@ -68,6 +78,7 @@ struct HistogramSpecs {
         return *this;
     }
     */
+    /*
     // static
     HistogramSpecs HistogramSpecs::fromCooked(const HistogramCooked& c) {
         HistogramSpecs specs;
@@ -75,6 +86,7 @@ struct HistogramSpecs {
         specs.precooked = c; // std::make_unique<HistogramCooked>(c);
         return specs;
     }
+    */
 // };
 
 
@@ -88,6 +100,10 @@ struct HistogramSpecs {
     */
 
     HistogramCooked::HistogramCooked(const HistogramSpecs &params, const std::vector<double>& data) {
+
+
+        this->hscopy = params; // have a copy of the specss
+
         auto [min_it, max_it] = std::ranges::minmax_element(data);
         this-> min = *min_it;
         this-> max = *max_it;
@@ -100,6 +116,7 @@ struct HistogramSpecs {
     }
     //HistogramCooked( const HistogramCooked &precooked)
     //: min(precooked.min), max(precooked.max), bin_width(precooked.bin_width) {}
+    /*
     HistogramCooked::HistogramCooked( const HistogramSpecs &with_precooked)
     {
         // if (with_precooked.precooked != nullptr) {
@@ -110,6 +127,7 @@ struct HistogramSpecs {
         *this = *with_precooked.precooked;
         // : min(precooked->min), max(precooked->max), bin_width(precooked->bin_width)
     }
+    */
 
     /*
     // need to abandon ( due to cyclic dependency ) and use default contructor. which is error-prone for user.
@@ -131,15 +149,12 @@ struct HistogramSpecs {
 // };
 
 
-HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs params) {
+HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs params_) {
     if (data.empty()) {
         std::cerr << "Empty data.\n";
         // return HistogramCooked();
         throw std::invalid_argument("Empty data provided for histogram.");
     }
-
-    // length of the maximum histogram bar (histogram bars are horizontal)
-    std::size_t graph_width = 50;
 
     // HistogramSpecs -> HistogramCooked
     // params -> cooked
@@ -148,54 +163,85 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs 
     // struct HistogramCooked; // ...
 
     // cooked, baked
-    HistogramCooked cooked (params, data);
+    // HistogramCooked cooked0 (params, data);
     /*
     if (!precooked.is_null()) {
         cooked = precooked; // use precooked if provided
     }
     */
     // use precooked if provided
+    /*
     // if (params.precooked != nullptr) {
     if (params.precooked.has_value() ) {
-        cooked = *params.precooked;
+        cooked = params.precooked.value();
     } else {
         // cooked = HistogramCooked(params, data);
+        cooked = cooked0;
     }
+    */
+    /*
+    cout << "precooked.has_value: " << params_.precooked.has_value() << endl;
+    HistogramCooked cooked = params_.precooked.has_value() ? params_.precooked.value() : HistogramCooked(params_, data);
+    cout << cooked.min << " " << cooked.max << " " << cooked.bin_width << "\n";
+    */
 
+    HistogramCooked cooked(params_, data);
+
+    // watertight
+    // from now on, barr the old params
+    HistogramSpecs params = cooked.hscopy; // copy the specs from cooked, in case it is
+
+    HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked cooked);
+    return print_histogram(data, cooked);
+
+}
+
+HistogramCooked print_histogram(const std::vector<double>& data, HistogramCooked cooked) {
     /* ideal syntax:
     if ...
     HistogramCooked cooked (params, data);
     else
     HistogramCooked cooked (*params.precooked);
     */
+    // std::string num_bins;
 
+    // HistogramSpecs origparams = cooked.hscopy;
+    auto orig_num_bins = cooked.hscopy.num_bins;
+    auto orig_graph_width = cooked.hscopy.graph_width;
 
-    std::vector<std::size_t> bins(params.num_bins, 0);
+    std::vector<std::size_t> bins(orig_num_bins, 0);
 
     // Fill bins
     for (double val : data) {
 
-        auto discretise =[cooked, &params](double val) ->  std::size_t  {
-          return std::min(static_cast<std::size_t>((val - cooked.min) / cooked.bin_width), params.num_bins - 1);
+        // cout << val << " ";
+        // cout << "min: " << cooked.min << ", max: " << cooked.max << ", bin_width: " << cooked.bin_width << "\n";
+
+        auto discretise =[cooked, orig_num_bins](double val) ->  std::size_t  {
+          return std::min(
+            static_cast<std::size_t>((val - cooked.min) / cooked.bin_width),
+            orig_num_bins - 1
+        );
         };
         std::size_t idx = discretise(val);
 
-        // std::size_t idx = std::min(static_cast<std::size_t>((val - min) / cooked.bin_width), params.num_bins - 1);
+        // std::size_t idx = std::min(static_cast<std::size_t>((val - min) / cooked.bin_width), orig_num_bins - 1);
         ++bins[idx];
+
     }
 
     // Determine scaling
     std::size_t max_count = *std::ranges::max_element(bins);
 
-    std::cout << "Histogram (" << params.num_bins << " bins):\n";
+    std::cout << "Histogram (" << orig_num_bins << " bins):\n";
     std::cout << std::setprecision(6);
     std::cout << "Min: " << cooked.min << ", Max: " << cooked.max << ", Bin Width: " << cooked.bin_width << "\n";
 
-    for (std::size_t i = 0; i < params.num_bins; ++i) {
+    for (std::size_t i = 0; i < orig_num_bins; ++i) {
         double bin_start = cooked.min + i * cooked.bin_width;
         double bin_end = bin_start + cooked.bin_width;
         std::size_t count = bins[i];
-        std::size_t bar_len = static_cast<std::size_t>((static_cast<double>(count) / max_count) * graph_width);
+        std::size_t bar_len = static_cast<std::size_t>((static_cast<double>(count) / max_count) * orig_graph_width);
 
         std::cout << std::fixed << std::setprecision(4)
                   << "[" << bin_start << ", " << bin_end << "): "
