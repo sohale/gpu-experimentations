@@ -64,6 +64,7 @@ ResultReportType experiment1(int param_nthreads)
     return result;
 }
 
+constexpr int MAX_SLOTS = 1000; // maximum number of threads
 /*
 Deliberately incorrect.
 */
@@ -73,7 +74,9 @@ ResultReportType experiment2(int param_nthreads)
     double start_time =  omp_get_wtime();
     const double dx_step = 1.0/(double) num_steps;
     int actual_numthreads = -1;
-    double naive_sum = 0.0;
+    double naive_sum[MAX_SLOTS];
+    double total_sum = 0.0;
+
     #pragma omp parallel
     {
 
@@ -84,17 +87,25 @@ ResultReportType experiment2(int param_nthreads)
 
         int M = nthreads;
         int offset = id;
+        naive_sum[offset] = 0.0;
         for ( int xi = offset; xi < num_steps; xi+=M)
         {
           double x = ( xi + 0.5 ) * dx_step;
-          naive_sum = naive_sum + 4.0 / ( 1.0 + x * x );
+          naive_sum[offset] += 4.0 / ( 1.0 + x * x );
         }
+
+        #pragma omp barrier
+
+
+        #pragma omp critical
+        total_sum += naive_sum[offset];
+
         // if (id == 0)
         #pragma omp single
         actual_numthreads = nthreads;
 
     } // omp-parallel
-	  double result_value = dx_step * naive_sum;
+	  double result_value = dx_step * total_sum;
     double run_time = omp_get_wtime() - start_time;
     ResultReportType result = {
       .param_nthreads = param_nthreads, .param_experno = 2,
