@@ -57,7 +57,7 @@ struct HistogramSpecs {
 
 struct HistogramCooked  {
     double min;
-    double max;
+    // double max;
     double bin_width;
     HistogramSpecs hscopy;
 
@@ -88,9 +88,10 @@ HistogramCooked HistogramCooked::from_minmaxwidth(double min, double max, double
     HistogramCooked cooked(nullptr);
     cooked.hscopy = temp_specs_params;
     cooked.min = min;
-    cooked.max = std::max( max, min + bin_width * numbins);
+    // cooked.max = std::max( max, min + bin_width * numbins);
+    double max_ =  min + bin_width * numbins;
     cooked.bin_width = bin_width;
-    assert(cooked.min < cooked.max && "Min must be less than max");
+    assert(cooked.min < max_ && "Min must be less than max");
 
     return cooked;
 }
@@ -159,7 +160,8 @@ struct HistogramSpecs {
 
         auto [min_it, max_it] = std::ranges::minmax_element(data);
         this-> min = *min_it;
-        this-> max = *max_it;
+        // this-> max = *max_it;
+        double max = *max_it;
         bin_width = (max - min) / params.num_bins;
 
         if (min == max) {
@@ -316,9 +318,11 @@ void print_histogram(const std::vector<double>& data, const HistogramCooked &coo
     assert(orig_graph_width > 0);
     assert(bins.size() > 0);
 
+    double calculated_max = cooked.min + cooked.bin_width * orig_num_bins;
+
     std::cout << "Histogram (" << orig_num_bins << " bins):\n";
     std::cout << std::setprecision(6);
-    std::cout << "Min: " << cooked.min << ", Max: " << cooked.max << ", Bin Width: " << cooked.bin_width << "\n";
+    std::cout << "Min: " << cooked.min << ", Max*: " << calculated_max << ", Bin Width: " << cooked.bin_width << "\n";
 
     for (std::size_t i = 0; i < orig_num_bins; ++i) {
         double bin_start = cooked.min + i * cooked.bin_width;
