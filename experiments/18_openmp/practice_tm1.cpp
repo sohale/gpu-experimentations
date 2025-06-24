@@ -100,6 +100,9 @@ ResultReportType experiment2(int param_nthreads)
 
         #pragma omp critical
         total_sum += naive_sum[offset][0];
+        // todo: this is serial
+        // a way to prarallelise it is, like merge-sort, first pairwise (half number of threads), then half, etc
+        // why not do this in the first place in the first one?
 
         // if (id == 0)
         #pragma omp single
@@ -118,12 +121,13 @@ ResultReportType experiment2(int param_nthreads)
 
 int main() {
 
+  int MAX_NUMTHREADS = 4*4;
   PARAM const int NTRIALS = 10;
   vector<ResultReportType> results;
-  for (int param_nthreads = 1; param_nthreads <= 4; param_nthreads++ )
+  for (int param_nthreads = 1; param_nthreads <= MAX_NUMTHREADS; param_nthreads++ )
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
-      cout << trial << " " << std::flush;
+      cout << trial << " "; // << std::flush;
       auto r = experiment2(param_nthreads);
 
       results.push_back(r);
@@ -157,7 +161,7 @@ int main() {
 
   print_histogram(times, h1);
 
-  for(int nth = 1; nth <= 4; nth++ )
+  for(int nth = 1; nth <= MAX_NUMTHREADS; nth++ )
   {
     cout << "nthreads=" << nth << endl;
 
