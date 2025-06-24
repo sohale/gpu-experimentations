@@ -15,11 +15,11 @@ clang++ -fopenmp -O2 -std=c++20 practice_tm1.cpp  -o practice_tm1.exec
 using std::vector;
 using std::cout;
 using std::endl;
-
+#define PARAM
 
 // static long num_steps = 100000000;
-
-static long num_steps = 1000000;
+// static long num_steps = 1000000;
+static long num_steps = 10000000;
 
 
 
@@ -41,8 +41,7 @@ ResultReportType experiment1(int param_nthreads)
     double sum = 0.0;
     #pragma omp parallel
     {
-    // #pragma omp single
-        // printf(" num_threads = %d",omp_get_num_threads());
+        #pragma omp single
         actual_numthreads = omp_get_num_threads();
 
     // #pragma omp for reduction(+:sum)
@@ -58,11 +57,11 @@ ResultReportType experiment1(int param_nthreads)
     return result;
 }
 
-#define param
+
 
 int main() {
 
-  param const int NTRIALS = 10;
+  PARAM const int NTRIALS = 10;
   vector<ResultReportType> results;
   for (int param_nthreads = 1; param_nthreads <= 4; param_nthreads++ )
   {
