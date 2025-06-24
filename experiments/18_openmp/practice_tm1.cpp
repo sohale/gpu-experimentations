@@ -64,7 +64,9 @@ ResultReportType experiment1(int param_nthreads)
     return result;
 }
 
-
+/*
+Deliberately incorrect.
+*/
 ResultReportType experiment2(int param_nthreads)
 {
     omp_set_num_threads(param_nthreads);
@@ -109,15 +111,15 @@ int main() {
   for (int param_nthreads = 1; param_nthreads <= 4; param_nthreads++ )
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
-      cout << trial << endl;
+      cout << trial << " " << std::flush;
       auto r = experiment2(param_nthreads);
 
       results.push_back(r);
 
     }
   }
-
   cout << endl;
+
   for(const auto &r : results) {
      cout << "result= " << r.result_value << "  " << r.run_time <<"(s) " << " threads:" << r.actual_numthreads << "/" << r.param_nthreads <<  "   \t ε=" << (r.result_value-std::numbers::pi) << "\n";
   }
