@@ -75,6 +75,75 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     }
 }
 
+
+// for future
+/*
+C++26:
+template <auto MemberPtr>
+constexpr auto project = std::views::transform([](auto&& obj) -> decltype(auto) {
+    return std::forward<decltype(obj)>(obj).*MemberPtr;
+});
+  auto run_times = reports
+    | project<&ResultReportType::run_time>
+    | std::ranges::to<std::vector>();
+*/
+/*
+template <std::ranges::input_range R>
+auto to_vector(R&& r) {
+    return std::vector(std::ranges::begin(r), std::ranges::end(r));
+}
+*/
+
+/*
+template <std::ranges::input_range R>
+auto to_vector(R&& range) {
+    return std::vector<std::ranges::range_value_t<R>>(std::ranges::begin(range), std::ranges::end(range));
+}
+*/
+
+
+// attempts for statements that do the mapping in main():
+
+  /*
+  auto data = auto sorted_times = results
+    | std::views::filter([](auto& r) { return r.actual_numthreads > 1; })
+    | std::views::transform(&ResultReportType::run_time)
+    | std::ranges::to<std::vector>();
+  */
+  /* C++26
+  auto run_times = reports
+    | std::views::transform(&ResultReportType::run_time)
+    | std::ranges::to<std::vector>();
+  */
+  /*
+  auto view = reports | std::views::transform(&ResultReportType::run_time);
+  std::vector<double> run_times(view.begin(), view.end());
+  */
+  // auto run_times = to_vector(reports | std::views::transform(&ResultReportType::run_time));
+
+  /*
+  auto run_times = to_vector(
+    reports | std::views::transform(&ResultReportType::run_time)
+  );
+  */
+  //auto view = reports | std::views::transform(&ResultReportType::run_time);
+  //   std::vector<double> run_times(view.begin(), view.end());
+//
+
+
+template<typename ST, typename MapFunc>
+auto myv_map(const std::vector<ST>& array, MapFunc map) {
+    // C++ cannot infer template-arg from return type of a given lambda
+    using DT = std::invoke_result_t<MapFunc, ST>;
+    std::vector<DT> res;
+    for( const ST& e : array) {
+        DT copy = map(e);
+        res.push_back(copy);
+    }
+    return res;
+}
+
+
 /*
 int main() {
     std::vector<double> data = {

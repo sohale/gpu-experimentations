@@ -15,6 +15,8 @@ clang++ -fopenmp -O2 -std=c++20 practice_tm1.cpp  -o practice_tm1.exec
 using std::vector;
 using std::cout;
 using std::endl;
+#include "histogram.hpp"
+
 #define PARAM
 
 // static long num_steps = 100000000;
@@ -26,6 +28,8 @@ static long num_steps = 10000000;
 struct ResultReportType {
   // in-givens:
   int param_nthreads;
+  int param_experno;
+
   // outcomes:
   double result_value;
   double run_time;
@@ -53,7 +57,10 @@ ResultReportType experiment1(int param_nthreads)
     }
 	  double result_value = dx_step * sum;
     double run_time = omp_get_wtime() - start_time;
-    ResultReportType result = { .param_nthreads = param_nthreads, .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads};
+    ResultReportType result = {
+      .param_nthreads = param_nthreads, .param_experno = 1,
+      .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
+    };
     return result;
 }
 
@@ -87,7 +94,10 @@ ResultReportType experiment2(int param_nthreads)
     } // omp-parallel
 	  double result_value = dx_step * sum;
     double run_time = omp_get_wtime() - start_time;
-    ResultReportType result = { .param_nthreads = param_nthreads, .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads};
+    ResultReportType result = {
+      .param_nthreads = param_nthreads, .param_experno = 2,
+      .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
+    };
     return result;
 }
 
@@ -106,9 +116,15 @@ int main() {
 
     }
   }
+
   cout << endl;
   for(const auto &r : results) {
      cout << "result= " << r.result_value << "  " << r.run_time <<"(s) " << " threads:" << r.actual_numthreads << "/" << r.param_nthreads <<  "   \t ε=" << (r.result_value-std::numbers::pi) << "\n";
   }
   cout << endl;
+
+
+  vector<double> times = myv_map(results, [](const ResultReportType&r) -> double {return r.run_time;});
+  print_histogram(times, HistogramSpecs{.num_bins=8});
+
 }
