@@ -124,7 +124,7 @@ ResultReportType experiment2(int param_nthreads)
 // * See https://www.youtube.com/watch?v=WcPZLJKtywc  07 Module 4:  (Barriers, critical, atomic)
 
 
-// Uses private sums
+// Uses private sums, still cyclic.
 ResultReportType experiment3(int param_nthreads)
 {
     omp_set_num_threads(param_nthreads);
@@ -161,12 +161,48 @@ ResultReportType experiment3(int param_nthreads)
 	  double result_value = dx_step * total_sum;
     double run_time = omp_get_wtime() - start_time;
     ResultReportType result = {
-      .param_nthreads = param_nthreads, .param_experno = 2,
+      .param_nthreads = param_nthreads, .param_experno = 3,
       .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
     };
     return result;
 }
 
+// #pragma omp for
+// should not work ( reduces total_sum) if `#pragma omp for` without the `reduction` clause.
+ResultReportType experiment4(int param_nthreads)
+{
+    omp_set_num_threads(param_nthreads);
+    double start_time =  omp_get_wtime();
+    const double dx_step = 1.0/(double) num_steps;
+    int actual_numthreads = -1;
+
+    double total_sum = 0.0;
+
+    #pragma omp parallel
+    {
+
+        // #pragma omp for // wrong
+        #pragma omp for reduction (+:total_sum)
+        for ( int xi = 0; xi < num_steps; xi++)
+        {
+          double x = ( xi + 0.5 ) * dx_step;
+          total_sum += 4.0 / ( 1.0 + x * x );
+        }
+        //#pragma omp critical
+        //total_sum += private_sum;
+
+        #pragma omp single
+        actual_numthreads = omp_get_num_threads();
+
+    } // omp-parallel
+	  double result_value = dx_step * total_sum;
+    double run_time = omp_get_wtime() - start_time;
+    ResultReportType result = {
+      .param_nthreads = param_nthreads, .param_experno = 4,
+      .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
+    };
+    return result;
+}
 
 
 int main() {
@@ -178,7 +214,7 @@ int main() {
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
       cout << trial << " "; // << std::flush;
-      auto r = experiment3(param_nthreads);
+      auto r = experiment4(param_nthreads);
 
       results.push_back(r);
 
