@@ -125,6 +125,14 @@ int main() {
 
 
   vector<double> times = myv_map(results, [](const ResultReportType&r) -> double {return r.run_time;});
-  print_histogram(times, HistogramSpecs{.num_bins=8});
+  print_histogram(times, HistogramSpecs{.num_bins=8*2});
+  cout << endl;
+
+  vector<double> times1 = myv_map(results,
+    [](const ResultReportType&r) -> double {return r.run_time;},
+    [](const ResultReportType&r) -> bool {return r.actual_numthreads == 1;}
+  );
+  print_histogram(times1, HistogramSpecs{.num_bins=8*2});
+  cout << endl;
 
 }

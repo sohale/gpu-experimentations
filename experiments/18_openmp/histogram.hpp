@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
-#include <ranges>
 #include <iomanip>
 
 struct HistogramSpecs {
@@ -22,7 +21,7 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
 
     // length of the maximum histogram bar (histogram bars are horizontal)
     std::size_t graph_width = 50;
-    
+
     // HistogramSpecs -> HistogramCooked
     // params -> cooked
 
@@ -49,12 +48,12 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
 
     // Fill bins
     for (double val : data) {
-        
+
         auto discretise =[cooked, params](double val) ->  std::size_t  {
           return std::min(static_cast<std::size_t>((val - cooked.min) / cooked.bin_width), params.num_bins - 1);
         };
         std::size_t idx = discretise(val);
-        
+
         // std::size_t idx = std::min(static_cast<std::size_t>((val - min) / cooked.bin_width), params.num_bins - 1);
         ++bins[idx];
     }
@@ -62,14 +61,16 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     // Determine scaling
     std::size_t max_count = *std::ranges::max_element(bins);
 
-    std::cout << "Histogram (" << params.num_bins << " bins):\n\n";
+    std::cout << "Histogram (" << params.num_bins << " bins):\n";
+    std::cout << "Min: " << cooked.min << ", Max: " << cooked.max << ", Bin Width: " << cooked.bin_width << "\n";
+
     for (std::size_t i = 0; i < params.num_bins; ++i) {
         double bin_start = cooked.min + i * cooked.bin_width;
         double bin_end = bin_start + cooked.bin_width;
         std::size_t count = bins[i];
         std::size_t bar_len = static_cast<std::size_t>((static_cast<double>(count) / max_count) * graph_width);
 
-        std::cout << std::fixed << std::setprecision(2)
+        std::cout << std::fixed << std::setprecision(4)
                   << "[" << bin_start << ", " << bin_end << "): "
                   << std::string(bar_len, '#') << " (" << count << ")\n";
     }
@@ -139,6 +140,19 @@ auto myv_map(const std::vector<ST>& array, MapFunc map) {
     for( const ST& e : array) {
         DT copy = map(e);
         res.push_back(copy);
+    }
+    return res;
+}
+template<typename ST, typename MapFunc, typename FilterFunc>
+auto myv_map(const std::vector<ST>& array, MapFunc map, FilterFunc filt) {
+    // C++ cannot infer template-arg from return type of a given lambda
+    using DT = std::invoke_result_t<MapFunc, ST>;
+    std::vector<DT> res;
+    for( const ST& e : array) {
+        if (filt(e)) {
+            DT copy = map(e);
+            res.push_back(copy);
+        }
     }
     return res;
 }
