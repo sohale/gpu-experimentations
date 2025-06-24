@@ -73,7 +73,7 @@ ResultReportType experiment2(int param_nthreads)
     double start_time =  omp_get_wtime();
     const double dx_step = 1.0/(double) num_steps;
     int actual_numthreads = -1;
-    double sum = 0.0;
+    double naive_sum = 0.0;
     #pragma omp parallel
     {
 
@@ -87,14 +87,14 @@ ResultReportType experiment2(int param_nthreads)
         for ( int xi = offset; xi < num_steps; xi+=M)
         {
           double x = ( xi + 0.5 ) * dx_step;
-          sum = sum + 4.0 / ( 1.0 + x * x );
+          naive_sum = naive_sum + 4.0 / ( 1.0 + x * x );
         }
         // if (id == 0)
         #pragma omp single
         actual_numthreads = nthreads;
 
     } // omp-parallel
-	  double result_value = dx_step * sum;
+	  double result_value = dx_step * naive_sum;
     double run_time = omp_get_wtime() - start_time;
     ResultReportType result = {
       .param_nthreads = param_nthreads, .param_experno = 2,

@@ -62,6 +62,7 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     std::size_t max_count = *std::ranges::max_element(bins);
 
     std::cout << "Histogram (" << params.num_bins << " bins):\n";
+    std::cout << std::setprecision(6);
     std::cout << "Min: " << cooked.min << ", Max: " << cooked.max << ", Bin Width: " << cooked.bin_width << "\n";
 
     for (std::size_t i = 0; i < params.num_bins; ++i) {
