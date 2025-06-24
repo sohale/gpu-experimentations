@@ -1,4 +1,6 @@
+#include <cstddef>
 #include <iostream>
+#include <optional>
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -10,14 +12,44 @@ struct HistogramSpecs {
 
 };
 
+struct HistogramCooked  {
+    double min;
+    double max;
+    double bin_width;
 
-void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
-    if (data.empty()) {
-        std::cerr << "Empty data.\n";
-        return;
+    HistogramCooked(HistogramSpecs params, const std::vector<double>& data) {
+        auto [min_it, max_it] = std::ranges::minmax_element(data);
+        this-> min = *min_it;
+        this-> max = *max_it;
+        bin_width = (max - min) / params.num_bins;
+
+        if (min == max) {
+            std::cerr << "Data has no variation.\n";
+            throw std::invalid_argument("Data has no variation.");
+        }
     }
 
+    // idea: instead of precooked, we can specify it as an input to HistogramSpecs
+    // sentinel:
+    bool is_null() const {
+        return std::isnan(min) || std::isnan(max) || std::isnan(bin_width);
+    }
+    static HistogramCooked null() {
+        HistogramCooked n{nullptr}; // = {.min = std::nan(""), .max = std::nan(""), .bin_width = std::nan("")};
+        return n;
+    }
+    private:
+    HistogramCooked(std::nullptr_t) : min(std::nan("")), max(std::nan("")), bin_width(std::nan("")) {};
 
+};
+
+
+HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs params, HistogramCooked precooked=HistogramCooked::null()) {
+    if (data.empty()) {
+        std::cerr << "Empty data.\n";
+        // return HistogramCooked();
+        throw std::invalid_argument("Empty data provided for histogram.");
+    }
 
     // length of the maximum histogram bar (histogram bars are horizontal)
     std::size_t graph_width = 50;
@@ -25,24 +57,14 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     // HistogramSpecs -> HistogramCooked
     // params -> cooked
 
-    struct HistogramCooked  {
-        double min;
-        double max;
-        double bin_width;
-        HistogramCooked(HistogramSpecs params, const std::vector<double>& data) {
-            auto [min_it, max_it] = std::ranges::minmax_element(data);
-            this-> min = *min_it;
-            this-> max = *max_it;
-            bin_width = (max - min) / params.num_bins;
+    // todo: flow like statements.
+    // struct HistogramCooked; // ...
 
-            if (min == max) {
-                std::cerr << "Data has no range.\n";
-                return;
-            }
-        }
-    };
     // cooked, baked
     HistogramCooked cooked (params, data);
+    if (!precooked.is_null()) {
+        cooked = precooked; // use precooked if provided
+    }
 
     std::vector<std::size_t> bins(params.num_bins, 0);
 
@@ -75,6 +97,7 @@ void print_histogram(const std::vector<double>& data, HistogramSpecs params) {
                   << "[" << bin_start << ", " << bin_end << "): "
                   << std::string(bar_len, '#') << " (" << count << ")\n";
     }
+    return cooked;
 }
 
 
