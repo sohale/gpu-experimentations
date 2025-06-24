@@ -66,7 +66,11 @@ ResultReportType experiment1(int param_nthreads)
 
 constexpr int MAX_SLOTS = 1000; // maximum number of threads
 /*
-Deliberately incorrect.
+Deliberately incorrect?
+
+Features:
+* interlaced/skipahead (cyclic) parallelism.
+* "reduce" using a `critical` and (after) a `barrier`.
 */
 ResultReportType experiment2(int param_nthreads)
 {
@@ -74,7 +78,7 @@ ResultReportType experiment2(int param_nthreads)
     double start_time =  omp_get_wtime();
     const double dx_step = 1.0/(double) num_steps;
     int actual_numthreads = -1;
-    constexpr int STACK_STRIDE = 64; // make sure satcks done overlap
+    constexpr int STACK_STRIDE = 64; // make sure satcks done overlap (padded)
     double naive_sum[MAX_SLOTS][STACK_STRIDE];
     double total_sum = 0.0;
 
@@ -117,6 +121,52 @@ ResultReportType experiment2(int param_nthreads)
     };
     return result;
 }
+// * See https://www.youtube.com/watch?v=WcPZLJKtywc  07 Module 4:  (Barriers, critical, atomic)
+
+
+// Uses private sums
+ResultReportType experiment3(int param_nthreads)
+{
+    omp_set_num_threads(param_nthreads);
+    double start_time =  omp_get_wtime();
+    const double dx_step = 1.0/(double) num_steps;
+    int actual_numthreads = -1;
+    // double naive_sum[MAX_SLOTS][STACK_STRIDE];
+    double total_sum = 0.0;
+
+    #pragma omp parallel
+    {
+        // private
+        int id = omp_get_thread_num();
+        int nthreads = omp_get_num_threads();
+        int M = nthreads;
+        int offset = id;
+        // private
+        double private_sum = 0.0;
+        for ( int xi = offset; xi < num_steps; xi+=M)
+        {
+          double x = ( xi + 0.5 ) * dx_step;
+          private_sum += 4.0 / ( 1.0 + x * x );
+        }
+        // naive_sum[offset][0] = private_sum;
+        // #pragma omp barrier
+        #pragma omp critical
+        // #pragma omp atomic
+        total_sum += private_sum;
+
+        #pragma omp single
+        actual_numthreads = nthreads;
+
+    } // omp-parallel
+	  double result_value = dx_step * total_sum;
+    double run_time = omp_get_wtime() - start_time;
+    ResultReportType result = {
+      .param_nthreads = param_nthreads, .param_experno = 2,
+      .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
+    };
+    return result;
+}
+
 
 
 int main() {
@@ -128,7 +178,7 @@ int main() {
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
       cout << trial << " "; // << std::flush;
-      auto r = experiment2(param_nthreads);
+      auto r = experiment3(param_nthreads);
 
       results.push_back(r);
 
