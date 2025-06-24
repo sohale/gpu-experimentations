@@ -138,7 +138,11 @@ int main() {
     [](const ResultReportType&r) -> double {return r.run_time;},
     [nth](const ResultReportType&r) -> bool {return r.actual_numthreads == nth;}
   );
-  print_histogram(times1, HistogramSpecs{.num_bins=8*2}, h1);
+  // print_histogram(times1, HistogramSpecs{.num_bins=8*2}, h1);
+  // print_histogram(times1, (HistogramSpecs)h1); // fails: HistogramSpecs(h1));
+  // after a lot of search in various patterns, it went back to the same old typical C++ pattern.
+  // C++ design is very specific.
+  print_histogram(times1, HistogramSpecs::fromCooked(h1));
   cout << endl;
 }
 

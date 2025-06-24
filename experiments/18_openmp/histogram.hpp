@@ -1,23 +1,93 @@
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <string>
 #include <iomanip>
+#include <optional>
 
-struct HistogramSpecs {
-  std::size_t num_bins = 10;
 
-};
+struct HistogramSpecs;  // forward declare
+// forward-declared
+// struct HistogramCooked;
+// HistogramCooked::null();
 
 struct HistogramCooked  {
     double min;
     double max;
     double bin_width;
+    HistogramCooked(const HistogramSpecs &params, const std::vector<double>& data);
+    HistogramCooked( const HistogramSpecs &with_precooked);
+};
 
-    HistogramCooked(HistogramSpecs params, const std::vector<double>& data) {
+struct HistogramSpecs {
+  std::size_t num_bins = 10;
+  std::optional<HistogramCooked> precooked = std::nullopt;
+  static HistogramSpecs fromCooked(const HistogramCooked& c);
+};
+
+
+
+
+
+
+
+
+/*
+struct HistogramSpecs {
+  std::size_t num_bins = 10;
+*/
+  // std::unique_ptr<HistogramCooked> precooked = nullptr;
+  // std::shared_ptr<HistogramCooked> precooked = nullptr;
+  // HistogramCooked precooked = HistogramCooked::null();
+  // HistogramCooked precooked;
+  std::optional<HistogramCooked> precooked = std::nullopt;
+
+
+  /*
+  HistogramSpecs() = default;
+  // default designated initializer
+  HistogramSpecs(const HistogramSpecs&s) {
+    if (s.precooked != nullptr) {
+        throw std::invalid_argument("Cannot copy HistogramSpecs with precooked data.");
+    }
+    this->num_bins = 10;
+    // copies
+    this->precooked = nullptr; // s.precooked ? std::make_unique<HistogramCooked>(*s.precooked) : nullptr;
+  };
+  */
+  // HistogramSpecs(const HistogramSpecs&) = default;
+  /*
+  HistogramSpecs& operator=(const HistogramCooked& c)
+    {
+        this->num_bins = -1;
+        this->precooked = std::make_unique<HistogramCooked>(c);
+        return *this;
+    }
+    */
+    // static
+    HistogramSpecs HistogramSpecs::fromCooked(const HistogramCooked& c) {
+        HistogramSpecs specs;
+        specs.num_bins = -1; // or some default value
+        specs.precooked = c; // std::make_unique<HistogramCooked>(c);
+        return specs;
+    }
+// };
+
+
+
+// struct HistogramCooked  {
+    /*
+    moved to header:
+    double min;
+    double max;
+    double bin_width;
+    */
+
+    HistogramCooked::HistogramCooked(const HistogramSpecs &params, const std::vector<double>& data) {
         auto [min_it, max_it] = std::ranges::minmax_element(data);
         this-> min = *min_it;
         this-> max = *max_it;
@@ -28,7 +98,21 @@ struct HistogramCooked  {
             throw std::invalid_argument("Data has no variation.");
         }
     }
+    //HistogramCooked( const HistogramCooked &precooked)
+    //: min(precooked.min), max(precooked.max), bin_width(precooked.bin_width) {}
+    HistogramCooked::HistogramCooked( const HistogramSpecs &with_precooked)
+    {
+        // if (with_precooked.precooked != nullptr) {
+        if (!with_precooked.precooked.has_value()) {
+            throw std::invalid_argument("No precooked histogram data provided.");
+        }
+        // copy into this
+        *this = *with_precooked.precooked;
+        // : min(precooked->min), max(precooked->max), bin_width(precooked->bin_width)
+    }
 
+    /*
+    // need to abandon ( due to cyclic dependency ) and use default contructor. which is error-prone for user.
     // idea: instead of precooked, we can specify it as an input to HistogramSpecs
     // sentinel:
     bool is_null() const {
@@ -40,11 +124,14 @@ struct HistogramCooked  {
     }
     private:
     HistogramCooked(std::nullptr_t) : min(std::nan("")), max(std::nan("")), bin_width(std::nan("")) {};
+    // usage: as arg:
+    // HistogramCooked precooked=HistogramCooked::null()
+    */
 
-};
+// };
 
 
-HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs params, HistogramCooked precooked=HistogramCooked::null()) {
+HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs params) {
     if (data.empty()) {
         std::cerr << "Empty data.\n";
         // return HistogramCooked();
@@ -62,16 +149,33 @@ HistogramCooked print_histogram(const std::vector<double>& data, HistogramSpecs 
 
     // cooked, baked
     HistogramCooked cooked (params, data);
+    /*
     if (!precooked.is_null()) {
         cooked = precooked; // use precooked if provided
     }
+    */
+    // use precooked if provided
+    // if (params.precooked != nullptr) {
+    if (params.precooked.has_value() ) {
+        cooked = *params.precooked;
+    } else {
+        // cooked = HistogramCooked(params, data);
+    }
+
+    /* ideal syntax:
+    if ...
+    HistogramCooked cooked (params, data);
+    else
+    HistogramCooked cooked (*params.precooked);
+    */
+
 
     std::vector<std::size_t> bins(params.num_bins, 0);
 
     // Fill bins
     for (double val : data) {
 
-        auto discretise =[cooked, params](double val) ->  std::size_t  {
+        auto discretise =[cooked, &params](double val) ->  std::size_t  {
           return std::min(static_cast<std::size_t>((val - cooked.min) / cooked.bin_width), params.num_bins - 1);
         };
         std::size_t idx = discretise(val);
