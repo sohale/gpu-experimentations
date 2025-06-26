@@ -255,8 +255,8 @@ int main() {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
      cout << trial << " "; // << std::flush;
 
-     // ***********
-      auto r = experiment4(param_nthreads);
+      // ***********
+      auto r = experiment6(param_nthreads);
       // ***********
 
       results.push_back(r);
