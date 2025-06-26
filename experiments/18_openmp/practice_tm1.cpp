@@ -245,6 +245,35 @@ ResultReportType experiment5(int param_nthreads)
     return result;
 }
 
+// designed for GPU offloading
+ResultReportType experiment6(int param_nthreads)
+{
+    double start_time = omp_get_wtime();
+    const double dx_step = 1.0 / (double) num_steps;
+
+    double total_sum = 0.0;
+
+    #pragma omp target map(to: dx_step) map(from: total_sum)
+    #pragma omp parallel for reduction(+:total_sum)
+    for (int xi = 0; xi < num_steps; xi++) {
+        double x = (xi + 0.5) * dx_step;
+        total_sum += 4.0 / (1.0 + x * x);
+    }
+
+    double result_value = dx_step * total_sum;
+    double run_time = omp_get_wtime() - start_time;
+
+    ResultReportType result = {
+        .param_nthreads = param_nthreads,
+        .param_experno = 6,
+        .result_value = result_value,
+        .run_time = run_time,
+        .actual_numthreads = -1  // Cannot be determined on GPU
+    };
+    return result;
+}
+
+
 int main() {
 
   int MAX_NUMTHREADS = 4*4;

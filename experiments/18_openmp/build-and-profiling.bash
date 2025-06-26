@@ -12,6 +12,8 @@ BUILD=$(realpath "$EXPERDIR/build")
 mkdir -p "$BUILD" && rm "$BUILD/*" && mkdir -p "$BUILD"
 # cd "$SRC"
 
+# installation
+# sudo apt get clang libomp-dev. # usually installs clang14
 
 clang++ -fopenmp -O2 -std=c++17 \
     "$SRC/rng_skipahead_v2.cpp" \
