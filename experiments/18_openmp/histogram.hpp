@@ -86,9 +86,12 @@ HistogramCooked HistogramCooked::from_minmaxwidth(double min, double max, double
     cout << "Number of bins: " << numbins << "\n";
     temp_specs_params.num_bins = numbins;
 
+    const double eps = (bin_width/10.0 + std::fabs(max-min)/2000000.0 + 1e-9)/3.0;
+    assert(eps > 0);
+
     HistogramCooked cooked(nullptr);
     cooked.hscopy = temp_specs_params;
-    cooked.min = min;
+    cooked.min = min - eps;
     // cooked.max = std::max( max, min + bin_width * numbins);
     double max_ =  min + bin_width * numbins;
     cooked.bin_width = bin_width;
