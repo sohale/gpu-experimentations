@@ -96,6 +96,7 @@ HistogramCooked HistogramCooked::from_minmaxwidth(double min, double max, double
     double max_ =  min + bin_width * numbins;
     cooked.bin_width = bin_width;
     assert(cooked.min < max_ && "Min must be less than max");
+    assert(max_ >= max && "code: heuristic adjustments should not shrink the range");
 
     return cooked;
 }
