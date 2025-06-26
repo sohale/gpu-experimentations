@@ -205,6 +205,46 @@ ResultReportType experiment4(int param_nthreads)
 }
 
 
+// lastprivate must be shared
+ResultReportType experiment5(int param_nthreads)
+{
+    omp_set_num_threads(param_nthreads);
+    double start_time =  omp_get_wtime();
+    const double dx_step = 1.0/(double) num_steps;
+    int actual_numthreads = -1;
+
+    double total_sum = 0.0;
+
+    // why do we need 'private' if it needs to be defined before the parallel section? // private(xi)
+    // default(none) reveals: actual_numthreads, dx_step
+    // dx_step is a good case of private: firstprivate
+    // lastprivate() must be in a `for`
+    // #pragma omp default(none) // cannot have clause without directive
+    #pragma omp parallel default(none) shared(total_sum) firstprivate(dx_step) shared(actual_numthreads)
+    {
+
+        // #pragma omp for // wrong
+        #pragma omp for reduction (+:total_sum) lastprivate(actual_numthreads)
+        for ( int xi = 0; xi < num_steps; xi++)
+        {
+          double x = ( xi + 0.5 ) * dx_step;
+          total_sum += 4.0 / ( 1.0 + x * x );
+        }
+
+        #pragma omp single
+        actual_numthreads = omp_get_num_threads();
+        // actual_numthreads could be `omp shared` if used with `omp single`, or , `lastprivate(actual_numthreads)`
+
+    } // omp-parallel
+	  double result_value = dx_step * total_sum;
+    double run_time = omp_get_wtime() - start_time;
+    ResultReportType result = {
+      .param_nthreads = param_nthreads, .param_experno = 5,
+      .result_value = result_value, .run_time = run_time, .actual_numthreads = actual_numthreads
+    };
+    return result;
+}
+
 int main() {
 
   int MAX_NUMTHREADS = 4*4;
@@ -213,8 +253,11 @@ int main() {
   for (int param_nthreads = 1; param_nthreads <= MAX_NUMTHREADS; param_nthreads++ )
   {
     for(int trial = 0 ; trial < NTRIALS; trial++) {
-      cout << trial << " "; // << std::flush;
+     cout << trial << " "; // << std::flush;
+
+     // ***********
       auto r = experiment4(param_nthreads);
+      // ***********
 
       results.push_back(r);
 
