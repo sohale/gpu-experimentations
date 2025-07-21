@@ -18,9 +18,15 @@ jobs:
       - name: Prepare (to be moved to a docker image)
         # see also : https://gist.github.com/jprjr/7667947
         run: |
+          set -eux
+
           export PYTHON_VERSION=3.12.3
-          echo "export PYTHON_VERSION=$PYTHON_VERSION" >> "$GITHUB_ENV"
           # Yosys says it is tested on 3.6.
+
+          echo "
+            set -eux
+            export PYTHON_VERSION=$PYTHON_VERSION
+          " >> "$GITHUB_ENV"
 
           sudo apt-get update
 
@@ -36,6 +42,13 @@ jobs:
           # sudo apt-get install -y  pyenv
 
           curl https://pyenv.run | bash
+
+          # DRY:
+          export PYENV_ROOT="/root/dot.pyenv"
+          mkdir -p "$PYENV_ROOT"
+          export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+          eval "$(ssh-agent -s)"
+
           pyenv update
           pyenv install $PYTHON_VERSION
           pyenv global $PYTHON_VERSION
