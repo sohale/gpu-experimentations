@@ -18,6 +18,10 @@ jobs:
       - name: Prepare (to be moved to a docker image)
         # see also : https://gist.github.com/jprjr/7667947
         run: |
+          export PYTHON_VERSION=3.12.3
+          echo "export PYTHON_VERSION=$PYTHON_VERSION" >> "$GITHUB_ENV"
+          # Yosys says it is tested on 3.6.
+
           sudo apt-get update
 
           sudo apt-get install -y --no-install-recommends \
@@ -28,9 +32,16 @@ jobs:
             git \
             make
 
-          sudo apt-get install -y \
-            pyenv
-            #
+          # pyenv is not in apt
+          # sudo apt-get install -y  pyenv
+
+          curl https://pyenv.run | bash
+          pyenv update
+          pyenv install $PYTHON_VERSION
+          pyenv global $PYTHON_VERSION
+          # pyenv shell $PYTHON_VERSION
+          pyenv rehash
+
 
           echo '
           export PYENV_ROOT="/root/dot.pyenv"
@@ -38,6 +49,7 @@ jobs:
           export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
           eval "$(ssh-agent -s)"
           pyenv version
+          python --version
           ' >> "$GITHUB_ENV"
           # The "$GITHUB_ENV" is automatically sourced in the next steps
 
@@ -49,9 +61,6 @@ jobs:
           eval "$(ssh-agent -s)"
           pyenv version
 
-          pyenv install 3.12.3
-          pyenv shell 3.12.3
-          # Yosys tested on 3.6?
           python --version
 
       - name: cp my neurasic1.v
