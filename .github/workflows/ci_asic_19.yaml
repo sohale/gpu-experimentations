@@ -24,7 +24,6 @@ jobs:
           # Yosys says it is tested on 3.6.
 
           echo "
-            set -eux
             export PYTHON_VERSION=$PYTHON_VERSION
           " >> "$GITHUB_ENV"
 
@@ -152,6 +151,22 @@ jobs:
           echo "empty2"
           pwd
           echo "Under construction (2)"
+
+  quick-build:
+    runs-on: ubuntu-latest # same
+    steps:
+
+      - name: TBC
+        run: |
+          set -eux
+          echo "Check environment variables"
+          env
+          pwd
+          cd "$TARGET_DIR"
+          pwd
+          ls
+          pyenv version
+          python --version
 
 
 # Inspirations from:
