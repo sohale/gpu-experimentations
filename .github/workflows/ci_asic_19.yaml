@@ -4,7 +4,8 @@ on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "man
   workflow_dispatch:
 
 jobs:
-  verilog-yosis-full:
+    verilog-yosis-environment-prepare:
+    # verilog-yosis-full:
     # amaranth-verilog-yosis-asic
     # riscv-formal:  # job name
 
@@ -68,13 +69,13 @@ jobs:
           mkdir -p "$PYENV_ROOT"
 
           # Set up environment for the next steps
-          echo "
-            export PYENV_ROOT=\"$HOME/dot.pyenv\"
+          echo '
+            export PYENV_ROOT="$HOME/dot.pyenv"
             export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
-            # eval \"\$(ssh-agent -s)\" # You cannot GITHUB_ENV this. Repeat at each step.
+            # eval "$(ssh-agent -s)" # You cannot GITHUB_ENV this. Repeat at each step.
             # pyenv version
             # python --version
-          " >> "$GITHUB_ENV"
+          ' >> "$GITHUB_ENV"
           # The "$GITHUB_ENV" is automatically sourced in the next steps
 
       - name: Test use of pyenv
@@ -171,6 +172,7 @@ jobs:
           echo "Under construction (2)"
 
   quick-build:
+    depends-on: verilog-yosis-environment-prepare
     runs-on: ubuntu-latest # same
     steps:
 
