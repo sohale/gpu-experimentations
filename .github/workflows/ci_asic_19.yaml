@@ -171,7 +171,7 @@ jobs:
           pwd
           echo "Under construction (2)"
 
-  quick-build:
+    quick-build:
     depends-on: verilog-yosis-environment-prepare
     runs-on: ubuntu-latest # same
     steps:
