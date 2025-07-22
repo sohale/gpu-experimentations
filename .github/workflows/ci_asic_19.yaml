@@ -15,7 +15,7 @@ jobs:
 
     steps:
 
-      - name: Prepare environment: pyenv + ubuntu (to be moved to a docker image)
+      - name: Prepare environment pyenv + ubuntu (to be moved to a docker image)
         run: |
           set -eux
           # see also : https://gist.github.com/jprjr/7667947
