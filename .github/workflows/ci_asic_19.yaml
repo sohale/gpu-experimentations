@@ -71,7 +71,7 @@ jobs:
           echo "
             export PYENV_ROOT=\"$HOME/dot.pyenv\"
             export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
-            # eval \"$(ssh-agent -s)\" # You cannot GITHUB_ENV this. Repeat at each step.
+            # eval \"\$(ssh-agent -s)\" # You cannot GITHUB_ENV this. Repeat at each step.
             # pyenv version
             # python --version
           " >> "$GITHUB_ENV"
