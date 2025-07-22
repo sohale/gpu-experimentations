@@ -80,12 +80,15 @@ jobs:
 
       - name: Test use of pyenv
         run: |
+          echo 'debug1'
           echo "GITHUB_ENV=$GITHUB_ENV"
           env
           echo
           echo $PYENV_ROOT
           eval "$(ssh-agent -s)"
-          env
+          echo 'debug2'
+          env || :
+          echo 'debug3'
           pyenv version
 
           python --version
