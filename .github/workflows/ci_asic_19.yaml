@@ -1,5 +1,5 @@
 on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "manual trigger"
-  # push:
+  push: # e-enable to avoid many clicks each time. Comment out later.
   pull_request:
   workflow_dispatch:
 
@@ -50,7 +50,7 @@ jobs:
           export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
           eval "$(ssh-agent -s)"
 
-          pyenv update
+          pyenv update || :  # May fail, but not too bad. FIXME.
           pyenv install $PYTHON_VERSION
           pyenv global $PYTHON_VERSION
           # pyenv shell $PYTHON_VERSION
