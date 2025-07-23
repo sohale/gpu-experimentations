@@ -190,9 +190,24 @@ jobs:
     # initiate experiment 19: ASIC using OpenLANE
 
     steps:
+        uses: actions/checkout@v4
+        with:
+          # default is: ${{ github.repository }}, i.e. same repo.
+          repository: git@github.com:sohale/gpu-experimentations.git
+          submodules: 'recursive'
+          # fetch-depth: '' # default is 1!
+          # clean: '' # clean / hard-reset before fetching
+          # ref: '' # sha or branch to checkout
+        # $GITHUB_WORKSPACE
+        # path: where to clone it into
 
       - name: cp my neurasic1.v
         run: |
+          pwd
+          ls -alth
+          cd gpu-experimentations || :
+          pwd
+          ls -alth
           echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
           TARGET_DIR="experiments/19_asic_lane/yosis-build"
           mkdir -p "$TARGET_DIR"
