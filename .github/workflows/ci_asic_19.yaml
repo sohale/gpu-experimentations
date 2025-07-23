@@ -190,6 +190,7 @@ jobs:
     # initiate experiment 19: ASIC using OpenLANE
 
     steps:
+      - name: check out myself
         uses: actions/checkout@v4
         with:
           # default is: ${{ github.repository }}, i.e. same repo.
