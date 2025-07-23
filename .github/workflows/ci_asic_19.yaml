@@ -151,7 +151,7 @@ jobs:
           # All future steps need to start with:
           # set -eux ; eval "$(ssh-agent -s)"
 
-jobs:
+  # jobs:
   verilog-yosis-full:
     # amaranth-verilog-yosis-asic
     # riscv-formal:  # job name
