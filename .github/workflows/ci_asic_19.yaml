@@ -103,7 +103,7 @@ jobs:
           python --version
 
           pyenv update \
-              || echo "err code: $?"
+              || echo "err code: $?" \
               || :  # A non-critical step that may fail. FIXME.
           # Can be slow:
           pyenv install $PYTHON_VERSION
