@@ -129,6 +129,7 @@ jobs:
           set -eux
           echo 'debug1'
           echo "GITHUB_ENV=$GITHUB_ENV"
+          cat "$GITHUB_ENV"
           env
           echo
           echo $PYENV_ROOT
