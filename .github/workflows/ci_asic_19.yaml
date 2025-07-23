@@ -80,6 +80,7 @@ jobs:
 
       - name: Test use of pyenv
         run: |
+          set -eux
           echo 'debug1'
           echo "GITHUB_ENV=$GITHUB_ENV"
           env
@@ -92,6 +93,8 @@ jobs:
           pyenv version
 
           python --version
+          # All future steps need to start with:
+          # set -eux ; eval "$(ssh-agent -s)"
 
       - name: cp my neurasic1.v
         run: |
@@ -135,8 +138,8 @@ jobs:
 
       - name: Download and extract OSS CAD Suite
         run: |
-          set -eux
-          eval "$(ssh-agent -s)"
+          set -eux ; eval "$(ssh-agent -s)"
+
           cd "$TARGET_DIR"
           wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2025-07-21/oss-cad-suite-linux-x64-20250721.tgz
           tar -xvzf oss-cad-suite-linux-x64-20250721.tgz
@@ -144,8 +147,8 @@ jobs:
 
       - name: cp my neurasic1.v
         run: |
-          set -eux
-          eval "$(ssh-agent -s)"
+          set -eux ; eval "$(ssh-agent -s)"
+
           # TARGET_DIR="experiments/19_asic_lane/yosis-build"
           # mkdir -p "$TARGET_DIR"
           echo "TARGET_DIR: $TARGET_DIR"
@@ -154,8 +157,8 @@ jobs:
 
       - name: make checks
         run: |
-          set -eux
-          eval "$(ssh-agent -s)"
+          set -eux ; eval "$(ssh-agent -s)"
+
           # export TARGET_DIR="experiments/19_asic_lane/yosis-build"
           cd "$TARGET_DIR"
           echo "empty1"
@@ -166,6 +169,8 @@ jobs:
 
       - name: make check
         run: |
+          set -eux ; eval "$(ssh-agent -s)"
+
           # cd riscv-formal/cores/picorv32
           # make check
           export TARGET_DIR="experiments/19_asic_lane/yosis-build"
@@ -181,8 +186,8 @@ jobs:
 
       - name: TBC
         run: |
-          set -eux
-          eval "$(ssh-agent -s)"
+          set -eux ; eval "$(ssh-agent -s)"
+
           echo "Check environment variables"
           env
           pwd
