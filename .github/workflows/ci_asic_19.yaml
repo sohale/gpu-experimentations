@@ -119,6 +119,9 @@ jobs:
           echo '
             export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
           ' >> "$GITHUB_ENV"
+          echo 'debug0.1'
+          cat "$GITHUB_ENV"
+          echo 'debug0.2'
           # The "$GITHUB_ENV" is automatically sourced in the next steps
           # eval "$(ssh-agent -s)" # You cannot GITHUB_ENV this. Repeat at each step.
           # pyenv version
@@ -129,10 +132,14 @@ jobs:
           set -eux
           echo 'debug1'
           echo "GITHUB_ENV=$GITHUB_ENV"
-          cat "$GITHUB_ENV"
+          echo 'debug1.1'
+          cat "$GITHUB_ENV" # Needed to see the actual contents carried by GITHUB_ENV.
+          echo 'debug1.2'
           env
+          echo 'debug1.3'
           echo
-          echo $PYENV_ROOT
+          echo 'debug1.4'
+          echo $PYENV_ROOT # failed here
           eval "$(ssh-agent -s)"
           echo 'debug2'
           env || :
