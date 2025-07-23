@@ -42,7 +42,7 @@ jobs:
     #      Not to confise with "runner-image registries", e.g. https://github.com/actions/runner-images
     #  A host VM, and the docker image is inside it:
     #     inside the specified Docker container, which is "inside" (nested docker in docker).
-    #     you can specify its docker-registry too (since it is fetched inside that "VM": meta-image)
+    #     you can specify its docker-registry too (since it is fetched inside that "VM": meta-image). AKA "native runner".
     #     Hence, runner-image is a meta-image (VM-docker relationship, that is nested).
 
 
@@ -93,7 +93,9 @@ jobs:
 
           pyenv init  # dont miss this
 
-          eval "$(ssh-agent -s)"
+          # eval "$(ssh-agent -s)" # never do this!
+          eval "$(pyenv init -)" # this is the correct one
+
           echo "pyenv ssh-agent eval succeeded."
           echo "Pre-update pyenv version:"
           pyenv version
