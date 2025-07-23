@@ -76,12 +76,15 @@ jobs:
             wget \
             ca-certificates \
             curl \
-            llvm \
             libncurses5-dev \
             libncursesw5-dev \
             xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 \
             git \
             make
+
+            # removed:
+            #        llvm \
+
 
           echo "Ready to install pyenv"
 
