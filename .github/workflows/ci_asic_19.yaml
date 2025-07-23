@@ -62,9 +62,7 @@ jobs:
           export PYTHON_VERSION=3.12.3
           # Yosys says it is tested on 3.6.
 
-          echo "
-            export PYTHON_VERSION=$PYTHON_VERSION
-          " >> "$GITHUB_ENV"
+          echo "PYTHON_VERSION=$PYTHON_VERSION" >> "$GITHUB_ENV"
 
           sudo apt-get update
 
@@ -126,11 +124,9 @@ jobs:
           # Set up environment for the next steps
 
           echo "export PYENV_ROOT=\"$PYENV_ROOT\""
-          echo "export PYENV_ROOT=\"$PYENV_ROOT\"" >> "$GITHUB_ENV"
+          echo "PYENV_ROOT=$PYENV_ROOT" >> "$GITHUB_ENV"
           echo 'debug0.0'
-          echo '
-            export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
-          ' >> "$GITHUB_ENV"
+          echo 'PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH' >> "$GITHUB_ENV"
           echo 'debug0.1'
           cat "$GITHUB_ENV"
           echo 'debug0.2'
@@ -144,6 +140,8 @@ jobs:
         run: |
           set -eux
           echo 'debug1'
+          echo "PATH:=$PATH"
+          echo 'debug1.0'
           echo "GITHUB_ENV=$GITHUB_ENV"
           echo 'debug1.1'
           cat "$GITHUB_ENV" # Needed to see the actual contents carried by GITHUB_ENV.
@@ -187,9 +185,7 @@ jobs:
 
       - name: cp my neurasic1.v
         run: |
-          echo '
-            export TARGET_DIR="experiments/19_asic_lane/yosis-build"
-          ' >> "$GITHUB_ENV"
+          echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
           TARGET_DIR="experiments/19_asic_lane/yosis-build"
           mkdir -p "$TARGET_DIR"
           pwd
