@@ -3,16 +3,54 @@ on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "man
   pull_request:
   workflow_dispatch:
 
+# Workflow for experiment 19: ASIC using OpenLANE and/or FPGA
+
 jobs:
   verilog-yosis-environment-prepare:
     # verilog-yosis-full:
-    # amaranth-verilog-yosis-asic
-    # riscv-formal:  # job name
 
     runs-on: ubuntu-latest # docker image
-    # docker run -it ubuntu
+    # each is a fresh, isolated VM or container
+    # can target a different OS, VM type, or custom label
+    # it’s a GitHub-hosted runner label. Not a "docker run -it ubuntu"
+    # List: https://github.com/actions/runner-images
+    #   preloaded with tools
+    #  not docker image!
+    #
+    # Across jobs: (if differnt, or even the same "runner-image")
+    #    not shared live
+    #    No layer reuse across jobs
+    #    No container layering
 
-    # initiate experiment 19: ASIC using OpenLANE
+    # `job`s are fully isolated: state, image-contents.
+    # Different filesystem. All layers are separate.
+    # environment : different, not shared, instantiated.
+    # No disk layer sharing
+    # Different processes
+    # No memory sharing
+
+
+    # Hence, a new concept: "runner-image", which is Not "docker-image". But parallels that.
+
+    # So, How to share data between jobs:
+    #    artifacts: upload-artifact / download-artifact
+    #    "cache keys"
+
+    # So, how to use docker-image as a "runner-image"? (instead of.)
+    #    Add a `container.image: yosys/yosys:latest`
+    #      private (docker) registries possible
+    #      Not to confise with "runner-image registries", e.g. https://github.com/actions/runner-images
+    #  A host VM, and the docker image is inside it:
+    #     inside the specified Docker container, which is "inside" (nested docker in docker).
+    #     you can specify its docker-registry too (since it is fetched inside that "VM": meta-image)
+    #     Hence, runner-image is a meta-image (VM-docker relationship, that is nested).
+
+
+    # Conceptology:
+    #   * runner-image
+    #   * cache-key
+    #   * artifact
+
 
     steps:
 
@@ -110,6 +148,18 @@ jobs:
 
           # All future steps need to start with:
           # set -eux ; eval "$(ssh-agent -s)"
+
+jobs:
+  verilog-yosis-full:
+    # amaranth-verilog-yosis-asic
+    # riscv-formal:  # job name
+    needs: verilog-yosis-environment-prepare
+
+    runs-on: ubuntu-latest # docker image?
+
+    # initiate experiment 19: ASIC using OpenLANE
+
+    steps:
 
       - name: cp my neurasic1.v
         run: |
