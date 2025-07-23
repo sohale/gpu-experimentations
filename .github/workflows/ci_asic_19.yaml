@@ -173,8 +173,7 @@ jobs:
           pyenv versions
           pyenv version-file
           pyenv which python3
-          pyenv exec echo "$(python3 --version)"
-
+          pyenv exec /usr/bin/echo "$(python3 --version)" || :
 
 
           # All future steps need to start with:
@@ -260,6 +259,13 @@ jobs:
           echo "This will fail. Under construction (1)"
           make checks -j$(nproc)
           # see https://github.com/YosysHQ/picorv32/blob/main/Makefile
+
+      - name: Test python installtion using pyenv to reach here
+        run: |
+          set -eux ; eval "$(ssh-agent -s)"
+          pyenv version || : # Why fails?
+
+          python --version
 
       - name: make check
         run: |
