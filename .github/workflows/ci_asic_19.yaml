@@ -91,10 +91,10 @@ jobs:
           # DRY:
           export PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
-          pyenv init  # dont miss this
+          # pyenv init  # dont miss this? No: You actually should not do that. You wrap it in `eval`. There is no installation `init`.
 
           # eval "$(ssh-agent -s)" # never do this!
-          eval "$(pyenv init -)" # this is the correct one
+          eval "$(pyenv init -)" # this is the correct one. (Default usage?)
 
           echo "pyenv ssh-agent eval succeeded."
           echo "Pre-update pyenv version:"
