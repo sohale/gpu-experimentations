@@ -1,0 +1,89 @@
+name: Build and Cache Pyenv Image
+
+# todo: use dockerfile: .github/docker/ub_pyenv.dockerfile
+# builds & uploads a buildx-based docker image for the dev/build  environment (pyenv, and later, as a base image for the yosyss and yosys-bases flows
+
+on:
+  workflow_dispatch:  # manual trigger
+  push:
+  # what changes this should react to / get triggered?
+    paths:
+      # - .github/docker/ub_pyenv.dockerfile
+      # - .github/docker/pyenv-image/**
+      - .github/docker/**
+      - .github/workflows/build-ub-pyenv-image.yaml
+
+jobs:
+  buildx-build-and-cache-job: # build, build-and-cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        # i.e. current repo
+
+      # buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR (GitHub Container Registry)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare the secret files
+        run: echo "sosi_commit_hash=$(git rev-parse HEAD)" > ./commit_hash.txt
+
+      # The magic is done here:
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          # context: .github/docker/ub_pyenv.dockerfile
+          file: .github/docker/ub_pyenv.dockerfile
+          # context: . # why
+          context: .github/docker/context_dir
+          push: true
+          # specifies both name and "remote image repository"
+          tags: ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
+          secrets: |
+            date=commit_hash.txt
+
+      - name: Self-test
+  # jobs:
+  self-test1-using-built-image:
+    name: Use built image in test job
+    runs-on: ubuntu-latest
+    needs: buildx-build-and-cache-job
+
+    steps:
+      - name: Run container from built image
+        run: |
+          docker pull ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
+          docker run --rm ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest \
+              bash -c "echo Inside image with pyenv setup ; pyenv versions "
+
+  # jobs:
+  # To self test, cache, and shocase the usage:
+  self-test-2-pyenv-job:
+  # test-using-built-image:
+    runs-on: ubuntu-latest # runs in !
+    needs: buildx-build-and-cache-job
+    # optional (since it is default):
+    container:
+      image: ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
+    steps:
+      - name: Test use of pyenv Python via Run container from built image
+        run: |
+          # set -euo pipefail
+          # eval "$(ssh-agent -s)"
+          # eval "$(pyenv init -)" # Is this not needed? If so, this is the correct variant. (default pyenv-init-eval usage?)
+          pyenv global
+          pyenv version || : # Why fails?
+          pyenv versions
+          pyenv version-file
+          pyenv which python3
+          pyenv exec /usr/bin/echo "$(/usr/bin/python3 --version)" || :
+          which python
+          python --version
+          # as a dev env

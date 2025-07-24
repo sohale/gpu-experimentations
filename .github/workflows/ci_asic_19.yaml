@@ -8,6 +8,8 @@ on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "man
 jobs:
   verilog-yosis-environment-prepare:
     # verilog-yosis-full:
+    # todo: use dockerbuilder approach instead of this job, based on: .github/docker/ub_pyenv.dockerfile
+    #     and defer it to: .github/workflows/build-ub-pyenv-image.yaml
 
     runs-on: ubuntu-latest # docker image
     # each is a fresh, isolated VM or container
@@ -67,6 +69,7 @@ jobs:
 
           sudo apt-get update
 
+          # todo: Many of may be not necessary for 'pyenv':
           sudo apt-get install -y --no-install-recommends \
             make \
             build-essential \
