@@ -49,7 +49,8 @@ jobs:
           secrets: |
             date=commit_hash.txt
 
-      - name: Self-test
+      # - name: Self-test
+
   # jobs:
   self-test1-using-built-image:
     name: Use built image in test job
