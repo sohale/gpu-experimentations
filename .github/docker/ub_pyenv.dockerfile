@@ -48,6 +48,9 @@
 
 # Order of USER,  RUN, ENV, etc matters. Even ENV can be changed between RUN steps (see DEBIAN_FRONTEND).
 
+# Special (reserved) vars:
+#      `WORKDIR`
+
 # To enable BuildKit: (Docker BuildKit’s extended syntax)
 # First line should start with: # syntax=docker/dockerfile:1.3
 #      Necessary for new syntax suh as ARGs to be used in FROM
@@ -84,7 +87,8 @@
 # To make sure buildx is installed
 #    docker buildx version
 # To actually build:
-#    docker buildx build ./ub_pyenv.dockerfile
+#    date > ./sosi_sfile_1.txt
+#    docker buildx build --secret id=date,src=./sosi_sfile_1.txt  --tag test-ubpyenv1:latest -f ./ub_pyenv.dockerfile --load ./ctx/
 
 # To learn: build vs bake. (in context of "buildx")
 # To learn:
@@ -122,7 +126,6 @@
 
 
 
-
 # End of dev-docs.
 
 
@@ -149,6 +152,10 @@ ENV \
 ENV \
     PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
 
+# Implemenation stuff (not parameters of the produced image):
+# ARG ARG_BUILD_WORK_DIR=/mlir
+# WORKDIR ${ARG_BUILD_WORK_DIR}
+# ENV ENV_WORK_DIR=${ARG_BUILD_WORK_DIR}
 
 # Notes:
 #  "git checkout" does not fetch from the interwebs.
@@ -156,19 +163,17 @@ ENV \
 # The ...`_local.txt` file is created during the build, but, in the build, we are noot "INSIDE" the image (??).
 #. but where is the "./" ? I deliverately used it.
 
-RUN : \
-    && touch ./sosi_commit_hash_local.txt || : \
-    && echo "checkout and build: pwd=$(pwd), ARG WORKDIR=${WORKDIR}" \
-    && git rev-parse HEAD > ./sosi_commit_hash_local.txt \
-    && echo
 
 # Start with non-dev mode for apt-get commands:
 ENV \
     DEBIAN_FRONTEND=noninteractive
 
 RUN : \
-    && echo "First layer: apt-get" \
-    && apt-get update \
+    && echo "First layer: 1.0: apt-get update" \
+    && apt-get update
+
+RUN : \
+    && echo "First layer: 1.1: apt-get" \
     && apt-get install -y \
           build-essential \
           ca-certificates \
@@ -189,11 +194,24 @@ RUN : \
 #  Is llvm needed? (for pyenv)
 # "git" is needed for pyenv, which I happen to use in non-dev layer.
 
-# Seal for security:
-RUN : \
-    && rm -rf /var/lib/apt/lists/*
+# requires: git
+# attempt to get some commit hash, for debugging purposes. It is not important, so I skip it.
+#RUN : \
+#    && touch ./sosi_commit_hash_local.txt || : \
+#    && echo "checkout and build: pwd=$(pwd), ARG WORKDIR=${WORKDIR}" \
+#    && cd dev \
+#    && ls -alth \
+#    && pwd \
+#    && git rev-parse HEAD > ./sosi_commit_hash_local.txt \
+#    && echo
+#
+# ls -alth \. # will only show ... just that file that was touch ed.
+# cwd is in '/' (also the WORKDIR). WORKDIR="", empty.
+
+
 
 # Install pyenv
+# Causion: the "pyenv install" is very slow. I have used "Python-3.12.3".
 RUN : \
      && echo "Layer 2: pyenv" \
     && curl https://pyenv.run | bash \
@@ -206,38 +224,56 @@ RUN : \
 # Can be slow:
 #   A non-critical step that may fail. FIXME:
 #     pyenv update  || echo "err code: $?"  || :
-
+#   If already updated, the "pyenv update" will exit with an error code.
 RUN \
-    pyenv update \
-    && pyenv install ${MY_PYTHON_VERSION} \
+    pyenv update || : \
+    && pyenv install ${MY_PYTHON_VERSION} || : \
     && pyenv global ${MY_PYTHON_VERSION} \
-    && pyenv rehash
+    && pyenv rehash \
+    && echo "pyenv sanity check done."
 
 # Development mode necessities: e.g. bash
 
 # If dev mode (BTW, pyenv is suitable for dev mode. May not be essential for GH Actions CI mode, but let's keep it.)
 # Order of USER vs RUN matters.
 
-# If you want to customise the username:
-USER ${ARG_DEV_USER}
 
-
-# Dev tools
+# Dev tools 2
 RUN : \
-    && echo "Layer 3: pyenv" \
-    && set -eux \
-    && apt-get install -y  sudo ssh-client ca-certificates patch \
-    && apt-get install -y  bash curl wget git patch \
-    && apt-get install -y  less \
+    && echo "Layer 3: dev-tools" \
+    && apt-get install -y \
+        sudo \
     && :
 
+# It will not replace inside of echo '...' commands!
+# So, practically, an ARG is an env?
+# adds \" instead of the `"` for the echo.
+# It has to be after the installation sudo, also.
+# Dependency chain:
+#  installation of sudo -> actual ceration of user (needs sudo) -> setting USER -> runing any command using "user"
 RUN : \
-    && set -eux \
+    && printenv \
     && useradd -m -s /bin/bash -G sudo ${ARG_DEV_USER} \
-    && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && echo 'Username will be: ${ARG_DEV_USER}' \
+    # && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    #&& echo "Username will be: ${ARG_DEV_USER}" \
     && :
 
+
+# Dev tools 2
+RUN : \
+    && echo "Layer 4: dev-tools" \
+    && apt-get install -y \
+        ssh-client ca-certificates patch \
+        bash curl wget git patch \
+        less \
+    && :
+
+
+
+# Seal for security:
+#  (but do it only after inalling the  rest of dev tools. In fact, for dev, we may need to have more. So, I remove it. If we want it, we need to add it after the last apt-get. But we need to cancel this anyway)
+# RUN : \
+#     && rm -rf /var/lib/apt/lists/*
 
 
 # Leave it in a nice state for development / for a dev user:
@@ -259,6 +295,17 @@ CMD ["bash"]
 # Hence, three places! (two images: temporary (not commited) and final (which has layers + buildx-hyper-layers) , apart from , obviously, the local files in the system running the buildx)
 # id and target are secrets ("free parameters")
 # Correction: a secret, has both "id" and "src". (and "target"?)
-RUN --mount=type=secret,id=date,target=/sosi_commit_hash.txt \
-    BUILD_DATE=$(cat ./sosi_commit_hash_local.txt) && \
-    echo "Build date is ${BUILD_DATE}"
+# Uses the secret with --moun
+# Don't use "./"
+RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
+    BUILD_DATE=$(cat /run/secrets/build_date) && \
+    echo "Build date is ${BUILD_DATE}" && \
+    cat /run/secrets/build_date && \
+    echo
+
+
+# If you want to customise the username:
+# Does not "set" the user, just the future `RUN`s will be using this user.
+# So, must be after a RUN command that creates this user! Because, if befor, that (and any) will fail.
+USER ${ARG_DEV_USER}
+# From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
