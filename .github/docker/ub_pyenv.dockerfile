@@ -157,7 +157,7 @@ ENV \
 #. but where is the "./" ? I deliverately used it.
 
 RUN : \
-    && touch > ./sosi_commit_hash_local.txt && exit 0 || : \
+    && touch ./sosi_commit_hash_local.txt || : \
     && echo "checkout and build: pwd=$(pwd), ARG WORKDIR=${WORKDIR}" \
     && git rev-parse HEAD > ./sosi_commit_hash_local.txt \
     && echo
