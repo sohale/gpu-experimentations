@@ -319,6 +319,21 @@ jobs:
           python --version
 
 
+  # based on locally published docker image
+  quick-build-based-on-docker-image:
+    # independent: no "needs:"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
+      options: --user root  # optional: add extra Docker run args
+
+    steps:
+      - name: Check Python version
+        run: python --version
+
+      - name: Show current user
+        run: whoami
+
 # Inspirations from:
 # https://github.com/YosysHQ/picorv32/blob/main/.github/workflows/ci.yml
 # 87c89acc18994c8cf9a2311e871818e87d304568

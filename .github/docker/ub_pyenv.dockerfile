@@ -254,8 +254,8 @@ RUN : \
 RUN : \
     && printenv \
     && useradd -m -s /bin/bash -G sudo ${ARG_DEV_USER} \
-    # && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    #&& echo "Username will be: ${ARG_DEV_USER}" \
+    && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && echo "Username will be: ${ARG_DEV_USER}" \
     && :
 
 
@@ -307,5 +307,8 @@ RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
 # If you want to customise the username:
 # Does not "set" the user, just the future `RUN`s will be using this user.
 # So, must be after a RUN command that creates this user! Because, if befor, that (and any) will fail.
-USER ${ARG_DEV_USER}
+
+# USER ${ARG_DEV_USER}
+
 # From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
+# Also note that the "root" was the user for pyenv.
