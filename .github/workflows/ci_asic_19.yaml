@@ -179,22 +179,23 @@ jobs:
           # All future steps need to start with:
           # set -eux ; eval "$(ssh-agent -s)"
 
-  # jobs:
-  verilog-yosis-full:
-    # amaranth-verilog-yosis-asic
-    # riscv-formal:  # job name
-    needs: verilog-yosis-environment-prepare
-
-    runs-on: ubuntu-latest # docker image?
-
-    # initiate experiment 19: ASIC using OpenLANE
-
-    steps:
+# This section is commented to merge into the same "job":
+#  # jobs:
+#  verilog-yosis-full:
+#    # amaranth-verilog-yosis-asic
+#    # riscv-formal:  # job name
+#    needs: verilog-yosis-environment-prepare
+#
+#    runs-on: ubuntu-latest # docker image?
+#
+#    # initiate experiment 19: ASIC using OpenLANE
+#
+#    steps:
       - name: check out myself
         uses: actions/checkout@v4
         with:
           # default is: ${{ github.repository }}, i.e. same repo.
-          repository: git@github.com:sohale/gpu-experimentations.git
+          # repository: git@github.com:sohale/gpu-experimentations.git
           submodules: 'recursive'
           # fetch-depth: '' # default is 1!
           # clean: '' # clean / hard-reset before fetching
@@ -204,6 +205,7 @@ jobs:
 
       - name: cp my neurasic1.v
         run: |
+          echo "github.repository: ${{ github.repository }}"
           pwd
           ls -alth
           cd gpu-experimentations || :
