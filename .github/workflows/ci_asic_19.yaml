@@ -328,12 +328,11 @@ jobs:
     runs-on: ubuntu-latest # same
     steps:
 
-      #- name: checkout,git-pull
-      #
-      #  # checkout the repo before running the steps
-      #  uses: actions/checkout@v4
-      #  # a step cannot have both the uses and run keys:
-      #  # run: | ...
+      - name: checkout,git-pull self-repo
+      # checkout the repo before running the steps
+      uses: actions/checkout@v4
+      # a step cannot have both the uses and run keys:
+      # run: | ...
 
 
       - name: TBC
