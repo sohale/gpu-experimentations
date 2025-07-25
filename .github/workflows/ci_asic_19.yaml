@@ -203,12 +203,14 @@ jobs:
     # amaranth-verilog-yosis-asic
     # riscv-formal:  # job name
 
-    #needs: verilog-yosis-environment-prepare
+    #needs: verilog-yosis-environment-prepare--deprecated:
     # replaced by the docker approach
 
     runs-on: ubuntu-latest
     # Runs on a docker image, not directly on the host VM (parent/hyper-image GH-Action's)
     # Steps are run inside the container, rather than directly on the host VM: (is docker-mediated)
+    #         Another approach could have been: use docker inside a ".container:." approach, but I guess it does not work because docker is not good for docker-in-docker nesting.
+
     container:
       image: ghcr.io/yourname/ub-pyenv-image:latest
 
@@ -322,7 +324,7 @@ jobs:
           echo "Under construction (2)"
 
   quick-build:
-    needs: verilog-yosis-environment-prepare
+    # needs: verilog-yosis-environment-prepare--deprecated:
     runs-on: ubuntu-latest # same
     steps:
 
@@ -366,7 +368,10 @@ jobs:
   testin-pulling-docker-image-based-on-login:
     runs-on: ubuntu-latest
 
+
     # no "container:" or "container.image:"
+    # Explicitly pulls into the Host VM (but equivalently).
+
 
     steps:
 
@@ -380,6 +385,7 @@ jobs:
 
       - name: Check Python version
         run: |
+          # explicitly pulling
           docker pull ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
           docker run \
               --rm -it \
