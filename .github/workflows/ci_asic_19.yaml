@@ -328,10 +328,15 @@ jobs:
     runs-on: ubuntu-latest # same
     steps:
 
-      - name: TBC
+      #- name: checkout,git-pull
+      #
+      #  # checkout the repo before running the steps
+      #  uses: actions/checkout@v4
+      #  # a step cannot have both the uses and run keys:
+      #  # run: | ...
 
-        # checkout the repo before running the steps
-        uses: actions/checkout@v4
+
+      - name: TBC
 
         run: |
           set -eux ; eval "$(ssh-agent -s)"
@@ -341,6 +346,7 @@ jobs:
           echo "Check environment variables"
           env
           pwd  # /home/runner/work/gpu-experimentations/gpu-experimentations
+          ls -alth # Is it already pulled?!
           cd "$TARGET_DIR"
           pwd
           ls
