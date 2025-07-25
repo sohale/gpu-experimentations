@@ -361,6 +361,9 @@ jobs:
           # So, why is it "gpu-experimentations/gpu-experimentations"? -- even before the pull. Not sure. But that folder is "re-"used for git clone.
           ls -alth ..
           echo "TARGET_DIR: ${TARGET_DIR:-NOT SET WHY}"
+          # now "$TARGET_DIR" is set, but the directory does not exist yet.
+          # Actually, it's better to make in a different folder, clearly.
+          mkdir -p "$TARGET_DIR"
           cd "$TARGET_DIR"
           pwd
           ls
