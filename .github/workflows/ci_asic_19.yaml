@@ -323,16 +323,16 @@ jobs:
           pwd
           echo "Under construction (2)"
 
-  quick-build:
+  quick-build-based-on-our-shiny-new-docker-image:
     # needs: verilog-yosis-environment-prepare--deprecated:
     runs-on: ubuntu-latest # same
     steps:
 
       - name: checkout,git-pull self-repo
-      # checkout the repo before running the steps
-      uses: actions/checkout@v4
-      # a step cannot have both the uses and run keys:
-      # run: | ...
+        # checkout the repo before running the steps
+        uses: actions/checkout@v4
+        # a step cannot have both the uses and run keys:
+        # run: | ...
 
 
       - name: TBC
