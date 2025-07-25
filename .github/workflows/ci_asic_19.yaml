@@ -1,3 +1,7 @@
+# Always use name, otherwise it will be confusing
+# Always repeat the type!
+name: Workflow for ASIC using OpenLANE and/or FPGA
+
 on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "manual trigger"
   push: # e-enable to avoid many clicks each time. Comment out later.
   pull_request:

@@ -1,7 +1,13 @@
-name: Build and Cache Pyenv Image
-
-# todo: use dockerfile: .github/docker/ub_pyenv.dockerfile
+# Always name it
+name: Workflow building docker images (and cache), to be used in the actual workflows
+# Workflow for building (and caching) docker images: build and cache, to be used in the actual workflows
 # builds & uploads a buildx-based docker image for the dev/build  environment (pyenv, and later, as a base image for the yosyss and yosys-bases flows
+# Done (~todo~): use dockerfile: .github/docker/ub_pyenv.dockerfile
+# Published readme too
+
+# Images:
+#  ub-pyenv-image: https://github.com/sohale/gpu-experimentations/pkgs/container/ub-pyenv-image
+
 
 on:
   workflow_dispatch:  # manual trigger
