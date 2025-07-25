@@ -340,13 +340,14 @@ jobs:
         run: |
           set -eux ; eval "$(ssh-agent -s)"
           echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
-          . "$GITHUB_ENV"
+          # This will not cause to enable the $TARGET_DIR:
+          source "$GITHUB_ENV"
 
           echo "Check environment variables"
           env
           pwd  # /home/runner/work/gpu-experimentations/gpu-experimentations
-          ls -alth # Is it already pulled?! Answer: No.
-           # So, why is it "gpu-experimentations/gpu-experimentations"?
+          ls -alth # Is it already pulled?! Answer: No. (unless previous checkout step is activated)
+          # So, why is it "gpu-experimentations/gpu-experimentations"? -- even before the pull. Not sure. But that folder is "re-"used for git clone.
           ls -alth ..
           cd "$TARGET_DIR"
           pwd
