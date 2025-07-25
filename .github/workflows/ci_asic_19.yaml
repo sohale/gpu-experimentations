@@ -15,10 +15,15 @@ permissions:
 
 
 jobs:
-  verilog-yosis-environment-prepare:
+  # deprecated since replaced by dockerimage approach
+  verilog-yosis-environment-prepare--deprecated:
     # verilog-yosis-full:
     # todo: use dockerbuilder approach instead of this job, based on: .github/docker/ub_pyenv.dockerfile
     #     and defer it to: .github/workflows/build-ub-pyenv-image.yaml
+
+    # deprecarted
+    if: false
+
 
     runs-on: ubuntu-latest # docker image
     # each is a fresh, isolated VM or container
@@ -192,17 +197,24 @@ jobs:
           # set -eux ; eval "$(ssh-agent -s)"
 
 # This section is commented to merge into the same "job":
-#  # jobs:
-#  verilog-yosis-full:
-#    # amaranth-verilog-yosis-asic
-#    # riscv-formal:  # job name
-#    needs: verilog-yosis-environment-prepare
-#
-#    runs-on: ubuntu-latest # docker image?
-#
-#    # initiate experiment 19: ASIC using OpenLANE
-#
-#    steps:
+# Separated after
+  # jobs:
+  verilog-yosis-full:
+    # amaranth-verilog-yosis-asic
+    # riscv-formal:  # job name
+
+    #needs: verilog-yosis-environment-prepare
+    # replaced by the docker approach
+
+    runs-on: ubuntu-latest
+    # Runs on a docker image, not directly on the host VM (parent/hyper-image GH-Action's)
+    # Steps are run inside the container, rather than directly on the host VM: (is docker-mediated)
+    container:
+      image: ghcr.io/yourname/ub-pyenv-image:latest
+
+    # initiate experiment 19: ASIC using OpenLANE
+
+    steps:
       - name: check out myself
         uses: actions/checkout@v4
         with:
