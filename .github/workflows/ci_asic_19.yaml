@@ -319,20 +319,57 @@ jobs:
           python --version
 
 
-  # based on locally published docker image
-  quick-build-based-on-docker-image:
+  # Based on locally "published" docker image
+  # Lesson: You cannot build it here (on the fly). At least using this method.
+  quick-based-on-pulling-docker-image:
+  # Wrong name:
+  # quick-build-based-on-docker-image:
     # independent: no "needs:"
     runs-on: ubuntu-latest
+
     container:
       image: ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
       options: --user root  # optional: add extra Docker run args
 
     steps:
+
       - name: Check Python version
         run: python --version
 
       - name: Show current user
         run: whoami
+
+
+
+
+  testin-pulling-docker-image-based-on-login:
+    runs-on: ubuntu-latest
+
+    # no "container:" or "container.image:"
+
+    steps:
+
+      # Login necessary before (push &) pull
+      - name: Login to GHCR, nececsary for pull-ing the image
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Python version
+        run: |
+          docker pull ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest
+          docker run \
+              --rm -it \
+              ghcr.io/${{ github.repository_owner }}/ub-pyenv-image:latest \
+              bash -c "echo Inside image with pyenv setup ; pyenv versions ; echo ; python --version" \
+          echo "back to outside the docker-[live-]image, in the GHA above-container"
+          echo "finne."
+
+      - name: Show current user
+        run: whoami
+
 
 # Inspirations from:
 # https://github.com/YosysHQ/picorv32/blob/main/.github/workflows/ci.yml
