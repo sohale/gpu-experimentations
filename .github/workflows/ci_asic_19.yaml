@@ -329,6 +329,10 @@ jobs:
     steps:
 
       - name: TBC
+
+        # checkout the repo before running the steps
+        uses: actions/checkout@v4
+
         run: |
           set -eux ; eval "$(ssh-agent -s)"
           echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
