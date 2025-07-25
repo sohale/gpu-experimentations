@@ -360,6 +360,7 @@ jobs:
           ls -alth # Is it already pulled?! Answer: No. (unless previous checkout step is activated)
           # So, why is it "gpu-experimentations/gpu-experimentations"? -- even before the pull. Not sure. But that folder is "re-"used for git clone.
           ls -alth ..
+          echo "TARGET_DIR: ${TARGET_DIR:-NOT SET WHY}"
           cd "$TARGET_DIR"
           pwd
           ls
