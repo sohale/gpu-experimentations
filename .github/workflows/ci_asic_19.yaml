@@ -331,10 +331,12 @@ jobs:
       - name: TBC
         run: |
           set -eux ; eval "$(ssh-agent -s)"
+          echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
+          . "$GITHUB_ENV"
 
           echo "Check environment variables"
           env
-          pwd
+          pwd  # /home/runner/work/gpu-experimentations/gpu-experimentations
           cd "$TARGET_DIR"
           pwd
           ls
