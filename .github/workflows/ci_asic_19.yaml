@@ -346,7 +346,9 @@ jobs:
           echo "Check environment variables"
           env
           pwd  # /home/runner/work/gpu-experimentations/gpu-experimentations
-          ls -alth # Is it already pulled?!
+          ls -alth # Is it already pulled?! Answer: No.
+           # So, why is it "gpu-experimentations/gpu-experimentations"?
+          ls -alth ..
           cd "$TARGET_DIR"
           pwd
           ls
