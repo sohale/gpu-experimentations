@@ -326,7 +326,15 @@ jobs:
   quick-build-based-on-our-shiny-new-docker-image:
     # needs: verilog-yosis-environment-prepare--deprecated:
     runs-on: ubuntu-latest # same
+
+    # a job-level env (not step-level)
+    env:
+      TARGET_DIR: experiments/19_asic_lane/yosis-build
     steps:
+
+      # Alternative to `env:` at job level:
+      #- name: set TARGET_DIR
+      #  run: echo "TARGET_DIR=experiments/19_asic_lane/yosis-build" >> "$GITHUB_ENV"
 
       - name: checkout,git-pull self-repo
         # checkout the repo before running the steps
@@ -338,10 +346,13 @@ jobs:
       - name: TBC
 
         run: |
-          set -eux ; eval "$(ssh-agent -s)"
-          echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
+          set -eux
+          # Why did I do this? ; eval "$(ssh-agent -s)"
+
+          # The run-time, dynamic, "communication/output/proceduralimperative" use of "$GITHUB_ENV":
+          # echo 'TARGET_DIR=experiments/19_asic_lane/yosis-build' >> "$GITHUB_ENV"
           # This will not cause to enable the $TARGET_DIR:
-          source "$GITHUB_ENV"
+          # source "$GITHUB_ENV"
 
           echo "Check environment variables"
           env
@@ -352,6 +363,7 @@ jobs:
           cd "$TARGET_DIR"
           pwd
           ls
+          pyenv --version
           pyenv version
           python --version
 
