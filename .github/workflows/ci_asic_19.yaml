@@ -366,7 +366,16 @@ jobs:
           mkdir -p "$TARGET_DIR"
           cd "$TARGET_DIR"
           pwd
-          ls
+          ls  # empty output
+          # pyenv: command not found
+          # path is not set yet?
+          # but this will fail too: eval "$(pyenv init -)"
+          echo "pre-find1-"
+          find /root/.pyenv || :
+          echo "post-find-1"
+          eval "$(/root/.pyenv/bin/pyenv init -)"
+          # aha, I am not using the pyenv docker-image yet? no: I "AM" using it: at job-level.
+          # so, the reason is, I dont't have that in PATH?
           pyenv --version
           pyenv version
           python --version
