@@ -3,7 +3,12 @@ on: # To web-hook to which events: "push", "PR" (creation or modificaiotn), "man
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read # Always needed.
+  packages: read # This grants our GITHUB_TOKEN read access to GitHub Packages (GHCR). We are not creating (docker build ing)
+
 # Workflow for experiment 19: ASIC using OpenLANE and/or FPGA
+
 
 jobs:
   verilog-yosis-environment-prepare:

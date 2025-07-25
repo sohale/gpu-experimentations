@@ -13,6 +13,11 @@ on:
       - .github/docker/**
       - .github/workflows/build-ub-pyenv-image.yaml
 
+
+permissions:
+  contents: read  # Always needed. write: only if we wanted to git-commit-push or push git-tags changes to this repo
+  packages: write # This grants our GITHUB_TOKEN write access to GitHub Packages (GHCR)
+
 jobs:
   buildx-build-and-cache-job: # build, build-and-cache
     runs-on: ubuntu-latest
