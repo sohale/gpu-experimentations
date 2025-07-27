@@ -158,6 +158,7 @@ ARG ARG_DEV_USER="devuser"
 ARG ARG_USER="pyenvuser"
 ARG ARG_UGROUP="pyenvgroup"
 
+# compromise: maje it one-more-nested
 ARG ARG_BASEPATH="/opt/pyenvu/pyenv"
 # ARG ARG_BASEPATH="/root/.pyenv" # Not good: user-specific installation.
 
@@ -235,9 +236,10 @@ RUN : \
     # not a sudoer, unless proven necessary.
     # && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 RUN : \
-    && mkdir -p ${ARG_BASEPATH} \
-    && chown -R  $ARG_USER:$ARG_UGROUP ${ARG_BASEPATH} \
-    && rmdir ${ARG_BASEPATH} \
+    # create the parent: will work by the minor compromise: of nesting it one level (otherwise) unnecessarily.
+    && PPPARENT="$(dirname "$ARG_BASEPATH")" \
+    && mkdir -p "$PPPARENT" \
+    && chown -R  $ARG_USER:$ARG_UGROUP $PPPARENT \
     && ls -alth  /opt/pyenvu \
     && :
 # remove the extra-nested one?
@@ -267,11 +269,13 @@ RUN : \
     && pyenv rehash \
     && python --version \
     && :
-
+#
 # Can be slow:
 #   A non-critical step that may fail. FIXME:
 #     pyenv update  || echo "err code: $?"  || :
 #   If already updated, the "pyenv update" will exit with an error code.
+#
+#  Merge, to avoid keeing both unupdated and updated
 RUN : \
     && pyenv update || : \
     && pyenv install ${MY_PYTHON_VERSION} || : \
@@ -287,6 +291,8 @@ RUN : \
 # If dev mode (BTW, pyenv is suitable for dev mode. May not be essential for GH Actions CI mode, but let's keep it.)
 # Order of USER vs RUN matters.
 
+
+USER root
 
 # Dev tools 2
 RUN : \
@@ -322,7 +328,7 @@ RUN : \
 #    && find "$ARG_BASEPATH" -exec chmod g=u {} + \
 #    && find ${ARG_BASEPATH} -type d -exec chmod g+rx {} \; \
 #    && find ${ARG_BASEPATH} -type f -exec chmod g+r {} \; \
-#    && find "$ARG_BASEPATH" -type d -exec chmod g+s {} + \  
+#    && find "$ARG_BASEPATH" -type d -exec chmod g+s {} + \
 #    && usermod -aG ${ARG_UGROUP} ${ARG_DEV_USER} \
 #    && :
 
@@ -362,7 +368,9 @@ RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
 # Does not "set" the user, just the future `RUN`s will be using this user.
 # So, must be after a RUN command that creates this user! Because, if befor, that (and any) will fail.
 
+# Must choose a user:
 # USER ${ARG_DEV_USER}
+# USER ${ARG_USER}
 USER root
 
 # From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
