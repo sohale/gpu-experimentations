@@ -1,6 +1,11 @@
 # syntax=docker/dockerfile:1.4
 # ^ Don't change
 
+# Leaving .github/docker/ub_pyenv.dockerfile.v1.deprecated ( as forking of this, i.e. ub_pyenv.dockerfile)
+#   for deprecating/expiring an old concern used in that file:
+#    Now: not separating dev concerns as docker layers. Hence, combining the apt-get steps etc.
+#  Also, adopt more of concern: [layering-related] size efficiency.
+
 # todo: used this in .github/workflows/ci_asic_19.yaml
 # Not tested.
 # Also useful for development, like GitPod. (not just GH Actions CI workflows)
