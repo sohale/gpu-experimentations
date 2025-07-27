@@ -1,6 +1,38 @@
 # syntax=docker/dockerfile:1.4
 # ^ Don't change
 
+# Leaving .github/docker/ub_pyenv.dockerfile.v1.deprecated ( as forking of ub_pyenv.dockerfile)
+#   for deprecating/expiring an old concern used in that file:
+#    Now: not separating dev concerns as docker layers. Hence, combining the apt-get steps etc.
+#  Also, adopt more of concern: [layering-related] size efficiency.
+
+# conflicting Layersings:
+#    dev vs pyenv, e.g. "Dev tools 2" (also with separate user)
+#    separaitng linux initial apt-get + update,  from, the rest.
+#
+# Why did I add a dev user in the first place? Becuase I needed to keep it seaprate from the root.
+#   but also the "runner" is differnt: it is not dev, but is also not the "root"!
+#   so, the elephant in the room, the invisible one, and needs ot be invisible, is: the user: "runner".
+
+# avoid:
+
+# switching USER back and forth with root user. and/or using sudo.
+
+# separating "force_color_prompt". What was the concern?
+
+# separation of
+#    Implementation content
+# idea of maybe, one day, programmatising: (no heml, and dockerfile will not support such condisional thing, at least soon, or , it is not common practive: dockerfile is a product.)
+#   If dev mode only.
+
+
+# keep separate:
+#   * apt-get update (was a good trick)
+
+
+
+
+
 # todo: used this in .github/workflows/ci_asic_19.yaml
 # Not tested.
 # Also useful for development, like GitPod. (not just GH Actions CI workflows)

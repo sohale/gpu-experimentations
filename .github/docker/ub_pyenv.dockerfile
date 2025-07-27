@@ -1,14 +1,22 @@
 # syntax=docker/dockerfile:1.4
 # ^ Don't change
 
-# Leaving .github/docker/ub_pyenv.dockerfile.v1.deprecated ( as forking of this, i.e. ub_pyenv.dockerfile)
+
+# Leaving .github/docker/ub_pyenv.dockerfile.v1.deprecated (see notes)
 #   for deprecating/expiring an old concern used in that file:
 #    Now: not separating dev concerns as docker layers. Hence, combining the apt-get steps etc.
-#  Also, adopt more of concern: [layering-related] size efficiency.
+#    Also, adopt more of concern: [layering-related] size efficiency.
+# More decisions:
+#    * Use sudo, root, freely.
+#    * Use pyenv, not python3. (i.e. not system python3
 
-# todo: used this in .github/workflows/ci_asic_19.yaml
+# build script:
+# docker buildx build --secret id=date,src=./sosi_sfile_1.txt  --tag ghcr.io/sohale/ub-pyenv-image:latest -f ./ub_pyenv.dockerfile --push ./ctx/
+
+# Used this in .github/workflows/ci_asic_19.yaml
 # Not tested.
 # Also useful for development, like GitPod. (not just GH Actions CI workflows)
+
 
 # Naming: decision for places:
 #    .github/docker/ub_pyenv.dockerfile
@@ -212,11 +220,18 @@ RUN : \
           libffi-dev liblzma-dev \
           git \
           curl \
-          wget
-#
-#      llvm
-#  Is llvm needed? (for pyenv)
-# "git" is needed for pyenv, which I happen to use in non-dev layer.
+          wget \
+# the dev tools
+          sudo \
+          ssh-client ca-certificates patch \
+          bash curl wget git patch \
+          less \
+    && :
+# ^ Notes:
+#   * llvm: Is llvm needed? (for pyenv)
+#   * git: "git" is needed for pyenv, which I happen to use in non-dev layer.
+
+
 
 # requires: git
 # attempt to get some commit hash, for debugging purposes. It is not important, so I skip it.
@@ -273,7 +288,7 @@ RUN : \
     && pyenv global ${ARG_MY_PYTHON_VERSION} \
     && pyenv rehash \
     && python --version \
-    && :
+#    && :
 #
 # Can be slow:
 #   A non-critical step that may fail. FIXME:
@@ -281,7 +296,7 @@ RUN : \
 #   If already updated, the "pyenv update" will exit with an error code.
 #
 #  Merge, to avoid keeing both unupdated and updated
-RUN : \
+# RUN : \
     && pyenv update || : \
     && pyenv install ${MY_PYTHON_VERSION} || : \
     && pyenv global ${MY_PYTHON_VERSION} \
@@ -295,27 +310,6 @@ RUN : \
 
 # If dev mode (BTW, pyenv is suitable for dev mode. May not be essential for GH Actions CI mode, but let's keep it.)
 # Order of USER vs RUN matters.
-
-
-USER root
-
-# Dev tools 2
-RUN : \
-    && echo "Layer 3: dev-tools" \
-    && apt-get install -y \
-        sudo \
-    && :
-
-
-
-# Dev tools 2
-RUN : \
-    && echo "Layer 4: dev-tools" \
-    && apt-get install -y \
-        ssh-client ca-certificates patch \
-        bash curl wget git patch \
-        less \
-    && :
 
 
 # Seal for security:
@@ -374,9 +368,9 @@ RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
 # So, must be after a RUN command that creates this user! Because, if befor, that (and any) will fail.
 
 # Must choose a user:
-# USER ${ARG_DEV_USER}
+USER ${ARG_DEV_USER}
 # USER ${ARG_USER}
-USER root
+# USER root
 
 # From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
 # Also note that the "root" was the user for pyenv.
