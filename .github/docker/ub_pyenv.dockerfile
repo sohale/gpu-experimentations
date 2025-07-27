@@ -48,6 +48,17 @@
 
 # Order of USER,  RUN, ENV, etc matters. Even ENV can be changed between RUN steps (see DEBIAN_FRONTEND).
 
+# It will not replace inside of echo '...' commands!
+# So, practically, an ARG is an env?
+#   Perhaps: ARG is an ENV but only during installations.
+#   But only ENV is passed at `docker run`.
+# adds \" instead of the `"` for the echo.
+# It has to be after the installation sudo, also.
+# Dependency chain:
+#  installation of sudo -> actual ceration of user (needs sudo) -> setting USER -> runing any command using "user"
+
+
+
 # Special (reserved) vars:
 #      `WORKDIR`
 
@@ -140,12 +151,19 @@ LABEL description="A pyenv development environment for Yosys-based EDA/ASIC/FPGA
 
 ARG ARG_MY_PYTHON_VERSION="3.12.3"
 
-# If you want to customise the username:
+# If you want to customise the username for CMD/bash:
 ARG ARG_DEV_USER="devuser"
+
+# User who installed pyenv:
+ARG ARG_USER="pyenvuser"
+ARG ARG_UGROUP="pyenvgroup"
+
+ARG ARG_BASEPATH="/opt/pyenvu/pyenv"
+# ARG ARG_BASEPATH="/root/.pyenv" # Not good: user-specific installation.
 
 # This ENV is like an ARG:
 ENV \
-    PYENV_ROOT="/root/.pyenv" \
+    PYENV_ROOT="$ARG_BASEPATH" \
     MY_PYTHON_VERSION="${ARG_MY_PYTHON_VERSION}"
 
 # Is this a good practice?
@@ -208,12 +226,41 @@ RUN : \
 # ls -alth \. # will only show ... just that file that was touch ed.
 # cwd is in '/' (also the WORKDIR). WORKDIR="", empty.
 
+# Create a pyenv-specific user without sudo ability (unpriviledged user)
+RUN : \
+    && useradd -m -s /bin/bash -G sudo ${ARG_USER} \
+    && groupadd ${ARG_UGROUP} \
+    && usermod -aG ${ARG_UGROUP} ${ARG_USER} \
+    && :
+    # not a sudoer, unless proven necessary.
+    # && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+RUN : \
+    && mkdir -p ${ARG_BASEPATH} \
+    && chown -R  $ARG_USER:$ARG_UGROUP ${ARG_BASEPATH} \
+    && rmdir ${ARG_BASEPATH} \
+    && ls -alth  /opt/pyenvu \
+    && :
+# remove the extra-nested one?
+# while still as root: create more users:
+
+# Create a dev user "with" sudo ability
+RUN : \
+    && useradd -m -s /bin/bash -G sudo ${ARG_DEV_USER} \
+    && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && usermod -aG ${ARG_UGROUP} ${ARG_DEV_USER} \
+    && echo "Username ${ARG_DEV_USER} created, can sudo, can pyenv, but is not set." \
+    && :
+
+
+USER ${ARG_USER}
 
 
 # Install pyenv
 # Causion: the "pyenv install" is very slow. I have used "Python-3.12.3".
 RUN : \
-     && echo "Layer 2: pyenv" \
+    && echo "Layer 2: pyenv" \
+    && whoami \
+    && ls -alth /opt/pyenvu \
     && curl https://pyenv.run | bash \
     && pyenv install ${ARG_MY_PYTHON_VERSION} \
     && pyenv global ${ARG_MY_PYTHON_VERSION} \
@@ -225,12 +272,15 @@ RUN : \
 #   A non-critical step that may fail. FIXME:
 #     pyenv update  || echo "err code: $?"  || :
 #   If already updated, the "pyenv update" will exit with an error code.
-RUN \
-    pyenv update || : \
+RUN : \
+    && pyenv update || : \
     && pyenv install ${MY_PYTHON_VERSION} || : \
     && pyenv global ${MY_PYTHON_VERSION} \
     && pyenv rehash \
-    && echo "pyenv sanity check done."
+    && whoami \
+    && echo "pyenv sanity check done." \
+    && :
+
 
 # Development mode necessities: e.g. bash
 
@@ -245,18 +295,6 @@ RUN : \
         sudo \
     && :
 
-# It will not replace inside of echo '...' commands!
-# So, practically, an ARG is an env?
-# adds \" instead of the `"` for the echo.
-# It has to be after the installation sudo, also.
-# Dependency chain:
-#  installation of sudo -> actual ceration of user (needs sudo) -> setting USER -> runing any command using "user"
-RUN : \
-    && printenv \
-    && useradd -m -s /bin/bash -G sudo ${ARG_DEV_USER} \
-    && echo "${ARG_DEV_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-    && echo "Username will be: ${ARG_DEV_USER}" \
-    && :
 
 
 # Dev tools 2
@@ -269,11 +307,27 @@ RUN : \
     && :
 
 
-
 # Seal for security:
 #  (but do it only after inalling the  rest of dev tools. In fact, for dev, we may need to have more. So, I remove it. If we want it, we need to add it after the last apt-get. But we need to cancel this anyway)
 # RUN : \
 #     && rm -rf /var/lib/apt/lists/*
+
+
+
+# do it after installing pyenv.
+#RUN : \
+#    && groupadd ${ARG_UGROUP} \
+#    && usermod -aG ${ARG_UGROUP} ${ARG_USER} \
+#    && chown -R ${ARG_USER}:${ARG_UGROUP} ${ARG_BASEPATH} \
+#    && find "$ARG_BASEPATH" -exec chmod g=u {} + \
+#    && find ${ARG_BASEPATH} -type d -exec chmod g+rx {} \; \
+#    && find ${ARG_BASEPATH} -type f -exec chmod g+r {} \; \
+#    && find "$ARG_BASEPATH" -type d -exec chmod g+s {} + \  
+#    && usermod -aG ${ARG_UGROUP} ${ARG_DEV_USER} \
+#    && :
+
+# not, indistriminatedly:
+#  chmod -R g+rx ${ARG_BASEPATH}
 
 
 # Leave it in a nice state for development / for a dev user:
@@ -309,6 +363,9 @@ RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
 # So, must be after a RUN command that creates this user! Because, if befor, that (and any) will fail.
 
 # USER ${ARG_DEV_USER}
+USER root
 
 # From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
 # Also note that the "root" was the user for pyenv.
+
+# Lesson: user may run it using a different user i.e. "runner" (in GH Actions CI workflow). But here we assume root.

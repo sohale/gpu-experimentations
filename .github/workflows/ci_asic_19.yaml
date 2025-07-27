@@ -371,7 +371,7 @@ jobs:
           # path is not set yet?
           # but this will fail too: eval "$(pyenv init -)"
           # Is it inside the image? or it's the user?
-          echo "whoami: $(whoami)"
+          echo "whoami: $(whoami)" # whoami: runner
           echo "pre-find-1"
           find /root/.pyenv || :
           echo "mid-find-1: sudo"
