@@ -355,9 +355,19 @@ CMD ["bash"]
 # id and target are secrets ("free parameters")
 # Correction: a secret, has both "id" and "src". (and "target"?)
 # Uses the secret with --moun
+# Buildkit's cache & mount:
+#   * mounted in there
+#      * a mount is injected
+#   * not baked into the final image
+#   * available only during that `RUN`. does not persist in any layer. is removed.
+#   * same RUN. Not persisted across "RUN" commands. (hence, "secret")
+#   * only readable by root
+#   * contents:
+#       * sourced from commandline (of buildx)
+# here: "mount" means that extra little space.
 # Don't use "./"
 RUN --mount=type=secret,id=date,target=/run/secrets/build_date \
-    BUILD_DATE=$(cat /run/secrets/build_date) && \
+    BUILD_DATE=$(sudo cat /run/secrets/build_date) && \
     echo "Build date is ${BUILD_DATE}" && \
     cat /run/secrets/build_date && \
     echo
@@ -374,5 +384,6 @@ USER ${ARG_DEV_USER}
 
 # From here on, you will need to use sudo (if you activate it) and you dont have sudo password.
 # Also note that the "root" was the user for pyenv.
+# `sudo` issues in dockerfiles: needs password.
 
 # Lesson: user may run it using a different user i.e. "runner" (in GH Actions CI workflow). But here we assume root.
