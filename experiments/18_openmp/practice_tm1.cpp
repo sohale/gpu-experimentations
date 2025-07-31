@@ -4,8 +4,7 @@ https://www.youtube.com/watch?v=WcPZLJKtywc
 https://github.com/tgmattso/OpenMP_intro_tutorial
 https://github.com/tgmattso/OpenMP_intro_tutorial/blob/master/omp_hands_on.pdf
 
-clang++ -fopenmp -O2 -std=c++20 practice_tm1.cpp  -o practice_tm1.exec
-
+clang++ -fopenmp -O3 -std=c++20 practice_tm1.cpp  -o practice_tm1.exec
 */
 
 #include <vector>
@@ -332,6 +331,7 @@ int main() {
   // after a lot of search in various patterns, it went back to the same old typical C++ pattern.
   // C++ design is very specific.
   // print_histogram(times1, HistogramSpecs::fromCooked(h1));
+  // if(0)
   print_histogram(times1, h1);
   report_basic_stats(times1);
   cout << endl;

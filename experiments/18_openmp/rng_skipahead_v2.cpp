@@ -46,7 +46,7 @@ void openmp_rng_serial(rng_state_t seed, int N, rng_value_t* array) {
         array++;
   }
 }
-template<int M=15>
+// template<int M=15>
 void openmp_rng_skipahead(rng_state_t seed, int N, rng_value_t* array) {
 
   rng_state_t next = seed;
@@ -67,7 +67,10 @@ void openmp_rng_skipahead(rng_state_t seed, int N, rng_value_t* array) {
   }
 
   // parallel:
-  for (int i = 0; i < M; ++i) {
+  #pragma omp parallel
+  // for (int i = 0; i < M; ++i)
+  {
+    int M = omp_get_num_threads();
 
     // serial:
     for (int j = 1, jM = M; j < N/M; ++j) {
