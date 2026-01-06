@@ -1,3 +1,4 @@
+echo "If you found this useful, and saved your time, consider tipping me. I shared these, while I am not working under a permanent employment."
 echo "dont run this. See https://github.com/shader-slang/slang/blob/master/docs/building.md "
 exit 1
 
