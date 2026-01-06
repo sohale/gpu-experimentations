@@ -72,7 +72,7 @@ nvm -v && npm -v
 npm install http-server
 # --dev-dependcy?
 
-# A web-GPU needs to be served via https:
+# A web-GPU needs to be served via "https"
 
 # using self-signed cert
 mkdir cert
@@ -84,4 +84,6 @@ cd ..
 ./node_modules/http-server/bin/http-server ./served --ssl --cert cert/cert.pem --key cert/key.pem
 
 # make sure explitily enter this, note https, note 8080, not 8000
-echo "https://46.101.15.163:8080/"
+# Replace the IP address depending on your remote machine. Also don't forget to open the port of your Linux TCP firewall, e.g. sudo ufw allow 8080
+echo "https://44.111.11.111:8080/"
+
