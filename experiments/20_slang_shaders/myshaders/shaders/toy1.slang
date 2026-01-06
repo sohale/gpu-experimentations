@@ -58,9 +58,18 @@ float4 mainImage(float2 fragCoord)
 }
 
 // Pixel shader
+/*
+// slang comes from a HLSL Legacy: Not suitable for WebGPU / WGSL-compatible. Use the one below instead.
 float4 psMain(VSOut i) : SV_Target
 {
     float2 fragCoord = i.uv * iResolution;
+    return mainImage(fragCoord);
+}
+*/
+float4 psMain(
+    float2 uv : TEXCOORD0
+) : SV_Target {
+    float2 fragCoord = uv * iResolution;
     return mainImage(fragCoord);
 }
 

@@ -5,6 +5,7 @@ cd /dataneura/gpu-experimentations/experiments/20_slang_shaders/myshaders
 export SLANGC_BIN="/dataneura/gpu-experimentations/experiments/20_slang_shaders/slang/build/RelWithDebInfo/bin/slangc"
 "$SLANGC_BIN" -h   1> /dev/null
 
+rm -rf build
 mkdir -p build
 
 : || skip || \
