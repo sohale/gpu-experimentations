@@ -16,3 +16,8 @@ rev = "v4.26.0"
 
 [[lean_lib]]
 name = "Linlog"
+
+# add target for building of simply/ll1.lean
+[[lean_lib]]
+name = "simply"
+path = "simply"
