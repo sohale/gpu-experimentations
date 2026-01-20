@@ -1,2 +1,2 @@
-import Linlog.Basic
-import simply.ll1
+import LinlogMy.Basic
+import LinlogMy.simply_ll1

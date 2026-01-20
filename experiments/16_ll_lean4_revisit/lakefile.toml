@@ -1,7 +1,9 @@
-name = "linlog"
+name = "linlogmy"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Linlog"]
+# What to build when `lake build` command:
+# Also: LinlogMy as a file target(?). LinlogMy.lean, only if it is clean slate! (no manifest)
+defaultTargets = ["LinlogMy"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -14,10 +16,14 @@ name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.26.0"
 
+# Directory-based target
 [[lean_lib]]
-name = "Linlog"
+name = "LinlogMy"
+path = "LinlogMy" # directory name!
+
+# wrong; ??looks for ./LinlogMy.lean . ie, in root dir
 
 # add target for building of simply/ll1.lean
-[[lean_lib]]
-name = "simply"
-path = "simply"
+# [[lean_lib]]
+# name = "simply"
+# path = "simply"
