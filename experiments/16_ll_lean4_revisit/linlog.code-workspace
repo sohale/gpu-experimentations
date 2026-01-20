@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "lean4.server.logging.enabled": false,
+    "lean4.checkOnSave": true
+  }
+}
+
