@@ -11,10 +11,28 @@ relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
 
+# adding each package requires running again `lake update`
+
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.26.0"
+# git = "https://github.com/leanprover-community/mathlib4"
+# rev = "leanprover/lean4:nightly"
+
+# use github with the exact commit that mathlib4’s lean-toolchain uses for 4.26.0,
+# from cslib: commit b55a607:
+rev = "v4.27.0-rc1"
+
+
+[[require]]
+name = "cslib"
+scope = "leanprover"
+# rev = "main"
+git = "https://github.com/leanprover/cslib"
+rev = "b55a607"
+# See: https://github.com/leanprover/cslib/commit/b55a607
+# eg https://github.com/leanprover/cslib/blob/b55a6073c8d000f59c6db812a6974017d1be0858/lakefile.toml
+
 
 # Directory-based target
 [[lean_lib]]
