@@ -22,8 +22,16 @@ def hello := "world"
 
 open Set
 
-example (x : ℝ) (hx : 0 < x) : x ∈ { y : ℝ | 0 ≤ y } := by
+-- example →→→ theorem
+
+theorem pos_mem_nonneg
+ (x : ℝ) (hx : 0 < x) : x ∈ { y : ℝ | 0 ≤ y } := by
   -- unfold set membership
-  show 0 ≤ x
+  -- bad: show 0 ≤ x
+  change 0 ≤ x
   -- strict positivity implies nonnegativity
   exact le_of_lt hx
+
+-- succeeds silently
+
+#print pos_mem_nonneg
