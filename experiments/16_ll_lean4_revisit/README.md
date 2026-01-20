@@ -1,8 +1,17 @@
 # linlog1proj
 
-exit 1
+to experiment Lean4 with linear logic, Mathlib, CSLib.
 
-# cd here
+Containts a working configuration (version tuple to pin).
+
+Three layers
+`elan`
+↓
+`lake`
+↓
+`lean`
+
+# Some key commands:
 
 # key command: init afresh
 lake init linlog math
@@ -17,27 +26,11 @@ lake env
 
 
 ## Maintenance: rebuild fresh (e.g., after renaming your module's name/dir, or, editing lakefile.toml)
-
+```bash
 rm -rf .lake lake-manifest.json
 lake update
 lake build
-
-
-
-This combination worked on :
-```toml
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "v4.26.0"
 ```
-
-File: `./lean-toolchain`
-```txt
-leanprover/lean4:v4.27.0-rc1
-```
-
-
 
 # Version of lean itself
 is set using `elan`
@@ -58,7 +51,10 @@ elan override set leanprover/lean4:nightly
 ```
 
 
+
 # The verison triplet:
+
+This combination worked.
 
 ## This triplet worked:
 * `leanprover/lean4:v4.27.0-rc1`
@@ -71,13 +67,14 @@ based on: https://github.com/leanprover/cslib/blob/b55a6073c8d000f59c6db812a6974
 and https://github.com/leanprover/cslib/blob/b55a6073c8d000f59c6db812a6974017d1be0858/lean-toolchain
 also maybe: https://github.com/leanprover/cslib/blob/b55a6073c8d000f59c6db812a6974017d1be0858/lake-manifest.json
 
+
 ## Other triplets:
 
 ( leanprover/lean4:v4.27.0-rc1, v4.27.0-rc1, b55a607 )
 ( leanprover/lean4:v4.26.0, "v4.26.0", - )
 
 
-## How to set the version triplet:
+# How to set the version triplet:
 ```bash
 elan self update
 elan override set leanprover/lean4:v4.27.0-rc1
@@ -93,7 +90,7 @@ lake build
 lake env lean LinlogMy.lean
 ```
 
-## The working configuration
+# The working configuration
 in lakefile.toml:
 ```toml
 [[require]]
@@ -114,24 +111,29 @@ rev = "b55a607"
 # See: https://github.com/leanprover/cslib/commit/b55a607
 # eg https://github.com/leanprover/cslib/blob/b55a6073c8d000f59c6db812a6974017d1be0858/lakefile.toml
 ```
-and in `./lean-toolchain`:
+and in
+File: `./lean-toolchain`:
 ```txt
 leanprover/lean4:v4.27.0-rc1
 ```
 
-## Anohter old sane configuration:
-This combination worked on `lean4:v4.27.0-rc1` (see file `lean-toolchain`)
-But CSLib did not work.
+## Anohter old sane valid configuration:
+But CSLib did not work:
 ```toml
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.26.0"
 ```
+This combination worked on this lean:
+File: `./lean-toolchain`:
+```txt
+leanprover/lean4:v4.26.0
+```
 
 
 ## (failed) Experiments for installing cslib
-Failed (on lean4:v4.27.0-rc1)
+Failed (on `lean-toolchain` = `lean4:v4.27.0-rc1`)
 ```toml
 [[require]]
 name = "CSLib"
