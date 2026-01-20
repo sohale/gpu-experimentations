@@ -89,6 +89,8 @@ rm -rf .lake lake-manifest.json
 lake update
 lake build
 # success!
+
+lake env lean LinlogMy.lean
 ```
 
 ## The working configuration
