@@ -26,9 +26,12 @@ open Set
 
 theorem pos_mem_nonneg
  (x : ℝ) (hx : 0 < x) : x ∈ { y : ℝ | 0 ≤ y } := by
+  -- dsimp -- ?
   -- unfold set membership
   -- bad: show 0 ≤ x
   change 0 ≤ x
+  -- show 0 ≤ x -- `show` is used for intermediate goal states (for readability)
+  -- show x ≥ 0
   -- strict positivity implies nonnegativity
   exact le_of_lt hx
 
