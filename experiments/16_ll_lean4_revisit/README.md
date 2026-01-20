@@ -4,16 +4,30 @@ to experiment Lean4 with linear logic, Mathlib, CSLib.
 
 Containts a working configuration (version tuple to pin).
 
-Three layers
-`elan`
+Three layers:
+```.
+elan
 ↓
-`lake`
+lake
 ↓
-`lean`
+lean
+```
 
-# Some key commands:
+Each layer, it's own typical commands:
+```shell
+# ------ elan layer:
+elan
+# ------ lake layer:
+lake update
+lake build
+# lake init # only once
+# ----- lean layer
+lake env lean filename.lean
+```
 
-# key command: init afresh
+## Some key commands:
+```bash
+# init afresh the scaffold
 lake init linlog math
 
 # check
@@ -21,35 +35,36 @@ cat .elan/lean-toolchain
 
 # key command
 lake build
-
 lake env
+```
 
-
-## Maintenance: rebuild fresh (e.g., after renaming your module's name/dir, or, editing lakefile.toml)
+How to rebuild after change odf package name, change of version, etc:
 ```bash
+# rebuild fresh (e.g., after renaming your module's name/dir, or, editing lakefile.toml)
 rm -rf .lake lake-manifest.json
 lake update
 lake build
 ```
 
-# Version of lean itself
-is set using `elan`
-
-# elan toolchain install .... (?)
-
+## The version of lean itself
+Set using `elan`:
 ```bash
 elan toolchain install leanprover/lean4:nightly
 elan toolchain list
 elan override set leanprover/lean4:nightly
 # elan override unset
 ```
+see/check/change file:
+```txt
+lean-toolchain
+```
 
+Incorrect note:
 `$ELAN_HOME/lean-toolchain`:
 Is created by
 ```bash
 elan override set leanprover/lean4:nightly
 ```
-
 
 
 # The verison triplet:
@@ -132,7 +147,8 @@ leanprover/lean4:v4.26.0
 ```
 
 
-## (failed) Experiments for installing cslib
+## Some draft notes
+(failed) Experiments for installing cslib
 Failed (on `lean-toolchain` = `lean4:v4.27.0-rc1`)
 ```toml
 [[require]]
