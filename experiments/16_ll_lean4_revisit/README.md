@@ -163,3 +163,21 @@ git = "https://github.com/leanprover/cslib"
 # rev = "main"
 rev = "v4.27.0-rc1"
 ```
+
+
+# General, to explore
+
+The lean-lsp-mcp:
+Follow instructions at:
+https://github.com/oOo0oOo/lean-lsp-mcp
+For extesion:
+https://vscode.dev/redirect/mcp/install?name=lean-Isp&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22lean-Isp-mcp%22%5D%7D
+
+```bash
+claude mcp add lean-lsp uvx lean-lsp-mcp
+```
+
+Id: leanprover.lean4
+
+lumina
+
