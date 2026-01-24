@@ -13,8 +13,8 @@ echo
 
 source $LINLOG_DEBUG_WORKSPACE_FOLDER_CHECK/scripts/workspace-rc.bash
 
-set -x
-cd dataneura/gpu-experimentations/experiments/16_ll_lean4_revisit$
+# set -x
+cd dataneura/gpu-experimentations/experiments/16_ll_lean4_revisit
 pwd
 
 # The terminal will not stay if I don't add the following command:
