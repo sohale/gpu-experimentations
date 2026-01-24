@@ -75,3 +75,6 @@ The `~/.bash_profile` should remain non-existent.
 
 A shortcut:
 `batcat -pp -lbash ~/.profile ~/.bashrc ~/sspanel/dgocean/ephemssss.envs.bash.source ~/neopiler/scripts/bashrc.bash.source`
+
+Also see:
+* https://code.visualstudio.com/docs/supporting/troubleshoot-terminal-launch
