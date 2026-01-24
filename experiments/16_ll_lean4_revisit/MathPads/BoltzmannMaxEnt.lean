@@ -101,17 +101,19 @@ by
     -- Z > 0 since Ω is nonempty and every term exp(...) > 0
     have hzpos : 0 < Z (E := E) β := by
       classical
-      rcases Finset.univ_nonempty with ⟨i0, hi0⟩
-      have hrest : 0 ≤ ∑ j in (Finset.univ.erase i0), Real.exp (-β * E j) := by
+      -- pick an element from Nonempty Ω
+      let i0 : Ω := Classical.choice (inferInstance : Nonempty Ω)
+      have hi0 : i0 ∈ (Finset.univ : Finset Ω) := by simp
+      have hrest : 0 ≤ (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j)) := by
         exact Finset.sum_nonneg (fun j _ => le_of_lt (Real.exp_pos (-β * E j)))
       have hmain : 0 < Real.exp (-β * E i0) := Real.exp_pos _
       have hsum : Z (E := E) β
-                = (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+                = (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
                   + Real.exp (-β * E i0) := by
         simpa [Z] using
           (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
             (f := fun j => Real.exp (-β * E j)) hi0)
-      have : 0 < (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+      have : 0 < (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
                   + Real.exp (-β * E i0) :=
         add_pos_of_nonneg_of_pos hrest hmain
       simpa [hsum] using this
@@ -121,8 +123,11 @@ by
       simpa [div_eq_mul_inv, Finset.sum_mul, Finset.mul_sum]
     -- Z/Z = 1 using hZ
     have : ((∑ i, Real.exp (-β * E i)) / Z (E := E) β) = 1 := by
-      simpa [Z, hZ] using div_self (Z (E := E) β)
-    simpa [gibbs, hpull, this]
+      simpa [Z] using div_self hz
+    -- Convert the pulled-out form back to the original sum
+    have hsum_one : (∑ i, Real.exp (-β * E i) / Z (E := E) β) = 1 := by
+      simpa [hpull] using this
+    simpa [gibbs] using hsum_one
 
 /-! ## Algebraic identities for Gibbs form (no optimisation proof yet) -/
 
@@ -135,21 +140,21 @@ variable (β : ℝ)
 -- contemplate why finite?
 --  on `[Nonempty Ω]`
 
-lemma Z_pos (E : Ω → ℝ) (β : ℝ) : 0 < Z (E := E) β := by
+
 lemma Z_pos [Nonempty Ω] (E : Ω → ℝ) (β : ℝ) : 0 < Z (E := E) β := by
   classical
   -- Pick any i0 ∈ Ω and split the sum at i0
   rcases Finset.univ_nonempty with ⟨i0, hi0⟩
-  have hrest : 0 ≤ ∑ j in (Finset.univ.erase i0), Real.exp (-β * E j) := by
+  have hrest : 0 ≤ (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j)) := by
     exact Finset.sum_nonneg (fun j _ => le_of_lt (Real.exp_pos (-β * E j)))
   have hmain : 0 < Real.exp (-β * E i0) := Real.exp_pos _
   have hsum : Z (E := E) β
-            = (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+            = (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
               + Real.exp (-β * E i0) := by
     simpa [Z] using
       (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
         (f := fun j => Real.exp (-β * E j)) hi0)
-  have : 0 < (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j)) + Real.exp (-β * E i0) :=
+  have : 0 < (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j)) + Real.exp (-β * E i0) :=
     add_pos_of_nonneg_of_pos hrest hmain
   simpa [hsum] using this
 
@@ -176,7 +181,7 @@ lemma sum_gibbs_eq_one [Nonempty Ω] (E : Ω → ℝ) (β : ℝ) :
     simpa [div_eq_mul_inv, Finset.sum_mul, Finset.mul_sum]
   -- Z/Z = 1 using hZ
   have : ((∑ i, Real.exp (-β * E i)) / Z (E := E) β) = 1 := by
-    simpa [Z, hZ] using div_self (Z (E := E) β)
+    simpa [Z] using div_self hZ
   simpa [gibbs, this]
 
 /-- Energy expectation under Gibbs distribution: U(β) = ∑ pβ(i) E_i. -/
