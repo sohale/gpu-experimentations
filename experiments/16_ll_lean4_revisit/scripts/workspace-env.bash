@@ -20,4 +20,8 @@ pwd
 # The terminal will not stay if I don't add the following command:
 # The `--noprofile` `--norc` needs to be both here and in $MONO_REPO_ROOT/experiments/16_ll_lean4_revisit/.vscode/settings.json
 # Will reset the `set -ex` etc
+
+: || \
 exec bash --noprofile --norc
+
+exec bash
