@@ -3,7 +3,7 @@ version = "0.1.0"
 keywords = ["math"]
 # What to build when `lake build` command:
 # Also: LinlogMy as a file target(?). LinlogMy.lean, only if it is clean slate! (no manifest)
-defaultTargets = ["LinlogMy"]
+defaultTargets = ["LinlogMy", "MathPads"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -45,3 +45,8 @@ path = "LinlogMy" # directory name!
 # [[lean_lib]]
 # name = "simply"
 # path = "simply"
+
+# Add a library for your math pads folder; each file is a module under `MathPads.*`
+[[lean_lib]]
+name = "MathPads"
+path = "MathPads"
