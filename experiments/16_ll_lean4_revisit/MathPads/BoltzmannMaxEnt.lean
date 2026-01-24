@@ -28,9 +28,10 @@ import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 
-import Mathlib.Algebra.BigOperators
+-- import Mathlib.Algebra.BigOperators
+impoer Mathlib.Algebra.BigOperators.Pi
 
-open scoped BigOperators
+-- open scoped BigOperators
 open Real
 
 namespace MaxEnt

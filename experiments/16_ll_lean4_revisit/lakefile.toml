@@ -1,9 +1,13 @@
 name = "linlogmy"
 version = "0.1.0"
 keywords = ["math"]
+
+# defaultTargets:
 # What to build when `lake build` command:
 # Also: LinlogMy as a file target(?). LinlogMy.lean, only if it is clean slate! (no manifest)
-defaultTargets = ["LinlogMy", "MathPads"]
+
+# defaultTargets = ["LinlogMy", "MathPads"]
+defaultTargets = ["MathPads"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
