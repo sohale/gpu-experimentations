@@ -1,10 +1,17 @@
 
-set -x
+#!/usr/bin/env bash
+
 echo "Details:"
 echo  "doin: workspace-env.bash arg: $1"
 uname -a
 echo "TERM_PROGRAM=$TERM_PROGRAM"
 echo "TERM_PROGRAM_VERSION=$TERM_PROGRAM_VERSION"
+echo $SHELL
+echo "HOME=$HOME"
+echo "$LINLOG_DEBUG_WORKSPACE_FOLDER_CHECK"
+echo
+
+source $LINLOG_DEBUG_WORKSPACE_FOLDER_CHECK/scripts/workspace-rc.bash
 
 set -x
 cd dataneura/gpu-experimentations/experiments/16_ll_lean4_revisit$
