@@ -6,7 +6,19 @@
   ],
   "settings": {
     "lean4.server.logging.enabled": false,
-    "lean4.checkOnSave": true
+    "lean4.checkOnSave": true,
+    "terminal.integrated.profiles.linux": {
+      "implisolid": {
+        "path": "/bin/bash",
+        "args": [
+          "--noprofile",
+          "--norc",
+          "-c",
+          "source ${workspaceFolder}/scripts/workspace-env.bash"
+        ]
+      }
+    },
+    "terminal.integrated.defaultProfile.linux": "implisolid",
+    "terminal.integrated.cwd": "${workspaceFolder}"
   }
 }
-

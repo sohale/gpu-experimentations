@@ -180,4 +180,3 @@ claude mcp add lean-lsp uvx lean-lsp-mcp
 Id: leanprover.lean4
 
 lumina
-
