@@ -78,7 +78,7 @@ def gibbs (β : ℝ) : Ω → ℝ :=
   fun i => Real.exp (-β * E i) / Z (E := E) β
 
 /-- Gibbs distribution packaged as a PMF, assuming Z(β) ≠ 0 (true for finite Ω). -/
-def gibbsPMF (β : ℝ) : PMF Ω :=
+def gibbsPMF (β : ℝ) [Nonempty Ω] : PMF Ω :=
 by
   classical
   refine
@@ -86,12 +86,43 @@ by
       nonneg := ?_
       norm_one := ?_ }
   · intro i
-    -- exp ≥ 0, division by Z; Z is positive for finite sums of exp, proved below as a lemma.
-    -- We keep it as a lemma hook; for now a mild `sorry`.
-    sorry
+    -- exp ≥ 0 and Z ≥ 0 ⇒ p(i) ≥ 0
+    have hnum : 0 ≤ Real.exp (-β * E i) := by
+      exact le_of_lt (Real.exp_pos (-β * E i))
+    have hden : 0 ≤ Z (E := E) β := by
+      -- Z is a finite sum of nonnegative terms
+      have : ∀ j, 0 ≤ Real.exp (-β * E j) := fun _ => le_of_lt (Real.exp_pos _)
+      simpa [Z] using
+        Finset.sum_nonneg (fun j _ => this j)
+    simpa [gibbs, div_eq_mul_inv] using div_nonneg hnum hden
   · -- ∑ exp(-βE)/Z = (∑ exp(-βE)) / Z = 1, when Z ≠ 0.
-    -- Again, we defer the positivity/nonzero proof as a lemma hook.
-    sorry
+    -- Use Z ≠ 0 and linearity of sums
+    classical
+    -- Z > 0 since Ω is nonempty and every term exp(...) > 0
+    have hzpos : 0 < Z (E := E) β := by
+      classical
+      rcases Finset.univ_nonempty with ⟨i0, hi0⟩
+      have hrest : 0 ≤ ∑ j in (Finset.univ.erase i0), Real.exp (-β * E j) := by
+        exact Finset.sum_nonneg (fun j _ => le_of_lt (Real.exp_pos (-β * E j)))
+      have hmain : 0 < Real.exp (-β * E i0) := Real.exp_pos _
+      have hsum : Z (E := E) β
+                = (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+                  + Real.exp (-β * E i0) := by
+        simpa [Z] using
+          (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
+            (f := fun j => Real.exp (-β * E j)) hi0)
+      have : 0 < (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+                  + Real.exp (-β * E i0) :=
+        add_pos_of_nonneg_of_pos hrest hmain
+      simpa [hsum] using this
+    have hz : Z (E := E) β ≠ 0 := ne_of_gt hzpos
+    have hpull : (∑ i, Real.exp (-β * E i) / Z (E := E) β)
+              = (∑ i, Real.exp (-β * E i)) / Z (E := E) β := by
+      simpa [div_eq_mul_inv, Finset.sum_mul, Finset.mul_sum]
+    -- Z/Z = 1 using hZ
+    have : ((∑ i, Real.exp (-β * E i)) / Z (E := E) β) = 1 := by
+      simpa [Z, hZ] using div_self (Z (E := E) β)
+    simpa [gibbs, hpull, this]
 
 /-! ## Algebraic identities for Gibbs form (no optimisation proof yet) -/
 
@@ -105,31 +136,48 @@ variable (β : ℝ)
 --  on `[Nonempty Ω]`
 
 lemma Z_pos (E : Ω → ℝ) (β : ℝ) : 0 < Z (E := E) β := by
+lemma Z_pos [Nonempty Ω] (E : Ω → ℝ) (β : ℝ) : 0 < Z (E := E) β := by
   classical
-  -- Finite sum of strictly positive terms exp(...) > 0.
-  -- A standard proof uses `Finset.sum_pos` after showing each term is positive.
-  -- Leaving as a hook; fill later if you want `simp` automation for nonneg/norm proofs.
-  sorry
+  -- Pick any i0 ∈ Ω and split the sum at i0
+  rcases Finset.univ_nonempty with ⟨i0, hi0⟩
+  have hrest : 0 ≤ ∑ j in (Finset.univ.erase i0), Real.exp (-β * E j) := by
+    exact Finset.sum_nonneg (fun j _ => le_of_lt (Real.exp_pos (-β * E j)))
+  have hmain : 0 < Real.exp (-β * E i0) := Real.exp_pos _
+  have hsum : Z (E := E) β
+            = (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j))
+              + Real.exp (-β * E i0) := by
+    simpa [Z] using
+      (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
+        (f := fun j => Real.exp (-β * E j)) hi0)
+  have : 0 < (∑ j in (Finset.univ.erase i0), Real.exp (-β * E j)) + Real.exp (-β * E i0) :=
+    add_pos_of_nonneg_of_pos hrest hmain
+  simpa [hsum] using this
 
 lemma Z_ne_zero (E : Ω → ℝ) (β : ℝ) : Z (E := E) β ≠ 0 := by
   have h : 0 < Z (E := E) β := Z_pos (E := E) β
   exact ne_of_gt h
 
 /-- Normalisation identity: ∑ gibbs = 1. -/
-lemma sum_gibbs_eq_one (E : Ω → ℝ) (β : ℝ) :
+lemma sum_gibbs_eq_one [Nonempty Ω] (E : Ω → ℝ) (β : ℝ) :
     (∑ i, gibbs (E := E) β i) = 1 := by
   classical
   -- Expand definition: ∑ exp(-βE)/Z = (∑ exp(-βE))/Z = Z/Z = 1.
-  have hZ : Z (E := E) β ≠ 0 := Z_ne_zero (E := E) β
+  -- First show Z ≠ 0 via positivity (Ω nonempty)
+  have hzpos : 0 < Z (E := E) β := Z_pos (E := E) β
+  have hZ : Z (E := E) β ≠ 0 := ne_of_gt hzpos
   -- `field_simp` works well once you rewrite.
   -- We keep the proof short and robust:
   unfold gibbs
   -- Pull out the constant factor 1/Z from sum:
   -- sum (exp(...) / Z) = (sum exp(...)) / Z
   -- Use `Finset.mul_sum` after rewriting division as multiplication by inv.
-  simp [div_eq_mul_inv, Finset.mul_sum, Finset.sum_mul, hZ, Z]  -- may need local tweaks
-  -- If `simp` does not close due to rewriting details, replace with an explicit `sorry`.
-  sorry
+  have : (∑ i, Real.exp (-β * E i) / Z (E := E) β)
+        = (∑ i, Real.exp (-β * E i)) / Z (E := E) β := by
+    simpa [div_eq_mul_inv, Finset.sum_mul, Finset.mul_sum]
+  -- Z/Z = 1 using hZ
+  have : ((∑ i, Real.exp (-β * E i)) / Z (E := E) β) = 1 := by
+    simpa [Z, hZ] using div_self (Z (E := E) β)
+  simpa [gibbs, this]
 
 /-- Energy expectation under Gibbs distribution: U(β) = ∑ pβ(i) E_i. -/
 def U (E : Ω → ℝ) (β : ℝ) : ℝ :=
