@@ -7,18 +7,20 @@
   "settings": {
     "lean4.server.logging.enabled": false,
     "lean4.checkOnSave": true,
+
     "terminal.integrated.profiles.linux": {
-      "implisolid": {
+      "comment": "The following IS ignored. Don't try.",
+      "expermentuzo": {
         "path": "/bin/bash",
         "args": [
           "--noprofile",
           "--norc",
           "-c",
-          "source ${workspaceFolder}/scripts/workspace-env.bash"
+          "export LINLOG_DEBUG_ZEMPP=LE && echo \"op\" && source ${workspaceFolder}/scripts/workspace-env.bash \"from-linlog.code-workspacen THIS IS IGNORED\""
         ]
       }
     },
-    "terminal.integrated.defaultProfile.linux": "implisolid",
+    "terminal.integrated.defaultProfile.linux": "expermentuzo",
     "terminal.integrated.cwd": "${workspaceFolder}"
   }
 }
