@@ -100,6 +100,10 @@ namespace GibbsIdentities
 variable {E : Ω → ℝ}
 variable (β : ℝ)
 
+-- Food for thought:
+-- contemplate why finite?
+--  on `[Nonempty Ω]`
+
 lemma Z_pos (E : Ω → ℝ) (β : ℝ) : 0 < Z (E := E) β := by
   classical
   -- Finite sum of strictly positive terms exp(...) > 0.
