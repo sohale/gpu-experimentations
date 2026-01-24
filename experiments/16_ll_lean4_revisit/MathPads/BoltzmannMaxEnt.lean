@@ -177,6 +177,7 @@ The “max entropy” problem (canonical ensemble), stated as:
 This is a *statement scaffold*. Proving it fully in Lean typically uses convexity
 and KL-divergence arguments, or Lagrange multipliers in a finite-dimensional simplex.
 -/
+-- q⋆ = qStar
 def IsMaxEntropyAt (qStar : PMF Ω) (E : Ω → ℝ) (U : ℝ) : Prop :=
   HasMeanEnergy (q := qStar) E U ∧
   ∀ q : PMF Ω, HasMeanEnergy (q := q) E U → q.shannon ≤ qStar.shannon
