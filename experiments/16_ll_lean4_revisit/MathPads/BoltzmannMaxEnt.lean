@@ -22,7 +22,7 @@
     • Everything is discrete on a finite state space `Ω` (recommended to start).
 -/
 
-import Mathlib
+-- Don't do this: It causes infinite loop in `lake build` command: import Mathlib
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Finset.Basic

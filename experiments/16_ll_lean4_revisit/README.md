@@ -180,3 +180,9 @@ claude mcp add lean-lsp uvx lean-lsp-mcp
 Id: leanprover.lean4
 
 lumina
+
+
+## Some useful commands
+```bash
+lake build MathPads
+```
