@@ -29,9 +29,9 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 
 -- import Mathlib.Algebra.BigOperators
-impoer Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Pi
 
--- open scoped BigOperators
+open scoped BigOperators
 open Real
 
 namespace MaxEnt
@@ -45,7 +45,7 @@ variable {Ω : Type} [Fintype Ω] [DecidableEq Ω]
 
 /-- A (discrete) probability mass function on a finite space. -/
 structure PMF (Ω : Type) [Fintype Ω] where
-  p        : Ω → ℝ
+  p : Ω → ℝ
   nonneg   : ∀ i, 0 ≤ p i
   norm_one : (∑ i, p i) = 1
 
@@ -177,9 +177,9 @@ The “max entropy” problem (canonical ensemble), stated as:
 This is a *statement scaffold*. Proving it fully in Lean typically uses convexity
 and KL-divergence arguments, or Lagrange multipliers in a finite-dimensional simplex.
 -/
-def IsMaxEntropyAt (q⋆ : PMF Ω) (E : Ω → ℝ) (U : ℝ) : Prop :=
-  HasMeanEnergy (q := q⋆) E U ∧
-  ∀ q : PMF Ω, HasMeanEnergy (q := q) E U → q.shannon ≤ q⋆.shannon
+def IsMaxEntropyAt (qStar : PMF Ω) (E : Ω → ℝ) (U : ℝ) : Prop :=
+  HasMeanEnergy (q := qStar) E U ∧
+  ∀ q : PMF Ω, HasMeanEnergy (q := q) E U → q.shannon ≤ qStar.shannon
 
 /--
 Canonical max-entropy theorem (scaffold):
@@ -191,9 +191,9 @@ You will likely want to strengthen this to uniqueness (under mild conditions)
 and connect β to temperature via β = 1/(kB*T).
 -/
 theorem exists_gibbs_max_entropy (E : Ω → ℝ) (U : ℝ) :
-    ∃ β : ℝ, ∃ q⋆ : PMF Ω,
-      (∀ i, q⋆.p i = gibbs (E := E) β i) ∧
-      IsMaxEntropyAt (q⋆ := q⋆) (E := E) U := by
+    ∃ β : ℝ, ∃ qStar : PMF Ω,
+      (∀ i, qStar.p i = gibbs (E := E) β i) ∧
+      IsMaxEntropyAt (qStar := qStar) (E := E) U := by
   classical
   -- Nontrivial (requires existence of β solving expectation = U, plus max-ent proof).
   -- Leave as a hook; you can fill later via KL divergence:
@@ -226,10 +226,10 @@ For concrete work you may want:
 or a group action:
   • `[Group Frame] [MulSemiringAction Frame ...]` etc.
 -/
-class FrameAction where
+class FrameAction (Frame : Type) (Site : Type) where
   act : Frame → Site → Site
 
-variable [FrameAction Site Frame]
+variable [FrameAction Frame Site]
 
 /-- Frame-dependent energy density per site. -/
 def EnergyDensity : Type :=
@@ -251,7 +251,7 @@ We keep it abstract here.
 def pushEnergy
     (E0 : Site → ℝ)
     (f : Frame) : Site → ℝ :=
-  fun s => E0 (FrameAction.act (Site := Site) (Frame := Frame) f s)
+  fun s => E0 (FrameAction.act (Frame := Frame) (Site := Site) f s)
 
 /-
 Now you can instantiate the MaxEnt machinery above by taking Ω := Site
@@ -260,4 +260,5 @@ and E := energyInFrame E f (or pushEnergy E0 f), then define Z, gibbs, etc.
 
 end MovingFrame
 
+end
 end MaxEnt
