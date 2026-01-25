@@ -194,7 +194,10 @@ export ARISTOTLE_API_KEY=... # as given, no prepending
 # run
 uvx --from aristotlelib@latest aristotle
 ```
-It should not ask for an API key if it is set as an environment variable.
+It should not ask for an API key if it is set as an environment variable. A wizard-like menu will ask for the lean file.
+Your request will be queued. Check requests at:
+https://aristotle.harmonic.fun/dashboard/requests
+
 
 Alternatively: (not tested)
 ```bash
@@ -203,15 +206,29 @@ python3 -m venv .venv
 source ./.venv/bin/activate
 pip install aristotlelib
 pip install --upgrade aristotlelib
+
 # run
 aristotle
+aristotle prove-from-file --help
+aristotle prove-from-file ./theorem.lean
+# natural language
+aristotle prove-from-file ./problem.txt --informal
+aristotle prove-from-file ./problem.txt --informal --formal-input-context ./context.lean
+
+aristotle prove-from-file ./theorem.lean --output-file solution.lean
 ```
+
 Write `sorry`s:
 ```lean
 def foo: Nat := by sorry
 ```
 and write `admit` to avoid Aristotle.
 
+May need to use the following versions
+```txt
+Lean Toolchain version: leanprover/lean4:v4.24.0
+Mathlib version: v4.24.0 - Oct 14, 2025 (f897ebcf72cd16f89ab4577d0c826cd14afaafc7)
+```
 ## Some useful commands
 ```bash
 lake build MathPads
