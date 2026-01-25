@@ -194,10 +194,10 @@ by
       have hsum : Z (E := E) β
                 = (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
                   + Real.exp (-β * E i0) := by
+        simp [Z]
         -- simpa [Z] using
-        simp [Z] -- using
-          (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
-            (f := fun j => Real.exp (-β * E j)) hi0)
+        --   (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
+        --    (f := fun j => Real.exp (-β * E j)) hi0)
       have : 0 < (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
                   + Real.exp (-β * E i0) :=
         add_pos_of_nonneg_of_pos hrest hmain
@@ -211,12 +211,17 @@ by
       simpa [Z] using div_self hz
     -- Convert the pulled-out form back to the original sum
     have hsum_one : (∑ i, Real.exp (-β * E i) / Z (E := E) β) = 1 := by
-      simpa [hpull] using this
+      simp
+      -- simpa [hpull] using this
     simpa [gibbs] using hsum_one
 
 /-! ## Algebraic identities for Gibbs form (no optimisation proof yet) -/
 
+
 namespace GibbsIdentities
+
+-- why `variable` is used here?
+-- to avoid passing E and β around everywhere
 
 variable {E : Ω → ℝ}
 variable (β : ℝ)
@@ -268,6 +273,8 @@ lemma sum_gibbs_eq_one [Nonempty Ω] (E : Ω → ℝ) (β : ℝ) :
   have : ((∑ i, Real.exp (-β * E i)) / Z (E := E) β) = 1 := by
     simpa [Z] using div_self hZ
   simpa [gibbs, this]
+
+
 
 /-- Energy expectation under Gibbs distribution: U(β) = ∑ pβ(i) E_i. -/
 def U (E : Ω → ℝ) (β : ℝ) : ℝ :=
