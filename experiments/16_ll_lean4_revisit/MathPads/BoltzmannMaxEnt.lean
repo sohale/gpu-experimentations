@@ -22,6 +22,85 @@
     • Everything is discrete on a finite state space `Ω` (recommended to start).
 -/
 
+/-
+Ingredients: (scope inputs)
+state space:
+    * `Ω`
+energy: `E`
+    * `E : Ω → ℝ`
+    * a function on states
+    * "energy function" (or "energy levels")
+twmperature parameter:
+    * `β : ℝ`
+    * inverse temperature `β`parameter
+    * Note: β = 1/(kB T) in physics
+
+
+No physicality here yet:
+
+Concept-cluster: PMF
+A PMF = probability mass function.
+A PMF on Ω:
+    * `p : Ω → ℝ`
+    * properties for p: See nonneg, norm_one.
+A Gibbs PMF: (a certain form of a PMF)
+    * `gibbsPMF(β)`
+    * Is a `PMF`
+    ^ Formula `gibbs(β) i := exp(-β E i) / Z(β)`
+    * called "Gibbs/Canonical" PMF form.
+    * depends on "energy function" `E` and an inverse temperature `β`.
+
+
+Useful side assumptions & lemmas:
+* `[Nonempty Ω]`
+    * Useful for `0 < Z(β)`
+* `[Fintype Ω]`
+    * finite state space
+* `[DecidableEq Ω]`
+
+Lemmas:
+* nonneg: each p(i) ≥ 0.
+* norm_one: ∑ p(i) = 1
+    * requires/uses: Z > 0.
+
+Stat quantities:
+* expectation:
+    * as `PMF.expect`.
+* entropy:
+    * H(q) = -∑ p log p
+    * as `PMF.shannon`.
+
+
+Physics enters: Thermo quantities:
+E, β.
+
+Thermo Quantities:
+* mean energy: (or total energy)
+    * U(β) := ∑ i, gibbs(β) i * E i
+* thermodynamic entropy:
+    * S(kB, β) := kB * H(gibbs(β))
+* Helmholtz free energy:
+    * F(β) := -(1/β) log Z(β)
+
+Intermediate: main:
+* partition function
+    * Z(β) := ∑ i, exp(-β E i)
+
+Intermediate: auxiliary/side:
+* positive exponentials:
+    * z(E, β) := exp(-β E i)
+* sum of positive exponentials:
+    * Z_pos: (sum of positive exponentials)
+
+Lemmas:
+* positive exponentials:
+    * z_pos (E, β): 0 < z(E, β)
+* sum of positive exponentials:
+    * Z_pos: (sum of positive exponentials)
+* positive partition function:
+    * Z_pos (β): 0 < Z(β)
+
+-/
 -- Don't do this: It causes infinite loop in `lake build` command: import Mathlib
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
