@@ -181,6 +181,36 @@ Id: leanprover.lean4
 
 lumina
 
+### UV Installation
+Use https://docs.astral.sh/uv/getting-started/installation/
+
+### Aristotle Installation
+* Follow https://aristotle.harmonic.fun/dashboard/docs/installation
+* Requires `uv` (see above)
+* Simply:
+```bash
+# install
+export ARISTOTLE_API_KEY=... # as given, no prepending
+# run
+uvx --from aristotlelib@latest aristotle
+```
+It should not ask for an API key if it is set as an environment variable.
+
+Alternatively: (not tested)
+```bash
+# install
+python3 -m venv .venv
+source ./.venv/bin/activate
+pip install aristotlelib
+pip install --upgrade aristotlelib
+# run
+aristotle
+```
+Write `sorry`s:
+```lean
+def foo: Nat := by sorry
+```
+and write `admit` to avoid Aristotle.
 
 ## Some useful commands
 ```bash
