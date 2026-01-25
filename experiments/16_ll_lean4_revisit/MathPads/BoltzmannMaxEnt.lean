@@ -43,6 +43,7 @@ A PMF = probability mass function.
 A PMF on Ω:
     * `p : Ω → ℝ`
     * properties for p: See nonneg, norm_one.
+    * Limitations: Finite sets only for now.
 A Gibbs PMF: (a certain form of a PMF)
     * `gibbsPMF(β)`
     * Is a `PMF`
@@ -72,7 +73,7 @@ Stat quantities:
 
 
 Physics enters: Thermo quantities:
-E, β.
+`E`, `β`.
 
 Thermo Quantities:
 * mean energy: (or total energy)
@@ -101,19 +102,21 @@ Lemmas:
     * Z_pos (β): 0 < Z(β)
 
 -/
--- Don't do this: It causes infinite loop in `lake build` command: import Mathlib
+-- Don't `import Mathlib`: It causes infinite loop in `lake build` command.
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 
 -- import Mathlib.Algebra.BigOperators
-import Mathlib.Algebra.BigOperators.Pi
+-- import Mathlib.Algebra.BigOperators.Pi
 
 open scoped BigOperators
 open Real
 
 namespace MaxEnt
+-- namespace Physical
+-- namespace PhysicalStatistics
 
 set_option autoImplicit false
 noncomputable section
@@ -122,7 +125,9 @@ noncomputable section
 
 variable {Ω : Type} [Fintype Ω] [DecidableEq Ω]
 
-/-- A (discrete) probability mass function on a finite space. -/
+/-- A (discrete) probability mass function on a finite space.
+`Ω` is the State Space (semi-physicality semantics)
+-/
 structure PMF (Ω : Type) [Fintype Ω] where
   p : Ω → ℝ
   nonneg   : ∀ i, 0 ≤ p i
@@ -189,7 +194,8 @@ by
       have hsum : Z (E := E) β
                 = (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
                   + Real.exp (-β * E i0) := by
-        simpa [Z] using
+        -- simpa [Z] using
+        simp [Z] -- using
           (Finset.sum_erase_add (s := (Finset.univ : Finset Ω))
             (f := fun j => Real.exp (-β * E j)) hi0)
       have : 0 < (Finset.univ.erase i0).sum (fun j => Real.exp (-β * E j))
