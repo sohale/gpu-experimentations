@@ -1,0 +1,17 @@
+{
+	"servers": {
+		"lean-lsp-my0": {
+			"command": "/home/ephemssss/.local/bin/uvx",
+
+			"NOT1_command": "/home/ephemssss/.local/bin/uvx",
+			"NOT2_command": "${HOME}/.local/bin/uvx",
+			"NOT3_command": "uvx",
+			"NOT4_command": "${workspaceFolder}/docs/lean-map/lean/scripts/uvx-wrapper.bash",
+			"args": [
+				"lean-lsp-mcp"
+			],
+			"type": "stdio"
+		}
+	},
+	"inputs": []
+}

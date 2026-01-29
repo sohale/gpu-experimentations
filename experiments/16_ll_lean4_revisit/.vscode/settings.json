@@ -1,0 +1,23 @@
+{
+  "terminal.integrated.profiles.linux": {
+    "implizolid": {
+      "path": "/bin/bash",
+      "args": [
+        "--noprofile",
+        "--norc",
+        "-c",
+        "export LINLOG_DEBUG_XEMPP=LE && echo \"from settings.json :\" && source ${workspaceFolder}/scripts/workspace-env.bash \"via settings.json\""
+      ]
+    }
+  },
+  "terminal.integrated.env.linux": {
+    "INITIAL_CWD": "${workspaceFolder}",
+    "LINLOG_DEBUG_WS_ACTIVE": "1",
+    "LINLOG_DEBUG_WORKSPACE_FOLDER_CHECK": "${workspaceFolder}",
+    "LINLOG_DEBUG_JSON_BASED_ENV_1": "correctlyset",
+  },
+
+  "comment": "Next line is necessary:",
+  "terminal.integrated.defaultProfile.linux": "implizolid",
+
+}
