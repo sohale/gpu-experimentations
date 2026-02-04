@@ -105,8 +105,16 @@ Verions: 4.3.3. When later available, see: https://cmake.org/download/
 ```bash
 wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3.tar.gz
 ```
+
+Build CMake with Clang (not g++).
+
 Then,
 ```bash
+
+clang --version
+export CC=clang
+export CXX=clang++
+
 
 # cmake will need openssl
 sudo apt install -y openssl libssl-dev libcurl4-openssl-dev ca-certificates
@@ -116,11 +124,16 @@ mkdir -p "$HOME/.local/bin"
 tar -xf cmake-4.2.3.tar.gz
 # careful:
 cd cmake-4.2.3
+CC=clang CXX=clang++ \
 ./bootstrap --prefix="$HOME/.local" --parallel="$(nproc)"
 # slow ^
+
 make -j"$(nproc)"
+
 make install
-export PATH="$HOME/.local/bin:$PATH"
+
+# export PATH="$HOME/.local/bin:$PATH"
+
 cmake --version
 
 # command -v gcc || echo "gcc missing"; command -v g++ || echo "g++ missing"; command -v make || echo "make missing"
