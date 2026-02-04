@@ -1,3 +1,7 @@
+# You need to run this to take effect:
+#     ./scripts/dev.bash
+#     Then, click on exper21.generated.code-workspace annd click ...
+
 # see https://code.visualstudio.com/docs/reference/variables-reference
 #     ${userHome}
 #     ${env:USERNAME}
@@ -5,7 +9,8 @@
 
 
 folders:
-  - path: ${userHome}/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
+  - path: /home/paperspace/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
+   #      fails: ${userHome}/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
 
 settings:
 
@@ -15,7 +20,7 @@ settings:
       path: /bin/bash
       args:
         - -c
-        - "export TEST_ENV1=V1 && 'cd ${workspaceFolder}/ && echo 'Hello ${env:USERNAME} ok'"
+        - "export TEST_ENV1=V1 && cd '${workspaceFolder}/' && echo 'Hello ${env:USERNAME} ok'"
 
   terminal.integrated.defaultProfile.linux: expermatazoid21
   terminal.integrated.cwd: ${workspaceFolder}
