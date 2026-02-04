@@ -8,24 +8,28 @@ using std::string;
 using std::unordered_map;
 
 
-typedef unordered_map<std::string, int> shelf_t;
+typedef std::string::value_type char_type;
+typedef unordered_map<char_type, int> shelf_t;
 
 /**
  * true: 
  */
-bool process(shelf_t & shelf, string::value_type c, bool add_keys, int increment) {
-    // self.emplace
-    shelf_t::iterator key = std::find(shelf);
-    if (key == shelf::end()) {
+bool processAChar(shelf_t & shelf, char_type c, bool add_keys, int increment) {
+   typedef  shelf_t::iterator itertype;
+    std::pair<iterator, bool>
+   itertype key = shelf.find(c);
+   if (key == shelf.end()) {
       if (add_keys) {
-           key = std::emplace()
+           // key = std::emplace()
+           // key = shelf.emplace(key);
+           shelf.insert(key, 0);
            shelf[key] += cincreamtn
       } else {
          retur false;
       }
     }
     return true;
-}
+   }
 
 bool isAnagram(const string &a, const string &a) {
    for (int li = 0; li<a.size(); li++ ) {
