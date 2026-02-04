@@ -139,6 +139,11 @@ cmake --version
 # command -v gcc || echo "gcc missing"; command -v g++ || echo "g++ missing"; command -v make || echo "make missing"
 ```
 
+#### Each build
+Alernativelly:
+`cmake -S . -B build -DCMAKE_C_COMPILER=/opt/llvm-21/bin/clang  -DCMAKE_CXX_COMPILER=/opt/llvm-21/bin/clang++ cmake --build build -j`
+
+
 ### CUDA
 Starting point of installation of CUDA is three downloaded files:
 * `build.sh`, via  `git clone` of: from https://github.com/NVIDIA/apt-packaging-cuda-keyring
