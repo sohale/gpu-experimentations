@@ -140,8 +140,27 @@ cmake --version
 ```
 
 #### Each build
+
+See `scripts/build.bash`
+
+Dont forget to `rm -rf ./build/` before each build/change of cmake, etc.
+
+```bash
+# either
+clang++ -std=c++26 -stdlib=libstdc++  cpp_test1.cpp
+# or:
+
+# rm -rf ./build
+cmake -S . -B build -DUSE_CPP26=ON
+
+cmake --build build -j"$(nproc)"
+```
+
+
+
 Alernativelly:
 `cmake -S . -B build -DCMAKE_C_COMPILER=/opt/llvm-21/bin/clang  -DCMAKE_CXX_COMPILER=/opt/llvm-21/bin/clang++ cmake --build build -j`
+
 
 
 ### CUDA
