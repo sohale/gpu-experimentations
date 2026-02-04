@@ -81,7 +81,14 @@ sudo chown $USER:$USER llvm-21
 cd llvm-21
 wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.7/LLVM-21.1.7-Linux-X64.tar.xz
 tar -xf ./LLVM-21.1.7-Linux-X64.tar.xz --strip-components=1
-echo 'export PATH=/opt/llvm-21/bin:$PATH' >> ~/.bashrc
+
+echo '
+export PATH=/opt/llvm-21/bin:$PATH
+export CC=clang
+export CXX=clang++
+' >> ~/.bashrc
+# export CXX=clang++
+
 source ~/.bashrc
 exit
 clang++ --version
