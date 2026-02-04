@@ -1,16 +1,15 @@
 folders:
-  - path: /dataneura/gpu-experimentations/experiments/16_ll_lean4_revisit
+  - path: ${}/home/paperspace/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
+
 settings:
-  lean4.server.logging.enabled: true
-  lean4.checkOnSave: true
+
   terminal.integrated.profiles.linux:
-    comment: The following IS ignored. Don't try.
-    expermentuzo:
+
+    expermatazoid21:
       path: /bin/bash
       args:
-        - --noprofile
-        - --norc
         - -c
-        - export LINLOG_DEBUG_ZEMPP=LE && echo "op" && source ${workspaceFolder}/scripts/workspace-env.bash "from-linlog.code-workspacen THIS IS IGNORED"
-  terminal.integrated.defaultProfile.linux: expermentuzo
+        - "export TEST_ENV1=V1 && echo 'ok'"
+
+  terminal.integrated.defaultProfile.linux: expermatazoid21
   terminal.integrated.cwd: ${workspaceFolder}
