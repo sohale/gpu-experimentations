@@ -1,0 +1,136 @@
+    1  nvcc
+    2  exit
+    3  git clone git@github.com:sohale/gpu-experimentations.git
+    4  sudo apt update
+    5  (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) 	&& sudo mkdir -p -m 755 /etc/apt/keyrings 	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg 	&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null 	&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg 	&& sudo mkdir -p -m 755 /etc/apt/sources.list.d 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 	&& sudo apt update 	&& sudo apt install gh -y
+    6  nvim miapatta.txt
+    7  vim miapatta.txt
+    8  cat miapatta.txt 
+    9  ls
+   10  cat miapatta.txt 
+   11  gh auth
+   12  exit
+   13  history
+   14  gh auth
+   15  gh auth login
+   16  gh auth
+   17  gh auth login
+   18  git clone git@github.com:sohale/gpu-experimentations.git
+   19  gh auth login
+   20  git clone git@github.com:sohale/gpu-experimentations.git
+   21  cd gpu-experimentations/
+   22  cd experiments/
+   23  ls
+   24  mkdir 20_cuda_another_exercise
+   25  cd 20_
+   26  cd 20_cuda_another_exercise/
+   27  ls ~/.ssh/
+   28  exit
+   29  mkdir -p ~/.ssh/
+   30  chmod 700 ~/.ssh/
+   31  chmod 700 ~/.ssh
+   32  nano ~/.ssh/authorized_keys 
+   33  chmod 600 ~/.ssh/authorized_keys
+   34  exit
+   35  mkdir clean-work
+   36  exit
+   37  sudo apt install python3.10-venv
+   38  sudo apt update
+   39  sudo apt install clang
+   40  cd /opt
+   41  sudo mkdir llvm-21
+   42  sudo chown $USER:$USER llvm-21
+   43  cd llvm-21
+   44  wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.0.0/clang+llvm-21.0.0-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+   45  wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.7/LLVM-21.1.7-Linux-X64.tar.xz
+   46  tar -xf ./LLVM-21.1.7-Linux-X64.tar.xz --strip-components=1
+   47  echo 'export PATH=/opt/llvm-21/bin:$PATH' >> ~/.bashrc
+   48  source ~/.bashrc
+   49  exit
+   50  clang++ --version
+   51  exit
+   52  ls
+   53  clang++ test1.cpp 
+   54  clang++ -std==c17 test1.cpp 
+   55  clang++ -std==c++17 test1.cpp 
+   56  clang++ --std==c++17 test1.cpp 
+   57  clang++ -std=c++17 -Wall -Wextra -Wpedantic  test1.cpp 
+   58  cp test1.cpp test2.cpp 
+   59  clang++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   60  gg++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   61  history 
+   62  gg++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   63  gcc++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   64  g++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   65  clang++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   66  clang++ --version
+   67  which clang
+   68  echo $PATH
+   69  ls
+   70  sudo apt install libstdc++-12-dev
+   71  exit
+   72  history
+   73  cd ~/gpu-experimentations/experiments/21_cuda_another_exercise/
+   74  ls
+   75  clang++ -std=c++17 -stdlib=libstdc++  test2.cpp 
+   76  cp test2.cpp test3.cpp 
+   77  chmod -w test1.cpp 
+   78  chmod -w test2.cpp 
+   79  clang++ -std=c++17 -stdlib=libstdc++  test3.cpp 
+   80  # isntallingnvidia
+   81  # isntallingn vidia
+   82  sudo apt install -y wget gnupg ca-certificates
+   83  touch readmd.md
+   84  history >session_history.txt
+   85  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-archive-keyring.gpg
+   86  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+   87  ls
+   88  mv cuda-ubuntu2204.pin cuda.pin
+   89  lsb_release -a
+   90  DISTRO=ubuntu2204 ARCH=x86_64 ./build.sh cuda-archive-keyring.gpg cuda.pin
+   91  ls
+   92  ls -alth
+   93  cat cuda-archive-keyring.gpg | gpg --dearmor > cuda-archive.keyring.gpg
+   94  cat cuda.pin
+   95  history >session_history.txt
+   96  apt-get install debhelper devscripts dpkg-dev make
+   97  sudo apt-get install debhelper devscripts dpkg-dev make
+   98  exit
+   99  git clone git@github.com:NVIDIA/apt-packaging-cuda-keyring.git
+  100  cd apt-packaging-cuda-keyring/
+  101  ls
+  102  DISTRO=ubuntu2204 ARCH=x86_64 ./build.sh  ../cuda-archive-keyring.gpg ../cuda.pin
+  103  ls
+  104  ls ..
+  105  cd ..
+  106  mv apt-packaging-cuda-keyring/ ~/gpu-experimentations/experiments/21_cuda_another_exercise/
+  107  ls
+  108  ls clean-work/
+  109  cd ~/gpu-experimentations/experiments/21_cuda_another_exercise/
+  110  ls
+  111  cd apt-packaging-cuda-keyring/
+  112  cd ~/gpu-experimentations/experiments/21_cuda_another_exercise/apt-packaging-cuda-keyring
+  113  ls
+  114  DISTRO=ubuntu2204 ARCH=x86_64 ./build.sh  ../cuda-archive-keyring.gpg ../cuda.pin
+  115  ls cuda-keyring*_all.deb
+  116  sudo dpkg --install cuda-keyring*_all.deb
+  117  # installed cuda-keyring_1.1-1_all.deb
+  118  sudo apt-get update
+  119  ls
+  120  cd ..
+  121  ls
+  122  history >session_history.txt
+  123  history 
+  124  eixt
+  125  exit
+  126  cd ~/gpu-experimentations/experiments/21_cuda_another_exercise/apt-packaging-cuda-keyring
+  127  ls
+  128  nvcc
+  129  apt-cache search cuda-toolkit
+  130  apt list | grep cuda-toolkit
+  131  nvidia-smi
+  132  sudo apt install cuda-toolkit-13-1
+  133  exit
+  134  cd ~/gpu-experimentations/experiments/21_cuda_another_exercise/apt-packaging-cuda-keyring
+  135  cd ..
+  136  history >session_history.txt 
