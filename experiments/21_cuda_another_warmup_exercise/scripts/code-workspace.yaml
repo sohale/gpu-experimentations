@@ -1,5 +1,11 @@
+# see https://code.visualstudio.com/docs/reference/variables-reference
+#     ${userHome}
+#     ${env:USERNAME}
+#     "${workspaceFolder}/...
+
+
 folders:
-  - path: ${}/home/paperspace/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
+  - path: ${userHome}/gpu-experimentations/experiments/21_cuda_another_warmup_exercise
 
 settings:
 
@@ -9,7 +15,7 @@ settings:
       path: /bin/bash
       args:
         - -c
-        - "export TEST_ENV1=V1 && echo 'ok'"
+        - "export TEST_ENV1=V1 && 'cd ${workspaceFolder}/ && echo 'Hello ${env:USERNAME} ok'"
 
   terminal.integrated.defaultProfile.linux: expermatazoid21
   terminal.integrated.cwd: ${workspaceFolder}
