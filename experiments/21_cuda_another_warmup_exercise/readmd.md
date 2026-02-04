@@ -13,7 +13,7 @@ To install: cuda & clang
 Get the GPU Machine: RTX4000
 
 
-#### On local machine:
+#### On local machine
 Append to `~/.ssh/config`:
 ```txt
 Host paperspace-gpu-quicktemp
@@ -24,20 +24,50 @@ Host paperspace-gpu-quicktemp
     ServerAliveCountMax 3
 ```
 
+Copy this:
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+On remote machine: (somwhow!)
+Add ssh key to `~/.ssh/authorized_keys`: (paste the copied key form local machine)
+
 Client/local machine:
 ```bash
 ssh paperspace-gpu-quicktemp
 ```
-On VScode: `F1` -> `Remote-SSH: Connect to Host...` -> `paperspace-gpu-quicktemp`
 
-## On the GPU machine
-
-
-Install gh, pythonnn, t
+Then: VSCode/Workspace setup:
 ```bash
-sudo apt install python3.10-venv
-
+cd ...
+bash ./scripts/dev.bash
 ```
+On **VScode** (local machine):
+`F1` -> `Remote-SSH: Connect to Host...` -> `paperspace-gpu-quicktemp`
+Then, in vscode, navigate to `exper21.generated.code-workspace`, click on `[Open Workspace]`.
+
+Now you can follow installtions for CUDA & Clang.
+
+
+## Preparations on the GPU machine
+
+Update ``~/.ssh/authorized_keys` as above, and connect via `ssh paperspace-gpu-quicktemp` or vscode remote. Then:
+
+Install `gh`, python, etc
+```bash
+# Onstall gh cli:
+`(type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) 	&& sudo mkdir -p -m 755 /etc/apt/keyrings 	&& out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg 	&& cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null 	&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg 	&& sudo mkdir -p -m 755 /etc/apt/sources.list.d 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 	&& sudo apt update 	&& sudo apt install gh -y
+
+gh auth login
+# Involves:
+#   paste a PAT
+#   navigating to https://github.com/login/device/select_account
+
+# just in case, not crucial
+sudo apt install python3.10-venv
+```
+
+
+
 ### Clang
 
 ```bash
@@ -190,9 +220,7 @@ Wed Feb  4 20:29:59 2026
 ```bash
 nvidia-smi ; nvcc --version ; clang++ --version ; clang++ -std=c++17 -stdlib=libstdc++  cpp_test1.cpp
 ```
-
-For workspace:
+Regularly:
 ```bash
 bash ./scripts/dev.bash
 ```
-Then, on vscode, click on `exper21.generated.code-workspace`
