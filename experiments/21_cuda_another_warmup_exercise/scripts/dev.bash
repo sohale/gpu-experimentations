@@ -22,5 +22,8 @@ cat scripts/code-workspace.yaml \
   | yq -o=json eval \
     > $WSFILE
 
+# to convert conversly: `cat jsonfile.json | yq -P
+# or ` | yq -P eval -`
+
 # For documentation. Not automating.
 echo "On vscode, click on $(realpath --relative-to="$WS" "$WSFILE")"
