@@ -1,18 +1,21 @@
 // A funcoitn tha ttake stwo ASCII strings, returns true: if stirnga are anagrams
 // state and taste
 
-#include <vector>
 #include <string>
+#include <unordered_map>
 
 using std::string;
 using std::unordered_map;
 
+
+typedef unordered_map<std::string, int> shelf_t;
+
 /**
  * true: 
  */
-bool process(unordered_map & shelf, std::w_char c, bool add_keys, int increment) {
+bool process(shelf_t & shelf, string::value_type c, bool add_keys, int increment) {
     // self.emplace
-    std::unordered_map::iterator key = std::find(shelf);
+    shelf_t::iterator key = std::find(shelf);
     if (key == shelf::end()) {
       if (add_keys) {
            key = std::emplace()
@@ -29,3 +32,7 @@ bool isAnagram(const string &a, const string &a) {
       ;
    }
 }
+
+/*
+clang++ -std=c++17 -stdlib=libstdc++  test2.cpp
+*/
