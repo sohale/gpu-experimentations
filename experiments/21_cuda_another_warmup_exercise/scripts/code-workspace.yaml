@@ -1,5 +1,16 @@
----
-folders: aasdasd
+folders:
+  - path: /dataneura/gpu-experimentations/experiments/16_ll_lean4_revisit
 settings:
-  editor.tabSize: 4
-  files.autoSave: afterDelay
+  lean4.server.logging.enabled: true
+  lean4.checkOnSave: true
+  terminal.integrated.profiles.linux:
+    comment: The following IS ignored. Don't try.
+    expermentuzo:
+      path: /bin/bash
+      args:
+        - --noprofile
+        - --norc
+        - -c
+        - export LINLOG_DEBUG_ZEMPP=LE && echo "op" && source ${workspaceFolder}/scripts/workspace-env.bash "from-linlog.code-workspacen THIS IS IGNORED"
+  terminal.integrated.defaultProfile.linux: expermentuzo
+  terminal.integrated.cwd: ${workspaceFolder}
