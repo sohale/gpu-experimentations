@@ -1,0 +1,5 @@
+---
+folders: aasdasd
+settings:
+  editor.tabSize: 4
+  files.autoSave: afterDelay
