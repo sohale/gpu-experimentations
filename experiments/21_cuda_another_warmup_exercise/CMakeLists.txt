@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.20)
 # Project setup
 project(cpp_test1 LANGUAGES CXX)
 
+# Helpful: show which compiler CMake is using
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER} (${CMAKE_CXX_COMPILER_ID})")
+
 # Default to the newest widely supported standard
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
