@@ -100,6 +100,10 @@ wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3.tar.g
 ```
 Then,
 ```bash
+
+# cmake will need openssl
+sudo apt install -y openssl libssl-dev libcurl4-openssl-dev ca-certificates
+
 # sudo apt update && sudo apt install build-essential
 mkdir -p "$HOME/.local/bin"
 tar -xf cmake-4.2.3.tar.gz
