@@ -7,7 +7,7 @@
 using std::string;
 using std::unordered_map;
 
-
+// w_char
 typedef std::string::value_type char_type;
 typedef unordered_map<char_type, int> shelf_t;
 
@@ -16,8 +16,7 @@ typedef unordered_map<char_type, int> shelf_t;
  */
 bool processAChar(shelf_t & shelf, char_type c, bool add_keys, int increment) {
    typedef  shelf_t::iterator itertype;
-    std::pair<iterator, bool>
-   itertype key = shelf.find(c);
+   const std::pair<itertype, bool> keyresult = shelf.find(c);
    if (key == shelf.end()) {
       if (add_keys) {
            // key = std::emplace()
