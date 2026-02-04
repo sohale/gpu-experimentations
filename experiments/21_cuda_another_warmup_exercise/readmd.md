@@ -93,6 +93,28 @@ clang++ -std=c++17 -stdlib=libstdc++  cpp_test1.cpp
 
 ```
 
+#### CMake
+Verions: 4.3.3. When later available, see: https://cmake.org/download/
+```bash
+wget https://github.com/Kitware/CMake/releases/download/v4.2.3/cmake-4.2.3.tar.gz
+```
+Then,
+```bash
+# sudo apt update && sudo apt install build-essential
+mkdir -p "$HOME/.local/bin"
+tar -xf cmake-4.2.3.tar.gz
+# careful:
+cd cmake-4.2.3
+./bootstrap --prefix="$HOME/.local" --parallel="$(nproc)"
+# slow ^
+make -j"$(nproc)"
+make install
+export PATH="$HOME/.local/bin:$PATH"
+cmake --version
+
+# command -v gcc || echo "gcc missing"; command -v g++ || echo "g++ missing"; command -v make || echo "make missing"
+```
+
 ### CUDA
 Starting point of installation of CUDA is three downloaded files:
 * `build.sh`, via  `git clone` of: from https://github.com/NVIDIA/apt-packaging-cuda-keyring
