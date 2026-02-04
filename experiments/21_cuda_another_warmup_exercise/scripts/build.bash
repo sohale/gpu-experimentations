@@ -33,19 +33,23 @@ fi
 
 
 # Optional: enable experimental C++26 if supported
-CXX26_OPT=""
-if [[ "${USE_CPP26:-0}" == "1" ]]; then
+
   CXX26_OPT="-DUSE_CPP26=ON"
   echo "Enabling experimental C++26 (via -std=c++2c if supported)"
-fi
 # CMake Warning at CMakeLists.txt:24 (message):
 #  C++26 flag -std=c++2c not supported by this compiler.  Using C++23.
 
 
 
+########### The build command
 
 # Configure and build
 cmake -S . -B build $CXX26_OPT
+cmake --build build -j"$(nproc)"
+
+# ??cmake -S . -B build ${CXX26_OPT:+-DUSE_CPP26=ON}
+
+cmake -S . -B build -DUSE_CPP26=ON
 cmake --build build -j"$(nproc)"
 
 : || {
