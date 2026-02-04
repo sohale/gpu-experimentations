@@ -4,3 +4,6 @@ cuda.pin
 cuda-archive*keyring.gpg
 
 apt-packaging-cuda-keyring
+
+build
+under-carpet/
