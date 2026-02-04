@@ -17,6 +17,11 @@ if(USE_CPP26)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     include(CheckCXXCompilerFlag)
 
+    # -std=c++2c === -std=c++26
+    # -std=c++2b === -std=c++23
+    # -std=c++20
+    # -std=c++17
+
     # C++ standard compiler-flag: Going for C++26
     check_cxx_compiler_flag("-std=c++2c" HAS_CPP2C)
     if(HAS_CPP2C)

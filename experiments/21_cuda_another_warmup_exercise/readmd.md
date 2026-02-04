@@ -279,3 +279,23 @@ Regularly:
 ```bash
 bash ./scripts/dev.bash
 ```
+
+### Notes
+#### On C++ versions: (the `clang++ -std=c++22222` CLI arg):
+
+```txt
+note: use 'c++98' or 'c++03' for 'ISO C++ 1998 with amendments' standard
+note: use 'gnu++98' or 'gnu++03' for 'ISO C++ 1998 with amendments and GNU extensions' standard
+note: use 'c++11' for 'ISO C++ 2011 with amendments' standard
+note: use 'gnu++11' for 'ISO C++ 2011 with amendments and GNU extensions' standard
+note: use 'c++14' for 'ISO C++ 2014 with amendments' standard
+note: use 'gnu++14' for 'ISO C++ 2014 with amendments and GNU extensions' standard
+note: use 'c++17' for 'ISO C++ 2017 with amendments' standard
+note: use 'gnu++17' for 'ISO C++ 2017 with amendments and GNU extensions' standard
+note: use 'c++20' for 'ISO C++ 2020 DIS' standard
+note: use 'gnu++20' for 'ISO C++ 2020 DIS with GNU extensions' standard
+note: use 'c++23' for 'ISO C++ 2023 DIS' standard
+note: use 'gnu++23' for 'ISO C++ 2023 DIS with GNU extensions' standard
+note: use 'c++2c' or 'c++26' for 'Working draft for C++2c' standard
+note: use 'gnu++2c' or 'gnu++26' for 'Working draft for C++2c with GNU extensions' standard
+```
