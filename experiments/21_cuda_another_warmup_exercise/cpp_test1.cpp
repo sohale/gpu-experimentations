@@ -55,9 +55,11 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
 }
 
 bool isAnagram(const string &a, const string &b) {
+  shelf_t shelf;
   for (int li = 0; li < a.size(); li++) {
-    ;
+    processAChar(shelf, a[li], true, +1);
   }
+  return false;
 }
 
 /*
