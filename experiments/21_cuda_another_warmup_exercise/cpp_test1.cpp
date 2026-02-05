@@ -31,16 +31,21 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
   if (found) {
 
     auto key1 = keyresult->first;
-    itertype key = key1;
+    std::cout << "found key: " << key1 << "\n";
+    std::cout << "found?: " << keyresult->second << "\n";
+    // /??
+    // itertype key = key1;
   } else { // ~ (key == shelf.end())
     bool am_i_correct = (keyresult == shelf.end());
-    std::cout << "am_i_correct: " << am_i_correct ? "yes" : "no" << "\n";
+    std::cout << "am_i_correct: " << (am_i_correct ? "yes" : "no") << "\n";
     qq = shelf.end();
 
     if (add_keys) {
+      char_type key = c;
       // key = std::emplace()
       // key = shelf.emplace(key);
-      shelf.insert(key, 0);
+      // shelf.insert(key, 0);
+      shelf.emplace(key);
       shelf[key] += cincreamtn
     } else {
       retur false;
