@@ -1,13 +1,12 @@
 // A funcoitn tha ttake stwo ASCII strings, returns true: if stirnga are
 // anagrams state and taste
 
+#include <iostream>
 #include <string>
 #include <unordered_map>
-#include <iostream>
 
 using std::string;
 using std::unordered_map;
-
 
 // w_char
 typedef std::string::value_type char_type;
@@ -27,8 +26,9 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
   // ^ why ref is returned??
   std::cout << "=========\n";
 
-      std::cout << "??found?:?? " <<  keyresult->second << "\n";
-      std::cout << "found?:?? " << keyresult->first << " , " << keyresult->second << "\n";
+  std::cout << "??found?:?? " << keyresult->second << "\n";
+  std::cout << "found?:?? " << keyresult->first << " , " << keyresult->second
+            << "\n";
 
   // bool found = (keyresult != shelf.end());
 
@@ -69,7 +69,6 @@ bool isAnagram(const string &a, const string &b) {
   }
   return false;
 }
-
 
 int main() {
   string a = "state";
