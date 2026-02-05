@@ -46,15 +46,15 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
       // key = shelf.emplace(key);
       // shelf.insert(key, 0);
       shelf.emplace(key);
-      shelf[key] += cincreamtn
+      shelf[key] += increment;
     } else {
-      retur false;
+      return false;
     }
   }
   return true;
 }
 
-bool isAnagram(const string &a, const string &a) {
+bool isAnagram(const string &a, const string &b) {
   for (int li = 0; li < a.size(); li++) {
     ;
   }
