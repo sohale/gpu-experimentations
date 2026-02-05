@@ -19,9 +19,15 @@ typedef unordered_map<char_type, int> shelf_t;
 bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
   typedef shelf_t::iterator itertype;
   itertype qq;
+
+  std::cout << "processing char: " << c << "\n";
+
   // const std::pair<itertype, bool> keyresult = shelf.find(c);
   auto keyresult = shelf.find(c);
   // ^ why ref is returned??
+
+      std::cout << "??found?:?? " <<  keyresult->second << "\n";
+      std::cout << "found?:?? " << keyresult->first << " , " << keyresult->second << "\n";
 
   // bool found = (keyresult != shelf.end());
 
@@ -45,7 +51,7 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
       // key = std::emplace()
       // key = shelf.emplace(key);
       // shelf.insert(key, 0);
-      shelf.emplace(key);
+      shelf.emplace(key, 0);
       shelf[key] += increment;
     } else {
       return false;
@@ -62,6 +68,15 @@ bool isAnagram(const string &a, const string &b) {
   return false;
 }
 
+
+int main() {
+  string a = "state";
+  string b = "taste";
+  bool result = isAnagram(a, b);
+  std::cout << "are anagrams?: " << (result ? "yes" : "no") << "\n";
+  return 0;
+}
+
 /*
-clang++ -std=c++17 -stdlib=libstdc++  test2.cpp
+clang++ -std=c++26 -stdlib=libstdc++  cpp_test1.cpp
 */
