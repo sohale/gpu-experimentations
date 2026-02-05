@@ -25,6 +25,7 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
   // const std::pair<itertype, bool> keyresult = shelf.find(c);
   auto keyresult = shelf.find(c);
   // ^ why ref is returned??
+  std::cout << "=========\n";
 
       std::cout << "??found?:?? " <<  keyresult->second << "\n";
       std::cout << "found?:?? " << keyresult->first << " , " << keyresult->second << "\n";
@@ -63,7 +64,8 @@ bool processAChar(shelf_t &shelf, char_type c, bool add_keys, int increment) {
 bool isAnagram(const string &a, const string &b) {
   shelf_t shelf;
   for (int li = 0; li < a.size(); li++) {
-    processAChar(shelf, a[li], true, +1);
+    bool result = processAChar(shelf, a[li], true, +1);
+    std::cout << "processAChar a result: " << (result ? "yes" : "no") << "\n";
   }
   return false;
 }
